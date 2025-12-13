@@ -1,0 +1,38 @@
+[
+  {
+    "doc_id": "microsoft_2024_annual_report",
+    "company": "Microsoft",
+    "fiscal_year": 2024,
+    "period": "FY",
+    "doc_type": "annual_report",
+    "source_type": "filing",
+    "source_format": "docx",
+    "source_file": "data/reports/Microsoft/2024_Annual_Report.docx",
+    "questions_file": "data/questions/Microsoft/2024_Annual_Report.json",
+    "eval_reference_file": "data/evals/per_doc/microsoft_2024_annual_report/qa_reference.jsonl",
+    "processed_dir": "data/processed/microsoft/2024_annual_report",
+    "extracted_text_dir": "data/processed/microsoft/2024_annual_report/text",
+    "chunks_file": "data/processed/microsoft/2024_annual_report/chunks/chunks.jsonl",
+    "embeddings_file": "data/processed/microsoft/2024_annual_report/embeddings/chunks.parquet",
+    "vector_store_dir": "data/processed/microsoft/2024_annual_report/vector_store",
+    "notes": "Primary FY2024 annual report entry; keep questions and processed artifacts aligned to this doc_id."
+  },
+  {
+    "doc_id": "microsoft_fy24_q4_10k",
+    "company": "Microsoft",
+    "fiscal_year": 2024,
+    "period": "Q4",
+    "doc_type": "10-K",
+    "source_type": "filing",
+    "source_format": "docx",
+    "source_file": "data/reports/Microsoft/MSFT_FY24Q4_10K.docx",
+    "questions_file": null,
+    "eval_reference_file": "data/evals/per_doc/microsoft_fy24_q4_10k/qa_reference.jsonl",
+    "processed_dir": "data/processed/microsoft/microsoft_fy24_q4_10k",
+    "extracted_text_dir": "data/processed/microsoft/microsoft_fy24_q4_10k/text",
+    "chunks_file": "data/processed/microsoft/microsoft_fy24_q4_10k/chunks/chunks.jsonl",
+    "embeddings_file": "data/processed/microsoft/microsoft_fy24_q4_10k/embeddings/chunks.parquet",
+    "vector_store_dir": "data/processed/microsoft/microsoft_fy24_q4_10k/vector_store",
+    "notes": "Placeholder entry; add a questions_file when you create a set for this filing."
+  }
+]
