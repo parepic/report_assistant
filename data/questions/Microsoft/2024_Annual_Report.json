@@ -1,0 +1,153 @@
+[
+    {
+        "prompt": "According to the “Comparison of 5-Year Cumulative Total Return” chart, which investment performed best between June 2019 and June 2024: Microsoft, the S&P 500, or the NASDAQ Computer Index? What was the ending value for each?",
+        "type": ["graphical", "quantitative", "time_series"],
+        "targeting": "Reads a single figure; compares end values across three series.",
+        "expected_answer": (
+            "Microsoft performed best. Ending values at 6/24 are: Microsoft Corporation 349.91, "
+            "NASDAQ Computer 331.25, and S&P 500 201.54 (all indexed to 100.00 at 6/19)."
+        ),
+        "evidence": ":contentReference[oaicite:0]{index=0}",
+    },
+    {
+        "prompt": "In which year did Microsoft’s cumulative return decline relative to the previous year, and how did the S&P 500 and NASDAQ Computer Index behave in that same year?",
+        "type": ["graphical", "quantitative", "comparative", "time_series"],
+        "targeting": "Detects a drop in one series and compares the same interval for other series.",
+        "expected_answer": (
+            "Microsoft declined from 6/21 to 6/22 (206.72 down to 197.60). In the same period, "
+            "the S&P 500 also declined (151.36 to 135.29) and the NASDAQ Computer Index declined "
+            "(222.50 to 173.91)."
+        ),
+        "evidence": ":contentReference[oaicite:1]{index=1}",
+    },
+    {
+        "prompt": "How many shares did Microsoft repurchase in total in fiscal year 2024, and what was the total dollar amount spent?",
+        "type": ["table", "quantitative", "lookup"],
+        "targeting": "Reads totals from the Share Repurchases table (Year Ended June 30, 2024).",
+        "expected_answer": "32 million shares were repurchased for a total amount of $11,960 million.",
+        "evidence": ":contentReference[oaicite:2]{index=2}",
+    },
+    {
+        "prompt": "Compare the total number of shares repurchased in fiscal years 2022, 2023, and 2024. What overall trend do you observe?",
+        "type": ["table", "quantitative", "trend", "multi_period"],
+        "targeting": "Compares totals across multiple fiscal years in a table.",
+        "expected_answer": (
+            "Repurchases declined over time: 95 million shares (2022), 69 million (2023), and "
+            "32 million (2024). The dollar amounts also declined: $28,033 million (2022), "
+            "$18,400 million (2023), $11,960 million (2024)."
+        ),
+        "evidence": ":contentReference[oaicite:3]{index=3}",
+    },
+    {
+        "prompt": "In fiscal year 2024, which quarter had the highest dollar amount of share repurchases, and how much was spent in that quarter?",
+        "type": ["table", "quantitative", "within_year_comparison"],
+        "targeting": "Finds max among quarterly amounts for FY2024 in the repurchase table.",
+        "expected_answer": (
+            "The first quarter was highest, with $3,560 million spent (other quarters in FY2024 "
+            "were $2,800 million each)."
+        ),
+        "evidence": ":contentReference[oaicite:4]{index=4}",
+    },
+    {
+        "prompt": "What was the total dividend per share paid in fiscal year 2024, and how does it compare to fiscal year 2023?",
+        "type": ["table", "quantitative", "multi_period"],
+        "targeting": "Reads the totals row in the Dividends table for two fiscal years.",
+        "expected_answer": (
+            "Fiscal year 2024 total dividend per share was $3.00, compared with $2.72 in fiscal year 2023."
+        ),
+        "evidence": ":contentReference[oaicite:5]{index=5}",
+    },
+    {
+        "prompt": "What was the payment date and dividend per share for the dividend declared in June 2024?",
+        "type": ["table", "quantitative", "date_lookup"],
+        "targeting": "Single-row lookup in the Dividends table (June 12, 2024 declaration).",
+        "expected_answer": (
+            "For the dividend declared on June 12, 2024, the payment date was September 12, 2024 "
+            "and the dividend per share was $0.75."
+        ),
+        "evidence": ":contentReference[oaicite:6]{index=6}",
+    },
+    {
+        "prompt": "How does Microsoft’s revenue growth in fiscal year 2024 compare to the growth implied by the 5-year stock performance shown in the chart?",
+        "type": ["graphical", "quantitative", "cross_reference", "time_period_comparison"],
+        "targeting": "Cross-checks a narrative/financial KPI against a 5-year stock performance figure.",
+        "expected_answer": (
+            "FY2024 revenue was $245,122 million, up 16% versus FY2023 ($211,915 million). "
+            "Over the 5-year stock chart window (6/19 to 6/24), Microsoft’s indexed value rose from "
+            "100.00 to 349.91—i.e., roughly +249.91% over that period (index-based, includes reinvested dividends). "
+            "These are different time windows/metrics, but both show growth."
+        ),
+        "evidence": ":contentReference[oaicite:7]{index=7} :contentReference[oaicite:8]{index=8}",
+    },
+    {
+        "prompt": "How did the scale of share repurchases change from fiscal year 2022 to 2024, and what might this indicate about Microsoft’s capital allocation priorities?",
+        "type": ["table", "quantitative", "multi_period", "qualitative_interpretation"],
+        "targeting": "Uses the repurchase table for facts + adds a light interpretation grounded in stated capital return behavior.",
+        "expected_answer": (
+            "Share repurchases decreased from 95 million shares ($28,033 million) in FY2022 to "
+            "32 million shares ($11,960 million) in FY2024. One reasonable interpretation is that, while Microsoft "
+            "continued returning capital to shareholders, the buyback pace was lower in FY2024 than FY2022; "
+            "the report also notes continued dividends and expects capital expenditures to increase to support cloud growth "
+            "and investments in AI infrastructure."
+        ),
+        "evidence": ":contentReference[oaicite:9]{index=9} :contentReference[oaicite:10]{index=10}",
+    },
+    {
+        "prompt": "What are the three company priorities Microsoft outlines going forward, and where in the report are they described?",
+        "type": ["qualitative", "section_lookup", "strategy"],
+        "targeting": "Extracts a labeled list from the shareholder letter.",
+        "expected_answer": (
+            "In the shareholder letter, Microsoft lists three priorities: (1) prioritizing fundamentals with security above all else "
+            "(including the Secure Future Initiative), (2) driving trustworthy AI innovation across the portfolio while continuing "
+            "to scale the cloud business, and (3) managing the cost structure dynamically to generate durable, long-term operating leverage."
+        ),
+        "evidence": ":contentReference[oaicite:11]{index=11}",
+    },
+    {
+        "prompt": "How does Microsoft link its investments in AI infrastructure to long-term revenue growth, according to the “Our Opportunity” section?",
+        "type": ["qualitative", "strategy", "cause_effect"],
+        "targeting": "Pulls explicit claims about infrastructure investments and intended growth horizon.",
+        "expected_answer": (
+            "In “Our Opportunity” (Infrastructure), Microsoft says it expanded cloud and AI capacity and announced new investments "
+            "across five continents, describing them as long-term assets intended to drive new growth for the next decade and beyond. "
+            "It also notes continued sustained revenue growth from migrations as customers turn to Azure."
+        ),
+        "evidence": ":contentReference[oaicite:12]{index=12}",
+    },
+    {
+        "prompt": "According to the “Note About Forward-Looking Statements,” why should readers be cautious when interpreting projections in the report?",
+        "type": ["qualitative", "risk_disclosure", "section_lookup"],
+        "targeting": "Extracts the caution statement and its rationale.",
+        "expected_answer": (
+            "Because forward-looking statements are based on current expectations and assumptions, are subject to risks and uncertainties, "
+            "and actual results may differ materially. Readers are cautioned not to place undue reliance on them, and the statements speak "
+            "only as of the date made."
+        ),
+        "evidence": ":contentReference[oaicite:13]{index=13}",
+    },
+    {
+        "prompt": "The report claims record financial performance in fiscal year 2024. Which specific revenue and operating income figures support this claim?",
+        "type": ["quantitative", "section_lookup", "financials"],
+        "targeting": "Finds explicit revenue + operating income metrics.",
+        "expected_answer": (
+            "The shareholder letter states annual revenue of over $245 billion (up 16% year-over-year) and operating income of over $109 billion "
+            "(up 24%). The MD&A segment table shows totals of $245,122 million revenue and $109,433 million operating income for FY2024."
+        ),
+        "evidence": ":contentReference[oaicite:14]{index=14} :contentReference[oaicite:15]{index=15}",
+    },
+    {
+        "prompt": "Which business areas are repeatedly highlighted as growth drivers, and what numerical evidence is provided to support these claims?",
+        "type": ["qualitative", "quantitative", "cross_reference"],
+        "targeting": "Collects multiple ‘growth driver’ claims with metrics (customers/users/% increases) across the narrative sections.",
+        "expected_answer": (
+            "Examples of highlighted growth areas and supporting numbers include: "
+            "(a) Azure/hybrid cloud: Azure Arc had 36,000 customers, up 90% YoY; "
+            "(b) Azure AI: over 60,000 Azure AI customers, up nearly 60% YoY; "
+            "(c) Developer tools: GitHub Copilot had more than 1.8 million paid subscribers and over 77,000 enterprise customers, up 180% YoY; "
+            "(d) Low-code/app platform: Power Platform had 48 million monthly active users, up 40% YoY; "
+            "(e) Collaboration: Teams Premium surpassed 3 million seats, up nearly 400% YoY; "
+            "(f) LinkedIn: surpassed 1 billion members, with Premium signups up 51%."
+        ),
+        "evidence": ":contentReference[oaicite:16]{index=16} :contentReference[oaicite:17]{index=17} :contentReference[oaicite:18]{index=18}",
+    },
+]
