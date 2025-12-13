@@ -13,6 +13,18 @@ LLM tool for investor-style Q&A over annual/quarterly filings and earnings call 
 - `data/evals/per_doc/<doc_id>/`: reference QA sets and manual labels for per-document evaluation (accuracy, citation relevance).
 - `data/evals/cross_company/`: question sets that touch multiple companies (e.g., revenue/margin comparisons).
 - `data/staging/`: scratch space for conversions and temporary artifacts; safe to clean.
+- `pipelines/`: code for ingestion/chunking/embedding pipelines (e.g., DOCX extraction and chunk generation).
+
+### Demo
+- Run `python -m pipelines.demo_chunking` to see paragraph-level blocks and how they form overlapping chunks (`chunk_size_tokens=12`, `overlap_tokens=4`).
+
+## Tooling / Setup
+- PDM project (`pyproject.toml`) with `python-docx` for DOCX extraction. Requires Python >= 3.11.
+- Standard setup:
+  1) Install PDM (see https://pdm.fming.dev/latest/#installation).
+  2) Point PDM at your interpreter: `pdm use -f $(which python3.12)` (or any >=3.11).
+  3) Install deps: `pdm install`.
+  4) Run modules via PDM: `pdm run python -m pipelines.demo_chunking`.
 
 ## Workflow (per document)
 1) Register the source in `data/index/documents.json` with a `doc_id`, `source_file`, type (filing vs call), format, `questions_file`, optional `eval_reference_file`, and processing paths.  
