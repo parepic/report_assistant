@@ -1,0 +1,20 @@
+[project]
+name = "report-assistant"
+version = "0.1.0"
+description = "LLM tool for investor-style Q&A over annual/quarterly filings and earnings call transcripts, with chunking/embeddings for RAG, cited sources, and basic evaluation."
+authors = [
+    { name = "Amar Mesic" },
+    { name = "Parviz Ahmadov" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "python-docx>=1.1.0",
+]
+
+[tool.pdm]
+distribution = false
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

@@ -27,6 +27,11 @@ dist/
 .venv/
 venv/
 ENV/
+.python-version
+.pdm-python
+.pdm-home/
+.pdm-venvs/
+__pypackages__/
 
 # Notebooks
 .ipynb_checkpoints
