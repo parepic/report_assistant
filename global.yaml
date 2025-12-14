@@ -1,0 +1,14 @@
+data_path: "data/"
+output_path: "output/"
+company: "Microsoft"
+OLLAMA_URL: "http://localhost:11434"
+QDRANT_URL: "http://localhost:6333"
+LLM_MODEL: "phi"
+
+# Chunking variables
+chunk_strategy: {
+  "embed_model": "nomic-embed-text",
+  "method":"sequential",
+  "chunk_size": 1000,
+  "overlap": 50
+}
