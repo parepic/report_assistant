@@ -3,7 +3,7 @@ output_path: "output/"
 company: "Microsoft"
 OLLAMA_URL: "http://localhost:11434"
 QDRANT_URL: "http://localhost:6333"
-LLM_MODEL: "phi"
+LLM_MODEL: "llama3.1:8b"
 
 # Chunking variables
 chunk_strategy: {
@@ -12,3 +12,5 @@ chunk_strategy: {
   "chunk_size": 1000,
   "overlap": 50
 }
+
+

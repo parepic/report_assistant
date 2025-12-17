@@ -20,6 +20,8 @@ from qdrant_client.models import (
     PayloadSchemaType,
 )
 
+from qdrant_client.http.exceptions import UnexpectedResponse
+
 def check_and_handle_existing_points(
     client: QdrantClient,
     collection_name: str,
@@ -39,7 +41,7 @@ def check_and_handle_existing_points(
     existing_count = count_result.count
 
     if existing_count == 0:
-        return
+        return True
 
     print(f"Found {existing_count} existing points with the same strategy hash in collection '{collection_name}'.")
     response = input("Do you want to delete them and recreate embeddings? (yes/no): ").strip().lower()
@@ -228,6 +230,31 @@ def upsert_to_company_collection(
         client.upsert(collection_name=collection_name, points=points)
 
 
+def get_embedding_dimension(ollama_url: str, embed_model: str) -> int:
+    """
+    Get the embedding dimension by querying Ollama model info or making a dummy embedding.
+    """
+    # First, try to get dimension from /api/show (if available in Modelfile)
+    try:
+        payload = {"name": embed_model}
+        resp = requests.post(f"{ollama_url}/api/show", json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        modelfile = data.get("modelfile", "")
+        
+        # Parse for common embedding dimension parameters (adjust regex as needed for your models)
+        import re
+        match = re.search(r'PARAMETER\s+embedding_length\s+(\d+)', modelfile, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
+    except (requests.RequestException, KeyError, ValueError):
+        pass  # Fall back to dummy embedding
+    
+    # Fallback: Make a dummy embedding and get its length
+    dummy_emb = get_embedding("test", ollama_url, embed_model)
+    return len(dummy_emb)
+
+
 def main():
     config = load_global_config()
 
@@ -244,12 +271,12 @@ def main():
 
     collection_name = slugify_collection_name(company)
     client = get_qdrant_client(config)
+    vector_dim = get_embedding_dimension(ollama_url, embed_model)
+    print(vector_dim)
+    create_collection_if_missing(client, collection_name, vector_dim)
     proceed = check_and_handle_existing_points(client, collection_name, chunk_strategy)
     if proceed:
         vectors = embed_chunks(chunks, ollama_url, embed_model)
-        vector_dim = int(vectors[0].shape[0])
-        create_collection_if_missing(client, collection_name, vector_dim)
-
         payload_example = dict(chunk_strategy)
         payload_example["company"] = company
         payload_example["chunk_idx"] = 0
