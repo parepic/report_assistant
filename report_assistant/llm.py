@@ -1,18 +1,8 @@
-import json
-from pathlib import Path
 from typing import List
 
-import numpy as np
 import requests
-import yaml
 
-
-def load_global_config() -> dict:
-    path = Path("global.yaml")
-    if not path.is_file():
-        raise FileNotFoundError(f"Global config file not found: {path}")
-    with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from report_assistant.data_classes import GlobalConfig
 
 
 def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
@@ -106,12 +96,12 @@ Answer:
     return llm_generate(prompt, ollama_url, llm_model)
 
 
-def main():
-    config = load_global_config()
-    ollama_url = config["OLLAMA_URL"]
-    qdrant_url = config["QDRANT_URL"]
-    llm_model = config["LLM_MODEL"]
-    embed_model = config["chunk_strategy"]["embed_model"]
+def main(config: GlobalConfig) -> None:
+
+    ollama_url = config.OLLAMA_URL
+    qdrant_url = config.QDRANT_URL
+    llm_model = config.LLM_MODEL
+    embed_model = config.chunk_strategy.embed_model
 
     # Ask for company name
     company_input = input("Enter company name (e.g. Microsoft): ").strip().lower()

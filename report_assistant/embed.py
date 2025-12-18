@@ -22,16 +22,72 @@ from qdrant_client.models import (
 
 from qdrant_client.http.exceptions import UnexpectedResponse
 
+from report_assistant.data_classes import ChunkFile, ChunkStrategy, GlobalConfig, attach_processed_paths
+from report_assistant.utils.load_utils import get_index_path, load_chunks, load_document_entry
+from report_assistant.utils.utils import slugify_name
+
+
+def get_embedding_dimension(ollama_url: str, embed_model: str) -> int:
+    """
+    Get the embedding dimension by querying Ollama model info or making a dummy embedding.
+    """
+    # First, try to get dimension from /api/show (if available in Modelfile)
+    try:
+        payload = {"name": embed_model}
+        resp = requests.post(f"{ollama_url}/api/show", json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        modelfile = data.get("modelfile", "")
+        
+        # Parse for common embedding dimension parameters (adjust regex as needed for your models)
+        import re
+        match = re.search(r'PARAMETER\s+embedding_length\s+(\d+)', modelfile, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
+    except (requests.RequestException, KeyError, ValueError):
+        pass  # Fall back to dummy embedding
+    
+    # Fallback: Make a dummy embedding and get its length
+    dummy_emb = get_embedding("test", ollama_url, embed_model)
+    return len(dummy_emb)
+
+
+def get_qdrant_client(config: dict) -> QdrantClient:
+    # You can set QDRANT_URL in global.yaml. Fallback is local default.
+    url = config.QDRANT_URL or "http://localhost:6333"
+    return QdrantClient(url=url)
+
+
+
+def collection_exists(client: QdrantClient, collection_name: str) -> bool:
+    try:
+        client.get_collection(collection_name)
+        return True
+    except UnexpectedResponse:
+        return False
+
+
+def create_collection_if_missing(client: QdrantClient, collection_name: str, vector_dim: int) -> None:
+    if collection_exists(client, collection_name):
+        return
+
+    client.create_collection(
+        collection_name=collection_name,
+        vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE),
+    )
+
+
+
+
 def check_and_handle_existing_points(
     client: QdrantClient,
     collection_name: str,
-    chunk_strategy: Dict[str, Any],
+    strategy_hash: str,
 ) -> bool:
     """
     Check if points with the same chunk_strategy metadata already exist.
     If yes, prompt user to delete them or stop.
     """
-    strategy_hash = hashlib.sha256(json.dumps(sorted(chunk_strategy.items()), sort_keys=True).encode()).hexdigest()
 
     # Build filter for exact match on strategy_hash
     scroll_filter = Filter(must=[FieldCondition(key="strategy_hash", match=MatchValue(value=strategy_hash))])
@@ -55,12 +111,6 @@ def check_and_handle_existing_points(
     return True
 
 
-def load_global_config() -> dict:
-    path = Path("global.yaml")
-    if not path.is_file():
-        raise FileNotFoundError(f"Global config file not found: {path}")
-    with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 
 def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
@@ -85,16 +135,17 @@ def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
     return data["embedding"]
 
 
-def slugify_collection_name(company: str) -> str:
-    """
-    Qdrant collection names should be simple. This keeps letters, digits, _ and -.
-    """
-    s = company.strip().lower()
-    s = re.sub(r"\s+", "_", s)
-    s = re.sub(r"[^a-z0-9_\-]", "", s)
-    if not s:
-        raise ValueError("Company name became empty after sanitization.")
-    return f"company__{s}"
+def embed_chunks(chunks: List[str], ollama_url: str, embed_model: str) -> List[np.ndarray]:
+    vectors: List[np.ndarray] = []
+    print(f"Creating embeddings for {len(chunks)} chunks...")
+    for i, chunk in enumerate(chunks):
+        emb = np.array(get_embedding(chunk, ollama_url, embed_model), dtype="float32")
+        vectors.append(emb)
+        if (i + 1) % 10 == 0 or i == len(chunks) - 1:
+            print(f"  Embedded {i + 1}/{len(chunks)} chunks")
+    return vectors
+
+
 
 
 def python_value_to_payload_type(value: Any) -> PayloadSchemaType:
@@ -109,30 +160,6 @@ def python_value_to_payload_type(value: Any) -> PayloadSchemaType:
         return PayloadSchemaType.FLOAT
     # default for strings and anything else
     return PayloadSchemaType.KEYWORD
-
-
-def get_qdrant_client(config: dict) -> QdrantClient:
-    # You can set QDRANT_URL in global.yaml. Fallback is local default.
-    url = config.get("QDRANT_URL", "http://localhost:6333")
-    return QdrantClient(url=url)
-
-
-def collection_exists(client: QdrantClient, collection_name: str) -> bool:
-    try:
-        client.get_collection(collection_name)
-        return True
-    except UnexpectedResponse:
-        return False
-
-
-def create_collection_if_missing(client: QdrantClient, collection_name: str, vector_dim: int) -> None:
-    if collection_exists(client, collection_name):
-        return
-
-    client.create_collection(
-        collection_name=collection_name,
-        vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE),
-    )
 
 
 def create_payload_indexes_if_missing(
@@ -163,26 +190,6 @@ def create_payload_indexes_if_missing(
         )
 
 
-def load_chunks(output_path: str, company: str) -> Dict[str, Any]:
-    chunks_file = Path(output_path) / "chunks" / f"{company}.json"
-    if not chunks_file.is_file():
-        raise FileNotFoundError(f"Chunks file not found: {chunks_file}")
-    with chunks_file.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-    if not isinstance(data, dict) or "chunks" not in data or "strategy" not in data:
-        raise ValueError(f"Invalid chunks file format in {chunks_file}")
-    return data
-
-
-def embed_chunks(chunks: List[str], ollama_url: str, embed_model: str) -> List[np.ndarray]:
-    vectors: List[np.ndarray] = []
-    print(f"Creating embeddings for {len(chunks)} chunks...")
-    for i, chunk in enumerate(chunks):
-        emb = np.array(get_embedding(chunk, ollama_url, embed_model), dtype="float32")
-        vectors.append(emb)
-        if (i + 1) % 10 == 0 or i == len(chunks) - 1:
-            print(f"  Embedded {i + 1}/{len(chunks)} chunks")
-    return vectors
 
 
 def upsert_to_company_collection(
@@ -191,16 +198,16 @@ def upsert_to_company_collection(
     company: str,
     chunks: List[str],
     vectors: List[np.ndarray],
-    chunk_strategy: Dict[str, Any],
+    chunk_file: ChunkFile,
 ) -> None:
     if len(chunks) != len(vectors):
         raise ValueError("Chunks count does not match vectors count.")
 
     # Payload fields shared for all points
-    base_payload: Dict[str, Any] = dict(chunk_strategy)
+    strategy_dict = chunk_file.strategy.model_dump()
+    base_payload: Dict[str, Any] = dict(strategy_dict)
     base_payload["company"] = company
-    strategy_hash = hashlib.sha256(json.dumps(sorted(chunk_strategy.items()), sort_keys=True).encode()).hexdigest()
-    base_payload["strategy_hash"] = strategy_hash
+    base_payload["strategy_hash"] = chunk_file.strategy_hash
 
     # Build and upsert points in batches
     batch_size = 128
@@ -230,60 +237,42 @@ def upsert_to_company_collection(
         client.upsert(collection_name=collection_name, points=points)
 
 
-def get_embedding_dimension(ollama_url: str, embed_model: str) -> int:
-    """
-    Get the embedding dimension by querying Ollama model info or making a dummy embedding.
-    """
-    # First, try to get dimension from /api/show (if available in Modelfile)
-    try:
-        payload = {"name": embed_model}
-        resp = requests.post(f"{ollama_url}/api/show", json=payload, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        modelfile = data.get("modelfile", "")
-        
-        # Parse for common embedding dimension parameters (adjust regex as needed for your models)
-        import re
-        match = re.search(r'PARAMETER\s+embedding_length\s+(\d+)', modelfile, re.IGNORECASE)
-        if match:
-            return int(match.group(1))
-    except (requests.RequestException, KeyError, ValueError):
-        pass  # Fall back to dummy embedding
-    
-    # Fallback: Make a dummy embedding and get its length
-    dummy_emb = get_embedding("test", ollama_url, embed_model)
-    return len(dummy_emb)
 
 
-def main():
-    config = load_global_config()
 
-    output_path = config["output_path"]
-    company = config["company"]
-    ollama_url = config["OLLAMA_URL"]
+def main(config: GlobalConfig):
 
-    chunks_data = load_chunks(output_path, company)
-    chunk_strategy = chunks_data["strategy"]
-    chunks = chunks_data["chunks"]
-    embed_model = chunk_strategy.get("embed_model")
+    index_path = get_index_path(config)
+    entry = load_document_entry(config.report_id, index_path, config)
+
+    chunks_file = load_chunks(entry.chunks_dir / f"{entry.doc_id}.json")
+
+    chunk_strategy = chunks_file.strategy
+    embed_model = chunk_strategy.embed_model
     if not embed_model:
         raise ValueError("Missing embed model in chunk strategy.")
-
-    collection_name = slugify_collection_name(company)
-    client = get_qdrant_client(config)
+    
+    ollama_url = config.OLLAMA_URL
     vector_dim = get_embedding_dimension(ollama_url, embed_model)
     print(vector_dim)
+
+    collection_name = slugify_name(entry.company)
+    client = get_qdrant_client(config)
     create_collection_if_missing(client, collection_name, vector_dim)
-    proceed = check_and_handle_existing_points(client, collection_name, chunk_strategy)
+
+    proceed = check_and_handle_existing_points(client, collection_name, chunks_file.strategy_hash)
     if proceed:
+        chunks = chunks_file.chunks
         vectors = embed_chunks(chunks, ollama_url, embed_model)
-        payload_example = dict(chunk_strategy)
-        payload_example["company"] = company
+
+        payload_example = chunk_strategy.model_dump()
+        payload_example["company"] = entry.company
         payload_example["chunk_idx"] = 0
-        payload_example["strategy_hash"] = "dummy_hash"
+        payload_example["strategy_hash"] = chunks_file.strategy_hash
+
         create_payload_indexes_if_missing(client, collection_name, payload_example)
         print(len(chunks), " ", len(vectors))
-        upsert_to_company_collection(client, collection_name, company, chunks, vectors, chunk_strategy)
+        upsert_to_company_collection(client, collection_name, entry.company, chunks, vectors, chunks_file)
         print(f"Upserted {len(vectors)} vectors into Qdrant collection '{collection_name}'.")
 
 

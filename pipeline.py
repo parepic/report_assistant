@@ -3,18 +3,21 @@
 Pipeline script to run chunking and embedding sequentially.
 """
 
-from report_assistant.chunk import main as chunk_main
+from report_assistant.chunking.chunk import main as chunk_main
 from report_assistant.embed import main as embed_main
 from report_assistant.llm import main as llm_main
+from report_assistant.utils.load_utils import load_global_config
 
 
 def main():
+    config = load_global_config()
+
     print("Starting chunking...")
-    chunk_main()
+    chunk_main(config)
     print("Chunking completed. Starting embedding...")
-    embed_main()
+    embed_main(config)
     print("LLM conversation starting...")
-    llm_main()
+    llm_main(config)
 
     print("Pipeline completed successfully.")
 

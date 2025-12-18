@@ -1,0 +1,16 @@
+[
+  {
+    "doc_id": "microsoft_2024_annual_report",
+    "company": "Microsoft",
+    "fiscal_year": 2024,
+    "source_file_path": "data/reports/Microsoft/2024_Annual_Report.docx",
+    "questions_file_path": null
+  },
+  {
+    "doc_id": "microsoft_fy24_q4_10k",
+    "company": "Microsoft",
+    "fiscal_year": 2024,
+    "source_file_path": "data/reports/Microsoft/MSFT_FY24Q4_10K.docx",
+    "questions_file_path": null
+  }
+]
