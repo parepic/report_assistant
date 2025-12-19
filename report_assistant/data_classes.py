@@ -67,7 +67,15 @@ class ChunkFile(BaseModel):
     @property
     def strategy_hash(self) -> str:
         strategy_payload = self.strategy.model_dump(mode="python")
-        serialized = json.dumps(strategy_payload, sort_keys=True, separators=(",", ":"))
+        serialized = json.dumps(
+            {
+                "strategy": strategy_payload,
+                "chunks": self.chunks,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
         return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 

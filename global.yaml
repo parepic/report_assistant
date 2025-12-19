@@ -12,7 +12,7 @@ LLM_MODEL: "llama3.1:8b"
 chunk_strategy: {
   "embed_model": "nomic-embed-text",
   "method":"sequential",
-  "chunk_size": 1000,
+  "chunk_size": 500,
   "overlap": 50
 }
 

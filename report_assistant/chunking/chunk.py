@@ -11,7 +11,8 @@ from typing import List
 
 from docx import Document
 
-from report_assistant.chunking.algorithms import chunk_sequential
+from report_assistant.chunking.algorithms import chunk_sequential, chunk_sentences
+from report_assistant.chunking.convert_to_markdown import convert_to_markdown_pypandoc
 from report_assistant.data_classes import ChunkFile, ChunkStrategy, DocumentEntry, GlobalConfig
 from report_assistant.utils.load_utils import get_index_path, load_document_entry
 
@@ -38,21 +39,10 @@ def run_chunking(text: str, strategy: ChunkStrategy) -> List[str]:
     """
     if strategy.method == "sequential":
         return chunk_sequential(text, strategy)
+    if strategy.method == "sentences":
+        return chunk_sentences(text, strategy)
+    
     raise ValueError(f"Unknown chunking method: {strategy.method}")
-
-
-
-def save_chunks(entry: DocumentEntry, chunk_file: ChunkFile) -> Path:
-    """
-    Persist chunk data to JSON.
-    """
-    output_dir = entry.chunks_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / f"{entry.doc_id}.json"
-    output_file.write_text(chunk_file.model_dump_json(indent=2, ensure_ascii=False), encoding="utf-8")
-    return output_file
-
-
 
 
 
@@ -65,14 +55,27 @@ def main(config: GlobalConfig) -> None:
 
     index_path = get_index_path(config)
     entry = load_document_entry(config.report_id, index_path, config)
+    file_path = entry.source_file_path
 
-    text = load_text(entry.source_format, entry.source_file_path)
-    chunks = run_chunking(text, strategy)
+    # Not necessary if we can convert to an .md file and use its contents directly
+    # text = load_text(entry.source_format, file_path)
+    # text_file = save_plain_text(entry, text)
+    markdown_text = convert_to_markdown_pypandoc(file_path)
 
+    markdown_path = entry.text_dir / f"{entry.doc_id}.md"
+    markdown_path.write_text(markdown_text, encoding="utf-8")
+
+
+    chunks = run_chunking(markdown_text, strategy)
     chunk_file = ChunkFile(strategy=strategy, chunks=chunks)
-    output_file = save_chunks(entry, chunk_file)
 
-    print(f"Chunked {len(chunks)} chunks for {config.report_id} using {strategy.method} strategy. Saved to {output_file}")
+    output_file = entry.chunks_dir / f"{entry.doc_id}.json"
+    output_file.write_text(chunk_file.model_dump_json(indent=2, ensure_ascii=False), encoding="utf-8")
+
+    print(
+        f"Chunked {len(chunks)} chunks for {config.report_id} using {strategy.method} strategy. "
+        f"Saved chunks to {output_file} and markdown to {markdown_path}"
+    )
 
 
 if __name__ == "__main__":
