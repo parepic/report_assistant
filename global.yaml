@@ -11,9 +11,9 @@ LLM_MODEL: "llama3.1:8b"
 # Chunking variables
 chunk_strategy: {
   "embed_model": "nomic-embed-text",
-  "method":"sequential",
-  "chunk_size": 500,
-  "overlap": 50
+  "method":"sentence",
+  "chunk_size": 5,
+  "overlap": 1
 }
 
 
