@@ -195,7 +195,7 @@ def create_payload_indexes_if_missing(
 def upsert_to_company_collection(
     client: QdrantClient,
     collection_name: str,
-    company: str,
+    file_id: str,
     chunks: List[str],
     vectors: List[np.ndarray],
     chunk_file: ChunkFile,
@@ -206,7 +206,7 @@ def upsert_to_company_collection(
     # Payload fields shared for all points
     strategy_dict = chunk_file.strategy.model_dump()
     base_payload: Dict[str, Any] = dict(strategy_dict)
-    base_payload["company"] = company
+    base_payload["file_id"] = file_id
     base_payload["strategy_hash"] = chunk_file.strategy_hash
 
     # Build and upsert points in batches
@@ -266,13 +266,13 @@ def main(config: GlobalConfig):
         vectors = embed_chunks(chunks, ollama_url, embed_model)
 
         payload_example = chunk_strategy.model_dump()
-        payload_example["company"] = entry.company
+        payload_example["file_id"] = entry.doc_id
         payload_example["chunk_idx"] = 0
         payload_example["strategy_hash"] = chunks_file.strategy_hash
 
         create_payload_indexes_if_missing(client, collection_name, payload_example)
         print(len(chunks), " ", len(vectors))
-        upsert_to_company_collection(client, collection_name, entry.company, chunks, vectors, chunks_file)
+        upsert_to_company_collection(client, collection_name, entry.doc_id, chunks, vectors, chunks_file)
         print(f"Upserted {len(vectors)} vectors into Qdrant collection '{collection_name}'.")
 
 

@@ -10,9 +10,8 @@ import hashlib
 import json
 from pathlib import Path
 from typing import List, Optional
-
+from .chunking.strategies import ChunkStrategy
 from pydantic import BaseModel, Field, HttpUrl, computed_field, field_validator
-
 
 
 class GlobalConfig(BaseModel):
@@ -27,34 +26,7 @@ class GlobalConfig(BaseModel):
     QDRANT_URL: HttpUrl | str
     LLM_MODEL: str
 
-    chunk_strategy: ChunkStrategy
-
-
-
-
-class ChunkStrategy(BaseModel):
-    embed_model: str
-    method: str
-    chunk_size: int
-    overlap: int = 0
-
-    @field_validator("chunk_size")
-    @classmethod
-    def chunk_size_positive(cls, v: int) -> int:
-        if v <= 0:
-            raise ValueError("chunk_size must be positive")
-        return v
-
-    @field_validator("overlap")
-    @classmethod
-    def overlap_non_negative(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError("overlap cannot be negative")
-        return v
-
-
-
-
+    chunk_strategy: ChunkStrategy 
 
 
 class ChunkFile(BaseModel):
@@ -77,12 +49,6 @@ class ChunkFile(BaseModel):
             ensure_ascii=False,
         )
         return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
-
-
-
-
-
 
 class DocumentEntry(BaseModel):
     doc_id: str
