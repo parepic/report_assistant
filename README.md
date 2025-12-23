@@ -51,13 +51,13 @@ This will:
 ## Key Modules / Types
 
 - `data_classes.py`: Pydantic models for `DocumentEntry`, `ChunkStrategy`, and `ChunkFile` (includes a hash over strategy + chunk content).
-- `chunking/algorithms.py`: chunkers. `sequential` chunks by iterating over characters with configurable overlap; `sentences`, meanwhile, chunks into discrete sentences.
 - `chunking/chunk.py`: orchestrates loading source files, saving plaintext, running the chunker, and writing chunk JSON.
 - `chunking/convert_to_markdown.py`: converts `.docx` to Markdown. Markdown is preferable to plaintext because tables render cleanly and match LLM pretraining formats.
 - `embed.py`: loads chunks, generates embeddings via Ollama, stores in Qdrant with metadata.
 - `llm.py`: interactive Q&A using vector search in Qdrant and LLM generation.
 - `pipeline.py`: runs chunk → embed → llm sequentially.
 - `notebooks/`: exploratory notebooks (e.g., sentence chunking, data exploration).
+- `chunking/strategies`: Chunking strategy classes live in this dir. Each strategy class inherits from `ChunkStrategy` base class.
 
 ## Converting Word Documents to Markdown
 

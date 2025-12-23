@@ -12,3 +12,5 @@ def slugify_name(company: str) -> str:
     if not s:
         raise ValueError("Company name became empty after sanitization.")
     return f"company__{s}"
+
+
