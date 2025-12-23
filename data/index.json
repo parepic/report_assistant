@@ -12,5 +12,19 @@
     "fiscal_year": 2024,
     "source_file_path": "data/reports/Microsoft/MSFT_FY24Q4_10K.docx",
     "questions_file_path": null
+  },
+  {
+    "doc_id": "amazon_10-k-item7",
+    "company": "Amazon",
+    "fiscal_year": 2024,
+    "source_file_path": "data/reports/Amazon/amazon_10-k-item7.docx",
+    "questions_file_path": null
+  },
+    {
+    "doc_id": "amazon_10-k-item1a",
+    "company": "Amazon",
+    "fiscal_year": 2024,
+    "source_file_path": "data/reports/Amazon/amazon_10-k-item1a.docx",
+    "questions_file_path": null
   }
 ]

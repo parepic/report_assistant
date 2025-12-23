@@ -80,6 +80,7 @@ def answer_question(question: str,
     context = ""
     for i, chunk in enumerate(top_chunks):
         context += f"Chunk {i+1}:\n{chunk}\n\n"
+    print("here is context: ", context)
     prompt = f"""
 You are a helpful assistant answering questions about a company document.
 Use ONLY the information in the context below. If the answer is not there,

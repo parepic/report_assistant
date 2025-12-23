@@ -254,7 +254,6 @@ def main(config: GlobalConfig):
     
     ollama_url = config.OLLAMA_URL
     vector_dim = get_embedding_dimension(ollama_url, embed_model)
-    print(vector_dim)
 
     collection_name = slugify_name(entry.company)
     client = get_qdrant_client(config)
