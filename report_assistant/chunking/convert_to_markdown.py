@@ -5,8 +5,8 @@ Tables are rendered as Markdown tables and basic headings/bullets are preserved
 using style names from the source document. This keeps content LLM-friendly.
 """
 from __future__ import annotations
+import warnings
 
-import argparse
 from pathlib import Path
 from typing import Iterable, List
 import re
@@ -19,23 +19,45 @@ from docx.text.paragraph import Paragraph
 import pypandoc
 
 
-# Convert using pypandoc
-def convert_to_markdown_pypandoc(
-    input_path: Path,
-    # output_path: Path
-) -> str:
+ROW_END_TOKEN = "<ROW_END>"
+TABLE_END_TOKEN = "<TABLE_END>."
+
+
+# # Convert using pypandoc
+# def convert_to_markdown_pypandoc(
+#     input_path: Path,
+#     # output_path: Path
+# ) -> str:
+#     """
+#     Convert a .docx file to Markdown using pypandoc.
+#     Returns the Markdown text.
+#     """
+#     warnings.warn(
+#         "Deprecated: use docx_to_markdown instead.",
+#         UserWarning,
+#         stacklevel=2,
+#     )
+
+#     return pypandoc.convert_file(
+#         str(input_path),
+#         "markdown",
+#         # outputfile=str(output_path),
+#         extra_args=["--standalone",
+#                     # f"--extract-media={output_path.parent / 'media'}"
+#                     ],
+#     )
+
+
+
+def clean_markdown_text(md_text: str) -> str:
     """
-    Convert a .docx file to Markdown using pypandoc.
-    Returns the Markdown text.
+    Clean up some common pypandoc artifacts in the Markdown text.
     """
-    return pypandoc.convert_file(
-        str(input_path),
-        "markdown",
-        # outputfile=str(output_path),
-        extra_args=["--standalone",
-                    # f"--extract-media={output_path.parent / 'media'}"
-                    ],
-    )
+    # Remove excessive newlines
+    md_text = remove_excessive_newlines(md_text)
+    md_text = remove_unwanted_lines(md_text)
+    md_text = remove_gt_markers(md_text)
+    return md_text
 
 def remove_excessive_newlines(md_text: str) -> str:
     lines = md_text.splitlines()
@@ -50,19 +72,6 @@ def remove_excessive_newlines(md_text: str) -> str:
             cleaned_lines.append(line)
             previous_blank = False
     return "\n".join(cleaned_lines)
-
-
-
-
-def clean_markdown_text(md_text: str) -> str:
-    """
-    Clean up some common pypandoc artifacts in the Markdown text.
-    """
-    # Remove excessive newlines
-    md_text = remove_excessive_newlines(md_text)
-    md_text = remove_unwanted_lines(md_text)
-    md_text = remove_gt_markers(md_text)
-    return md_text
 
 def remove_unwanted_lines(md_text: str) -> str:
     """
@@ -103,8 +112,14 @@ def remove_gt_markers(md_text: str) -> str:
         out.append(cleaned)
     return "\n".join(out)
 
-# Convert using python-docx
 
+
+
+
+
+
+
+# Convert using python-docx
 def docx_to_markdown(input_path: Path) -> str:
     """
     Convert a .docx file to Markdown text.
@@ -171,10 +186,15 @@ def table_to_md(table: Table) -> str:
     rows: List[List[str]] = []
     for row in table.rows:
         cells = [cell.text.strip().replace("\n", " ") for cell in row.cells]
+        if cells:
+            cells[-1] = f"{cells[-1]} {ROW_END_TOKEN}"
         rows.append(cells)
 
     if not rows:
         return ""
+
+    if rows[-1]:
+        rows[-1][-1] = f"{rows[-1][-1]} {TABLE_END_TOKEN}"
 
     header = rows[0]
     body = rows[1:] if len(rows) > 1 else []

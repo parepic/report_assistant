@@ -1,7 +1,7 @@
 data_path: "data/"
 output_path: "output/"
 
-report_id: "amazon_10-k-item1a"
+report_id: "microsoft_fy24_q4_10k"
 
 
 OLLAMA_URL: "http://localhost:11434"
@@ -11,7 +11,7 @@ LLM_MODEL: "llama3.1:8b"
 # Chunking variables
 chunk_strategy: {
   "embed_model": "nomic-embed-text",
-  "method":"sentence_metadata",
+  "method":"sentence",
   "chunk_size": 3,
   "overlap": 1
 }

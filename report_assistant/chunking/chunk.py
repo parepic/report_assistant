@@ -11,8 +11,8 @@ from typing import List
 
 from docx import Document
 
-from report_assistant.chunking.convert_to_markdown import convert_to_markdown_pypandoc, clean_markdown_text
-from report_assistant.data_classes import ChunkFile, DocumentEntry, GlobalConfig
+from report_assistant.chunking.convert_to_markdown import clean_markdown_text, docx_to_markdown
+from report_assistant.data_classes import ChunkFile, GlobalConfig
 from report_assistant.utils.load_utils import get_index_path, load_document_entry
 
 
@@ -46,8 +46,8 @@ def main(config: GlobalConfig) -> None:
     
     # Removed this for now as something was causing error when embedding
 
-    markdown_text = convert_to_markdown_pypandoc(file_path)
-    markdown_text = clean_markdown_text(markdown_text)
+    markdown_text = docx_to_markdown(file_path)
+    # markdown_text = clean_markdown_text(markdown_text)
     markdown_path = entry.text_dir / f"{entry.doc_id}.md"
     markdown_path.write_text(markdown_text, encoding="utf-8")
 
