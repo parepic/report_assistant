@@ -1,7 +1,7 @@
 data_path: "data/"
 output_path: "output/"
 
-report_id: "microsoft_fy24_q4_10k"
+report_id: "amazon_10-k-item1a"
 
 
 OLLAMA_URL: "http://localhost:11434"

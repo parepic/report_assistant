@@ -47,7 +47,7 @@ def main(config: GlobalConfig) -> None:
     # Removed this for now as something was causing error when embedding
 
     markdown_text = docx_to_markdown(file_path)
-    # markdown_text = clean_markdown_text(markdown_text)
+    markdown_text = clean_markdown_text(markdown_text)
     markdown_path = entry.text_dir / f"{entry.doc_id}.md"
     markdown_path.write_text(markdown_text, encoding="utf-8")
 

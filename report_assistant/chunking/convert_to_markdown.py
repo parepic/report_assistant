@@ -89,7 +89,7 @@ def remove_unwanted_lines(md_text: str) -> str:
             continue
         if lstripped.startswith("![]"):
             continue
-        if lstripped.startswith("[Table of Contents]"):
+        if lstripped.startswith("Table of Contents"):
             continue
 
         kept.append(line)
