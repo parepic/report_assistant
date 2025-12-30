@@ -14,7 +14,7 @@ A RAG (Retrieval-Augmented Generation) system for Q&A over company documents usi
    - Download from https://ollama.ai/
    - Pull the required models:
      ```
-     ollama pull phi
+     ollama pull llama3.1:8b
      ollama pull nomic-embed-text
      ```
 
