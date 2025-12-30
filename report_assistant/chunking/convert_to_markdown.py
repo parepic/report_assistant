@@ -5,10 +5,11 @@ Tables are rendered as Markdown tables and basic headings/bullets are preserved
 using style names from the source document. This keeps content LLM-friendly.
 """
 from __future__ import annotations
+import warnings
 
-import argparse
 from pathlib import Path
 from typing import Iterable, List
+import re
 
 from docx import Document
 from docx.oxml.table import CT_Tbl
@@ -18,27 +19,107 @@ from docx.text.paragraph import Paragraph
 import pypandoc
 
 
-# Convert using pypandoc
-def convert_to_markdown_pypandoc(
-    input_path: Path,
-    # output_path: Path
-) -> str:
+ROW_END_TOKEN = "<ROW_END>"
+TABLE_END_TOKEN = "<TABLE_END>."
+
+
+# # Convert using pypandoc
+# def convert_to_markdown_pypandoc(
+#     input_path: Path,
+#     # output_path: Path
+# ) -> str:
+#     """
+#     Convert a .docx file to Markdown using pypandoc.
+#     Returns the Markdown text.
+#     """
+#     warnings.warn(
+#         "Deprecated: use docx_to_markdown instead.",
+#         UserWarning,
+#         stacklevel=2,
+#     )
+
+#     return pypandoc.convert_file(
+#         str(input_path),
+#         "markdown",
+#         # outputfile=str(output_path),
+#         extra_args=["--standalone",
+#                     # f"--extract-media={output_path.parent / 'media'}"
+#                     ],
+#     )
+
+
+
+def clean_markdown_text(md_text: str) -> str:
     """
-    Convert a .docx file to Markdown using pypandoc.
-    Returns the Markdown text.
+    Clean up some common pypandoc artifacts in the Markdown text.
     """
-    return pypandoc.convert_file(
-        str(input_path),
-        "markdown",
-        # outputfile=str(output_path),
-        extra_args=["--standalone",
-                    # f"--extract-media={output_path.parent / 'media'}"
-                    ],
-    )
+    # Remove excessive newlines
+    md_text = remove_excessive_newlines(md_text)
+    md_text = remove_unwanted_lines(md_text)
+    md_text = remove_gt_markers(md_text)
+    return md_text
+
+def remove_excessive_newlines(md_text: str) -> str:
+    lines = md_text.splitlines()
+    cleaned_lines = []
+    previous_blank = False
+    for line in lines:
+        if line.strip() == "":
+            if not previous_blank:
+                cleaned_lines.append("")
+            previous_blank = True
+        else:
+            cleaned_lines.append(line)
+            previous_blank = False
+    return "\n".join(cleaned_lines)
+
+def remove_unwanted_lines(md_text: str) -> str:
+    """
+    Remove lines that are only a single number, start with '![]', or start with '[Table of Contents]'.
+    Leading whitespace is ignored for the prefix checks.
+    """
+    lines = md_text.splitlines()
+    kept: List[str] = []
+
+    for line in lines:
+        stripped = line.strip()
+        lstripped = line.lstrip()
+
+        if re.fullmatch(r"\d+", stripped):
+            continue
+        if lstripped.startswith("![]"):
+            continue
+        if lstripped.startswith("Table of Contents"):
+            continue
+
+        kept.append(line)
+
+    return "\n".join(kept)
+
+def remove_gt_markers(md_text: str) -> str:
+    """
+    Remove blockquote-style markers: leading '>' (with optional spaces) and
+    the exact substring " >" wherever it appears.
+    This avoids carrying over blockquote arrows into cleaned Markdown.
+    """
+    lines = md_text.splitlines()
+    out: List[str] = []
+    for line in lines:
+        # Remove leading '>' with optional whitespace after it
+        stripped_lead = re.sub(r"^\s*>\s*", "", line)
+        # Remove the exact substring space+greater-than
+        cleaned = stripped_lead.replace(" >", "")
+        out.append(cleaned)
+    return "\n".join(out)
+
+
+
+
+
+
 
 
 # Convert using python-docx
-
 def docx_to_markdown(input_path: Path) -> str:
     """
     Convert a .docx file to Markdown text.
@@ -105,10 +186,15 @@ def table_to_md(table: Table) -> str:
     rows: List[List[str]] = []
     for row in table.rows:
         cells = [cell.text.strip().replace("\n", " ") for cell in row.cells]
+        if cells:
+            cells[-1] = f"{cells[-1]} {ROW_END_TOKEN}"
         rows.append(cells)
 
     if not rows:
         return ""
+
+    if rows[-1]:
+        rows[-1][-1] = f"{rows[-1][-1]} {TABLE_END_TOKEN}"
 
     header = rows[0]
     body = rows[1:] if len(rows) > 1 else []

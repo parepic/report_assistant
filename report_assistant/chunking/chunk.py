@@ -11,7 +11,8 @@ from typing import List
 
 from docx import Document
 
-from report_assistant.data_classes import ChunkFile, DocumentEntry, GlobalConfig
+from report_assistant.chunking.convert_to_markdown import clean_markdown_text, docx_to_markdown
+from report_assistant.data_classes import ChunkFile, GlobalConfig
 from report_assistant.utils.load_utils import get_index_path, load_document_entry
 
 
@@ -45,15 +46,16 @@ def main(config: GlobalConfig) -> None:
     
     # Removed this for now as something was causing error when embedding
 
-    # markdown_text = convert_to_markdown_pypandoc(file_path)
-    # markdown_path = entry.text_dir / f"{entry.doc_id}.md"
-    # markdown_path.write_text(markdown_text, encoding="utf-8")
+    markdown_text = docx_to_markdown(file_path)
+    markdown_text = clean_markdown_text(markdown_text)
+    markdown_path = entry.text_dir / f"{entry.doc_id}.md"
+    markdown_path.write_text(markdown_text, encoding="utf-8")
 
-    text = load_text(entry.source_format, file_path)
-    text_path = entry.text_dir / f"{entry.doc_id}.txt"
-    text_path.write_text(text, encoding="utf-8")
+    # text = load_text(entry.source_format, file_path)
+    # text_path = entry.text_dir / f"{entry.doc_id}.txt"
+    # text_path.write_text(text, encoding="utf-8")
 
-    chunks = strategy.create_chunks(text)
+    chunks = strategy.create_chunks(markdown_text)
     chunk_file = ChunkFile(strategy=strategy, chunks=chunks)
 
     output_file = entry.chunks_dir / f"{entry.doc_id}.json"
@@ -61,7 +63,7 @@ def main(config: GlobalConfig) -> None:
 
     print(
         f"Chunked {len(chunks)} chunks for {config.report_id} using {strategy.method} strategy. "
-        f"Saved chunks to {output_file} and text to {text_path}"
+        f"Saved chunks to {output_file} and text to {markdown_path}"
     )
 
 

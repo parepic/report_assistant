@@ -29,6 +29,7 @@ def load_document_entries(index_path: Path, config: Optional[GlobalConfig] = Non
         raise FileNotFoundError(f"Index file not found: {index_path}")
 
     entries_raw = index_path.read_text(encoding="utf-8")
+    print(entries_raw)
     entries_data = json.loads(entries_raw)
     if not isinstance(entries_data, list):
         raise ValueError(f"Index file {index_path} must contain a list of document entries.")
