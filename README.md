@@ -29,9 +29,10 @@ A RAG (Retrieval-Augmented Generation) system for Q&A over company documents usi
    docker-compose up -d
    ```
 
+
 ## Usage
 
-Run the full pipeline (chunking, embedding, and Q&A):
+Run the full pipeline (chunking, embedding, and testing):
 ```
 pdm run python pipeline.py
 ```
@@ -39,7 +40,21 @@ pdm run python pipeline.py
 This will:
 - Chunk the document based on `global.yaml` config.
 - Generate embeddings and store in Qdrant.
-- Start an interactive Q&A session.
+- Run tests to compare LLM outputs with expected answers from the questions file.
+
+To run individual stages, use these flags:
+```
+pdm run python pipeline.py --chunk   # Run chunking only
+pdm run python pipeline.py --embed   # Run embedding only
+pdm run python pipeline.py --test    # Run testing only
+pdm run python pipeline.py --llm     # Run interactive Q&A session
+```
+
+You can combine multiple flags to run specific stages in sequence:
+```
+pdm run python pipeline.py --chunk --embed
+```
+
 
 ## Data & Output Layout
 
@@ -55,6 +70,7 @@ This will:
 - `chunking/convert_to_markdown.py`: converts `.docx` to Markdown. Markdown is preferable to plaintext because tables render cleanly and match LLM pretraining formats.
 - `embed.py`: loads chunks, generates embeddings via Ollama, stores in Qdrant with metadata.
 - `llm.py`: interactive Q&A using vector search in Qdrant and LLM generation.
+- `test.py`: Contains testing logic, where llm answers are compared with expected answers.
 - `pipeline.py`: runs chunk → embed → llm sequentially.
 - `notebooks/`: exploratory notebooks (e.g., sentence chunking, data exploration).
 - `chunking/strategies`: Chunking strategy classes live in this dir. Each strategy class inherits from `ChunkStrategy` base class.
