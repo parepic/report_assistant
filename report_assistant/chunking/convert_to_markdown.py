@@ -23,29 +23,30 @@ ROW_END_TOKEN = "<ROW_END>"
 TABLE_END_TOKEN = "<TABLE_END>."
 
 
-# # Convert using pypandoc
-# def convert_to_markdown_pypandoc(
-#     input_path: Path,
-#     # output_path: Path
-# ) -> str:
-#     """
-#     Convert a .docx file to Markdown using pypandoc.
-#     Returns the Markdown text.
-#     """
-#     warnings.warn(
-#         "Deprecated: use docx_to_markdown instead.",
-#         UserWarning,
-#         stacklevel=2,
-#     )
+# Convert using pypandoc
+def convert_to_markdown_pypandoc(
+    input_path: Path,
+    # output_path: Path
+) -> str:
+    """
+    Convert a .docx file to Markdown using pypandoc.
+    Returns the Markdown text.
+    """
+    warnings.warn(
+        "Deprecated: use docx_to_markdown instead.",
+        UserWarning,
+        stacklevel=2,
+    )
 
-#     return pypandoc.convert_file(
-#         str(input_path),
-#         "markdown",
-#         # outputfile=str(output_path),
-#         extra_args=["--standalone",
-#                     # f"--extract-media={output_path.parent / 'media'}"
-#                     ],
-#     )
+    return pypandoc.convert_file(
+        str(input_path),
+        "markdown",
+        # outputfile=str(output_path),
+        extra_args=["--standalone",
+                    "--wrap=none",
+                    # f"--extract-media={output_path.parent / 'media'}"
+                    ],
+    )
 
 
 
@@ -111,11 +112,6 @@ def remove_gt_markers(md_text: str) -> str:
         cleaned = stripped_lead.replace(" >", "")
         out.append(cleaned)
     return "\n".join(out)
-
-
-
-
-
 
 
 

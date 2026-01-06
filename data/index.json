@@ -25,6 +25,6 @@
     "company": "Amazon",
     "fiscal_year": 2024,
     "source_file_path": "data/reports/Amazon/amazon_10-k-item1a.docx",
-    "questions_file_path": null
+    "questions_file_path": "data/questions/Amazon/amazon_10-k-item1a.json"
   }
 ]

@@ -18,7 +18,6 @@ dependencies = [
     "pydantic>=2.12.5",
     "pypandoc>=1.16.2",
     "spacy>=3.8.0",
-    "pandoc>=2.4",
 ]
 
 [tool.pdm]

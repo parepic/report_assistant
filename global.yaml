@@ -11,9 +11,16 @@ LLM_MODEL: "llama3.1:8b"
 # Chunking variables
 chunk_strategy: {
   "embed_model": "nomic-embed-text",
-  "method":"sentence",
+  "method":"sentence_metadata",
   "chunk_size": 3,
   "overlap": 1
 }
 
+# Retrieval variables
+top_k: 4
 
+# Test variables
+print_chunks: True
+question_types: [
+  "extraction"
+]

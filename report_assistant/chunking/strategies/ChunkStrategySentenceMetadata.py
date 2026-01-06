@@ -8,15 +8,15 @@ SECTION_RE = re.compile(r"^\s*\*\*(?!\*)([\s\S]+?)\*\*(?!\*)\s*$", re.DOTALL)
 SUBSECTION_RE = re.compile(r"^\s*\*\*\*(?!\*)([\s\S]+?)\*\*\*(?!\*)\s*$", re.DOTALL)
 
 
-def looks_like_grid_table(block: str) -> bool:
-    """Heuristic to drop Pandoc-style grid tables that explode chunk length."""
-    lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
-    if len(lines) < 3:
-        return False
+# def looks_like_grid_table(block: str) -> bool:
+#     """Heuristic to drop Pandoc-style grid tables that explode chunk length."""
+#     lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
+#     if len(lines) < 3:
+#         return False
 
-    tableish = sum(1 for ln in lines if ln.startswith("+") or ln.startswith("|"))
-    has_border = any("---" in ln or "+" in ln for ln in lines)
-    return tableish >= len(lines) * 0.6 and has_border
+#     tableish = sum(1 for ln in lines if ln.startswith("+") or ln.startswith("|"))
+#     has_border = any("---" in ln or "+" in ln for ln in lines)
+#     return tableish >= len(lines) * 0.6 and has_border
 
 
 class ChunkStrategySentenceMetadata(BaseModel):
@@ -24,6 +24,7 @@ class ChunkStrategySentenceMetadata(BaseModel):
     method: Literal["sentence_metadata"] = "sentence_metadata"
     chunk_size: int
     overlap: int
+    max_chunk_size: Optional[int] = 2000
 
     def create_chunks(self, text: str) -> List[str]:
         """
@@ -54,8 +55,8 @@ class ChunkStrategySentenceMetadata(BaseModel):
                 continue
 
             # Skip Pandoc grid tables that become one gigantic "sentence"
-            if looks_like_grid_table(block):
-                continue
+            # if looks_like_grid_table(block):
+            #     continue
 
             # Detect section
             m_sec = SECTION_RE.match(block)
@@ -110,8 +111,14 @@ class ChunkStrategySentenceMetadata(BaseModel):
                 chunk_text = " | ".join(prefix_parts) + "\n" + body
             else:
                 chunk_text = body
-
-            chunks.append(chunk_text)
+    
+            # Split chunk if it exceeds max_chunk_size
+            if self.max_chunk_size and len(chunk_text) > self.max_chunk_size:
+                # Split the chunk into smaller parts
+                for i in range(0, len(chunk_text), self.max_chunk_size):
+                    chunks.append(chunk_text[i:i + self.max_chunk_size])
+            else:
+                chunks.append(chunk_text)
 
             if len(window) < chunk_size:
                 break
