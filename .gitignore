@@ -5,6 +5,8 @@ Thumbs.db
 .idea/
 *.swp
 *~
+~*
+.~*
 
 # Python artifacts
 __pycache__/

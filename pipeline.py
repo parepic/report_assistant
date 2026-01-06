@@ -6,7 +6,7 @@ Pipeline script to run chunking and embedding sequentially.
 from report_assistant.chunking.chunk import main as chunk_main
 from report_assistant.embed import main as embed_main
 from report_assistant.llm import main as llm_main
-from report_assistant.test import main as test_main
+from tests.test import main as test_main
 
 from report_assistant.utils.load_utils import load_global_config
 
