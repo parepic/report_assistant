@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 import requests
 
-from report_assistant.data_classes import GlobalConfig
+from report_assistant.data_classes import GlobalConfig, compute_strategy_hash
 
 
 def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
@@ -47,9 +47,11 @@ def retrieve_top_k_from_qdrant(query: str,
                                qdrant_url: str,
                                ollama_url: str,
                                embed_model: str,
+                               strategy_hash: Optional[str] = None,
                                k: int = 4) -> List[str]:
     """
     Embed the query and retrieve top-k chunk texts from Qdrant using REST API.
+    Optionally filter by strategy_hash to only retrieve chunks created with a specific chunking strategy.
     """
     query_emb = get_embedding(query, ollama_url, embed_model)
     payload = {
@@ -57,6 +59,20 @@ def retrieve_top_k_from_qdrant(query: str,
         "limit": k,
         "with_payload": ["text"]
     }
+    
+    # Add filter if strategy_hash is provided
+    if strategy_hash:
+        payload["filter"] = {
+            "must": [
+                {
+                    "key": "strategy_hash",
+                    "match": {
+                        "value": strategy_hash
+                    }
+                }
+            ]
+        }
+    
     resp = requests.post(f"{qdrant_url}/collections/{collection_name}/points/search", json=payload)
     resp.raise_for_status()
     data = resp.json()
@@ -68,14 +84,19 @@ def answer_question(question: str,
                     qdrant_url: str,
                     ollama_url: str,
                     embed_model: str,
-                    llm_model: str) -> str:
+                    llm_model: str,
+                    top_k: int,
+                    strategy_hash: Optional[str] = None,) -> str:
     """
     RAG:
       1) Retrieve relevant chunks from Qdrant
       2) Build context
       3) Ask LLM with that context
     """
-    top_chunks = retrieve_top_k_from_qdrant(question, collection_name, qdrant_url, ollama_url, embed_model, k=4)
+    top_chunks = retrieve_top_k_from_qdrant(
+        question, collection_name, qdrant_url, ollama_url, embed_model, 
+        strategy_hash=strategy_hash, k=top_k
+    )
 
     context = ""
     for i, chunk in enumerate(top_chunks):
@@ -103,6 +124,10 @@ def main(config: GlobalConfig) -> None:
     qdrant_url = config.QDRANT_URL
     llm_model = config.LLM_MODEL
     embed_model = config.chunk_strategy.embed_model
+    top_k = config.top_k
+
+    # Compute strategy hash from global config
+    strategy_hash = compute_strategy_hash(config.chunk_strategy)
 
     # Ask for company name
     company_input = input("Enter company name (e.g. Microsoft): ").strip().lower()
@@ -116,7 +141,10 @@ def main(config: GlobalConfig) -> None:
         q = input("You: ")
         if q.lower() in {"exit", "quit"}:
             break
-        ans = answer_question(q, collection_name, qdrant_url, ollama_url, embed_model, llm_model)
+        ans = answer_question(
+            q, collection_name, qdrant_url, ollama_url, embed_model, llm_model,
+            strategy_hash=strategy_hash, top_k=top_k
+        )
         print("\nAssistant:", ans, "\n")
 
 

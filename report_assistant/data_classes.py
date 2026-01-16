@@ -28,27 +28,37 @@ class GlobalConfig(BaseModel):
 
     chunk_strategy: ChunkStrategy 
 
+    top_k: int
+
+    print_chunks: Optional[bool] = True
+    question_types: Optional[List[str]] = None
+
+
+def compute_strategy_hash(strategy: ChunkStrategy) -> str:
+    """
+    Compute a hash from just the chunking strategy configuration.
+    This allows filtering retrieval by strategy without needing the chunks.
+    """
+    strategy_payload = strategy.model_dump(mode="python")
+    serialized = json.dumps(
+        strategy_payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
 
 class ChunkFile(BaseModel):
     version: str = Field(default="1")
     strategy: ChunkStrategy
     chunks: List[str]
 
-    # In case we want to use the hash of the chunkfile so that we can avoid redundant processing
     @computed_field
     @property
     def strategy_hash(self) -> str:
-        strategy_payload = self.strategy.model_dump(mode="python")
-        serialized = json.dumps(
-            {
-                "strategy": strategy_payload,
-                "chunks": self.chunks,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=False,
-        )
-        return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+        """Hash of the chunking strategy configuration."""
+        return compute_strategy_hash(self.strategy)
 
 class DocumentEntry(BaseModel):
     doc_id: str
