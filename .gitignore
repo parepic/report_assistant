@@ -50,3 +50,5 @@ out/
 .turbo/
 
 output/
+
+.deepeval/
