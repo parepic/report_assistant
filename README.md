@@ -55,6 +55,20 @@ You can combine multiple flags to run specific stages in sequence:
 pdm run python pipeline.py --chunk --embed
 ```
 
+## Evaluation
+
+Evaluating a RAG system means testing two things: (1) whether retrieval finds the right context, and (2) whether the model answers correctly using that context. We use an **LLM-as-judge** approach, where a separate model scores outputs with metrics that quantify retrieval quality (context relevance) and answer quality (relevance/faithfulness to context).
+
+In this repo, DeepEval is used to run those metrics. The high-level flow is:
+1) Load a question set with expected answers.
+2) Run the real RAG pipeline (retrieve → build prompt → generate answer).
+3) Build DeepEval test cases that include the retrieved context.
+4) Run metrics for retrieval (e.g., contextual precision/recall) and answering (e.g., answer relevancy/faithfulness).
+
+See `deepeval_eval/eval_rag.py` for a minimal, end-to-end example that mirrors the app’s RAG prompt while attaching retrieval context for evaluation.
+
+run the file to see how our llm-as-judge performs. In Amar's opinion, it is clear that llama3.1 is a bad judge, and to improve performance either we manually must judge answers or use a better model. My suggestion is migrating over to OpenAI's or Google's flagship models.
+
 
 ## Data & Output Layout
 

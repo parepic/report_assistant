@@ -7,14 +7,12 @@ from deepeval.test_case import LLMTestCase
 from deepeval.models import OllamaModel
 from deepeval.config.settings import get_settings
 
-
-dataset = EvaluationDataset(goldens=[Golden(input="What's the weather like today?")])
+os.environ.setdefault("DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS_OVERRIDE", "360")
 model = OllamaModel(model="llama3.1:8b", base_url="http://localhost:11434")
 
-os.environ.setdefault("DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS_OVERRIDE", "360")
 
-settings = get_settings()
-print(f"Using DeepEval settings: {settings.dict()}")
+
+dataset = EvaluationDataset(goldens=[Golden(input="What's the weather like today?")])
 
 for golden in dataset.goldens:
     test_case = LLMTestCase(
