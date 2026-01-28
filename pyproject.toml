@@ -18,6 +18,8 @@ dependencies = [
     "pydantic>=2.12.5",
     "pypandoc>=1.16.2",
     "spacy>=3.8.0",
+    "deepeval>=0.21.0",
+    "ollama>=0.6.1",
 ]
 
 [tool.pdm]
