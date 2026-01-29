@@ -1,12 +1,11 @@
 data_path: "data/"
 output_path: "output/"
 
-report_id: "amazon_10-k-item1a"
-
+report_id: "apple_10-k-item1a"
 
 OLLAMA_URL: "http://localhost:11434"
 QDRANT_URL: "http://localhost:6333"
-LLM_MODEL: "llama3.1:8b"
+LLM_MODEL: "gpt-4o-mini"
 
 # Chunking variables
 chunk_strategy: {
@@ -21,6 +20,3 @@ top_k: 4
 
 # Test variables
 print_chunks: True
-question_types: [
-  "extraction"
-]

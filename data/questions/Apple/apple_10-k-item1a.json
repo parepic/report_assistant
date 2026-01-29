@@ -1,0 +1,34 @@
+[
+  {
+    "question": "What does the report say about the share of Apple’s net sales generated outside the United States?",
+    "expected_answer": "The report states that sales outside the United States account for a majority of the Company’s total net sales.",
+    "location": {
+      "subsection": "The Company’s operations and performance depend significantly on global and regional economic conditions",
+      "paragraph": "1st paragraph"
+    }
+  },
+  {
+    "question": "When were new U.S. tariffs announced and which regions are explicitly mentioned?",
+    "expected_answer": "The report says that beginning in the second quarter of 2025, new tariffs were announced on imports to the United States, including additional tariffs on imports from China, India, Japan, South Korea, Taiwan, Vietnam, and the European Union.",
+    "location": {
+      "subsection": "The Company’s business can be impacted by political events, trade and other international disputes, war, terrorism, natural disasters, public health issues, industrial accidents, and other business interruptions",
+      "paragraph": "2nd paragraph"
+    }
+  },
+  {
+    "question": "What specific harms can result from defects in third-party components used in Apple products?",
+    "expected_answer": "The report states that defects in components supplied by third parties can make products unsafe and may result in environmental or property damage and personal injury.",
+    "location": {
+      "subsection": "The Company’s products and services may be affected from time to time by design and manufacturing defects",
+      "paragraph": "1st paragraph"
+    }
+  },
+  {
+    "question": "What actions does Apple say it may take in response to suspicious account activity that could affect customers?",
+    "expected_answer": "The report says Apple may deploy or make available protective measures such as multifactor authentication, monitor for unusual activity, and freeze accounts under suspicious circumstances, which can delay or result in loss of customer orders or impede access to products and services.",
+    "location": {
+      "subsection": "Losses or unauthorized access to or releases of confidential information could subject the Company to significant reputational, financial, legal, and operational consequences",
+      "paragraph": "5th paragraph"
+    }
+  }
+]

@@ -56,8 +56,11 @@ def clean_markdown_text(md_text: str) -> str:
     """
     # Remove excessive newlines
     md_text = remove_excessive_newlines(md_text)
+    md_text = remove_text_before_item_1a(md_text)
+    md_text = remove_text_after_item_section(md_text)
     md_text = remove_unwanted_lines(md_text)
     md_text = remove_gt_markers(md_text)
+
     return md_text
 
 def remove_excessive_newlines(md_text: str) -> str:
@@ -73,6 +76,32 @@ def remove_excessive_newlines(md_text: str) -> str:
             cleaned_lines.append(line)
             previous_blank = False
     return "\n".join(cleaned_lines)
+
+
+def remove_text_before_item_1a(md_text: str) -> str:
+    """
+    Remove all text until encountering "Item 1A." (inclusive of that line).
+    """
+    lines = md_text.splitlines()
+    for i, line in enumerate(lines):
+        if "item 1a." in line.lower():
+            return "\n".join(lines[i+1:])
+    return md_text
+
+def remove_text_after_item_section(md_text: str) -> str:
+    """
+    Remove everything after encountering a line that, after removing '#' characters,
+    becomes "item 1" or "item 2" etc. (case-insensitive).
+    """
+    lines = md_text.splitlines()
+    for i, line in enumerate(lines):
+        # Remove all '#' characters and strip whitespace
+        cleaned_line = line.replace('#', '').strip().lower()
+        # Check if it matches pattern "item <number>"
+        if re.match(r'^item\s+\d+', cleaned_line):
+            # Return everything before this line (exclusive)
+            return "\n".join(lines[:i])
+    return md_text
 
 def remove_unwanted_lines(md_text: str) -> str:
     """

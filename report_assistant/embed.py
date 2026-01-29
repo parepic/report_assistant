@@ -236,9 +236,7 @@ def upsert_to_company_collection(
     if points:
         client.upsert(collection_name=collection_name, points=points)
 
-
-
-
+        
 
 def main(config: GlobalConfig):
 
