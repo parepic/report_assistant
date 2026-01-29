@@ -2,21 +2,7 @@ from pydantic import BaseModel
 from typing import List, Literal, Optional, Tuple
 import re
 import spacy
-
-
-SECTION_RE = re.compile(r"^\s*\*\*(?!\*)([\s\S]+?)\*\*(?!\*)\s*$", re.DOTALL)
-SUBSECTION_RE = re.compile(r"^\s*\*\*\*(?!\*)([\s\S]+?)\*\*\*(?!\*)\s*$", re.DOTALL)
-
-
-# def looks_like_grid_table(block: str) -> bool:
-#     """Heuristic to drop Pandoc-style grid tables that explode chunk length."""
-#     lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
-#     if len(lines) < 3:
-#         return False
-
-#     tableish = sum(1 for ln in lines if ln.startswith("+") or ln.startswith("|"))
-#     has_border = any("---" in ln or "+" in ln for ln in lines)
-#     return tableish >= len(lines) * 0.6 and has_border
+from report_assistant.utils.utils import get_heading_level_pattern
 
 
 class ChunkStrategySentenceMetadata(BaseModel):
@@ -29,12 +15,15 @@ class ChunkStrategySentenceMetadata(BaseModel):
     def create_chunks(self, text: str) -> List[str]:
         """
         Sentence-based chunking (same windowing as ChunkStrategySentence)
-        while tracking last seen **section** and ***subsection*** and
+        while tracking last seen section and subsection and
         prepending them into each chunk as plain-text metadata.
         """
 
         if not text:
             return []
+
+        # Determine heading patterns based on first heading encountered
+        section_re, subsection_re = get_heading_level_pattern(text)
 
         # Lightweight sentence tokenizer
         nlp = spacy.blank("en")
@@ -59,14 +48,14 @@ class ChunkStrategySentenceMetadata(BaseModel):
             #     continue
 
             # Detect section
-            m_sec = SECTION_RE.match(block)
+            m_sec = section_re.match(block)
             if m_sec:
                 current_section = m_sec.group(1).strip()
                 current_subsection = None
                 continue
 
             # Detect subsection
-            m_sub = SUBSECTION_RE.match(block)
+            m_sub = subsection_re.match(block)
             if m_sub:
                 current_subsection = m_sub.group(1).strip()
                 continue

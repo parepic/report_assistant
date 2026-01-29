@@ -17,9 +17,10 @@ dependencies = [
     "ipykernel>=7.1.0",
     "pydantic>=2.12.5",
     "pypandoc>=1.16.2",
-    "spacy>=3.8.0",
     "deepeval>=0.21.0",
     "ollama>=0.6.1",
+    "openai>=2.16.0",
+    "python-dotenv>=1.2.1",
 ]
 
 [tool.pdm]

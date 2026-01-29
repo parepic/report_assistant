@@ -1,8 +1,17 @@
 from typing import List, Optional
+import os
 
 import requests
+from openai import OpenAI
+from dotenv import load_dotenv
 
 from report_assistant.data_classes import GlobalConfig, compute_strategy_hash
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+
 
 
 def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
@@ -27,19 +36,17 @@ def get_embedding(text: str, ollama_url: str, embed_model: str) -> List[float]:
     return data["embedding"]
 
 
-def llm_generate(prompt: str, ollama_url: str, llm_model: str) -> str:
+def llm_generate(prompt: str, client: OpenAI, llm_model: str) -> str:
     """
-    Call the LLM via Ollama's generate API.
+    Call the LLM via OpenAI API.
     """
-    payload = {
-        "model": llm_model,
-        "prompt": prompt,
-        "stream": False,
-    }
-    resp = requests.post(f"{ollama_url}/api/generate", json=payload)
-    resp.raise_for_status()
-    data = resp.json()
-    return data["response"]
+    response = client.chat.completions.create(
+        model=llm_model,
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
 
 
 def retrieve_top_k_from_qdrant(query: str,
@@ -84,6 +91,7 @@ def answer_question(question: str,
                     qdrant_url: str,
                     ollama_url: str,
                     embed_model: str,
+                    client: OpenAI,
                     llm_model: str,
                     top_k: int,
                     strategy_hash: Optional[str] = None,) -> str:
@@ -115,11 +123,14 @@ Question: {question}
 Answer:
 """.strip()
 
-    return llm_generate(prompt, ollama_url, llm_model)
+    return llm_generate(prompt, client, llm_model)
 
 
 def main(config: GlobalConfig) -> None:
 
+    # Initialize OpenAI client with API key from .env
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
     ollama_url = config.OLLAMA_URL
     qdrant_url = config.QDRANT_URL
     llm_model = config.LLM_MODEL
@@ -142,7 +153,7 @@ def main(config: GlobalConfig) -> None:
         if q.lower() in {"exit", "quit"}:
             break
         ans = answer_question(
-            q, collection_name, qdrant_url, ollama_url, embed_model, llm_model,
+            q, collection_name, qdrant_url, ollama_url, embed_model, client, llm_model,
             strategy_hash=strategy_hash, top_k=top_k
         )
         print("\nAssistant:", ans, "\n")
