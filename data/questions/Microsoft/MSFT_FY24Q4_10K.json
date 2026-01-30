@@ -1,0 +1,122 @@
+[
+  {
+    "question": "What structural features of the technology sector make sustained competitive advantage difficult for Microsoft?",
+    "expected_answer": "Sustained advantage is difficult due to low barriers to entry, rapid technological change, disruptive innovation, shifting user needs, and frequent product introductions by both large and small competitors.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition in the Technology Sector",
+    "reference_excerpt": "Barriers to entry in many of our businesses are low and many of the areas in which we compete evolve rapidly with changing and disruptive technologies, shifting user needs, and frequent introductions of new products and services."
+  },
+  {
+    "question": "Yes or no: Does Microsoft consider barriers to entry in many of its markets to be low?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition in the Technology Sector",
+    "reference_excerpt": "Barriers to entry in many of our businesses are low"
+  },
+  {
+    "question": "Which competitive model—platform ecosystems or vertically integrated systems—poses margin risks for Microsoft, and why?",
+    "expected_answer": "Vertically integrated systems pose margin risks because shifting toward this model can increase cost of revenue and reduce operating margins.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition Among Platform-Based Ecosystems",
+    "reference_excerpt": "A competing vertically-integrated model, in which a single firm controls the software and hardware elements of a product and related services, has succeeded with some consumer products such as PCs, tablets, smartphones, gaming consoles, wearables, and other endpoint devices. Competitors pursuing this model also earn revenue from services integrated with the hardware and software platform, including applications and content sold through their integrated marketplaces. They may also be able to claim security and performance benefits from their vertically integrated offer. We also offer some vertically-integrated hardware and software products and services. Shifting a portion of our business to a vertically integrated model may increase our cost of revenue and reduce our operating margins."
+  },
+  {
+    "question": "What is the most significant long-term competitive threat to Microsoft’s Windows PC ecosystem?",
+    "expected_answer": "The report does not identify a single most significant long-term competitive threat, but notes that low- or no-cost operating systems on smartphones, tablets, and new device form factors that reduce PC usage, weaken developer incentives, and compress operating system margins.",
+    "section_path": null,
+    "reference_excerpt": null
+  },
+  {
+    "question": "What distinct business models do competitors use to compete with Microsoft’s proprietary software model?",
+    "expected_answer": "Advertising-funded free services, open source software monetized through services or advertising, cloud-based subscription models, and vertically integrated hardware–software ecosystems.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
+    "reference_excerpt": "Other competitors develop and offer free applications, online services, and content, and make money by selling third-party advertising. Advertising revenue funds development of products and services these competitors provide to users at little or no cost, competing directly with our revenue-generating products."
+  },
+  {
+    "question": "Yes or no: Does Microsoft expect AI services to be both highly competitive and rapidly evolving?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
+    "reference_excerpt": "We expect AI technology and services to be a highly competitive and rapidly evolving market, and new competitors continue to enter the market."
+  },
+  {
+    "question": "Why does AI investment increase short-term margin pressure for Microsoft?",
+    "expected_answer": "Because Microsoft must incur significant development, operational, and infrastructure costs before corresponding revenue and usage are assured.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
+    "reference_excerpt": "We will bear significant development and operational costs to build and support the AI models, services, platforms, and infrastructure necessary to meet the needs of our customers."
+  },
+  {
+    "question": "What are two reasons open-source software competitors may have a cost advantage over Microsoft?",
+    "expected_answer": "They do not bear the full costs of research and development and can distribute software at little or no cost while monetizing through advertising or integrated services.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
+    "reference_excerpt": "These firms do not bear the full costs of research and development for the open source products. Some open source products mimic the features and functionality of our products."
+  },
+  {
+    "question": "Which five execution areas does Microsoft identify as critical to cloud and AI success?",
+    "expected_answer": "Bringing compelling cloud-based and AI products to market; maintaining performance, compatibility, and utility across devices; enhancing attractiveness to third-party developers; meeting reliability, security, and compliance expectations; and making services platform-agnostic across ecosystems.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
+    "reference_excerpt": "Whether we succeed in cloud-based and AI services depends on our execution in several areas, including:\\nContinuing to bring to market compelling cloud-based and AI experiences and products that generate increasing traffic and market share.\\nMaintaining the utility, compatibility, and performance of our cloud-based and AI services on the growing array of computing devices, including PCs, smartphones, tablets, gaming consoles, and other devices.\\nContinuing to enhance the attractiveness of our cloud platforms to third-party developers.\\nEnsuring our cloud-based services meet the reliability expectations and specific requirements of our customers and maintain the security of their data as well as help them meet their own compliance needs.\\nMaking our suite of cloud-based services platform-agnostic, available on a wide range of devices and ecosystems, including those of our competitors."
+  },
+  {
+    "question": "What happens if cloud and AI usage growth does not match infrastructure investment growth?",
+    "expected_answer": "Revenue may fail to grow in line with costs, negatively affecting margins, operations, and financial performance.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
+    "reference_excerpt": "if we fail to generate sufficient usage of our new products and services, we may not grow revenue in line with the infrastructure and development investments described above."
+  },
+  {
+    "question": "Yes or no: Does Microsoft commit to making its cloud services platform-agnostic, including on competitor ecosystems?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
+    "reference_excerpt": "Making our suite of cloud-based services platform-agnostic, available on a wide range of devices and ecosystems, including those of our competitors."
+  },
+  {
+    "question": "Why may Microsoft fail to achieve expected returns on new product and technology investments?",
+    "expected_answer": "Because new technologies are speculative, may face long development cycles, limited adoption, lower profitability, or insufficient customer engagement.",
+    "section_path": "ITEM 1A / Risks Relating to the Evolution of Our Business / We make significant investments in products and services that may not achieve expected returns",
+    "reference_excerpt": "Investments in new technology are speculative. Commercial success depends on many factors, including innovation, developer support, and effective distribution and marketing. If customers do not perceive our latest offerings as providing significant new functionality or other value, they may reduce their purchases of new software and hardware products or upgrades, unfavorably affecting revenue."
+  },
+  {
+    "question": "What factor most strongly links innovation failure to revenue decline in Microsoft’s model?",
+    "expected_answer": "Customer perception that new offerings do not deliver significant new functionality or value.",
+    "section_path": "ITEM 1A / Risks Relating to the Evolution of Our Business / We make significant investments in products and services that may not achieve expected returns",
+    "reference_excerpt": "If customers do not perceive our latest offerings as providing significant new functionality or other value, they may reduce their purchases of new software and hardware products or upgrades, unfavorably affecting revenue."
+  },
+  {
+    "question": "What types of threat actors does Microsoft explicitly identify as major cybersecurity risks?",
+    "expected_answer": "Hackers, organized groups, sophisticated criminal organizations, and nation-state or state-sponsored actors.",
+    "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Security of our information technology",
+    "reference_excerpt": "Threats to IT security can take a variety of forms. Individual and groups of hackers and sophisticated organizations, including state-sponsored organizations or nation-states, continuously undertake attacks that pose threats to our customers and our IT, and we have experienced cybersecurity incidents in which such actors have gained unauthorized access to our IT systems and data, including customer systems and data."
+  },
+  {
+    "question": "Why are nation-state cyberattacks particularly difficult for Microsoft to fully mitigate?",
+    "expected_answer": "They are highly resourced, persistent over long periods, sophisticated, and capable of exploiting unknown vulnerabilities",
+    "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Security of our information technology",
+    "reference_excerpt": "Nation-state and state-sponsored actors can sustain malicious activities for extended periods and deploy significant resources to plan and carry out attacks."
+  },
+  {
+    "question": "Yes or no: Can cybersecurity incidents harm Microsoft even if production services are not directly compromised?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Security of our products, services, devices, and customers’ data",
+    "reference_excerpt": "Cyberattacks may adversely impact our customers even if our production services are not directly compromised."
+  },
+  {
+    "question": "What forms of platform abuse could damage Microsoft’s reputation or user engagement?",
+    "expected_answer": "Impersonation, misinformation, fraudulent activity, harmful or illegal content, and AI-enabled abuse of platforms.",
+    "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Advertising, professional, marketplace, and gaming platform abuses",
+    "reference_excerpt": "For platform products and services that provide content or host ads that come from or can be influenced by third parties, our reputation or user engagement may be negatively affected by activity that is hostile or inappropriate. This activity may come from users impersonating other people or organizations, including through the use of AI technologies, dissemination of information that may be viewed as misleading or intended to manipulate the opinions of our users, or the use of our products or services that violates our terms of service or otherwise for objectionable or illegal ends. Preventing or responding to these actions may require us to make substantial investments in people and technology and these investments may not be successful, adversely affecting our business, financial condition, and results of operations."
+  },
+  {
+    "question": "Why does generative AI increase both reputational and regulatory risk simultaneously?",
+    "expected_answer": "Because AI outputs may be harmful or biased while also triggering scrutiny under emerging AI, data protection, and intellectual property regulations",
+    "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Issues in the development and use of AI may result in reputational or competitive harm or liability",
+    "reference_excerpt": "Content generated by AI systems may be offensive, illegal, inaccurate, or otherwise harmful. Ineffective or inadequate AI development or deployment practices by Microsoft or others could result in incidents that impair the acceptance of AI solutions, cause harm to individuals, customers, or society, or result in our products and services not working as intended. Human review of certain outputs may be required. Our implementation of AI systems could result in legal liability, regulatory action, brand, reputational, or competitive harm, or other adverse impacts."
+  },
+  {
+    "question": "Which major regulatory regimes in the EU directly affect Microsoft’s core platforms?",
+    "expected_answer": "The Digital Markets Act, Digital Services Act, Data Act, GDPR, and the EU AI Act.",
+    "section_path": "ITEM 1A / Legal, Regulatory, and Litigation Risks / Government enforcement under competition laws and new market regulation may limit how we design and market our products",
+    "reference_excerpt": "For example, the European Commission (“the Commission”) has designated Windows and LinkedIn as core platform services subject to obligations under the EU Digital Markets Act, which prohibits certain self-preferencing behaviors and places limitations on certain data use among other obligations. The Commission also continues to closely scrutinize the design of high-volume Microsoft products and the terms on which we make certain technologies used in these products, such as file formats, programming interfaces, and protocols, available to other companies. Flagship product releases such as Microsoft 365 and Windows can receive significant scrutiny under EU or other competition laws."
+  },
+  {
+    "question": "What is the maximum additional tax liability claimed by the IRS in the transfer pricing dispute (excluding penalties and interest)?",
+    "expected_answer": "$28.9 billion.",
+    "section_path": "ITEM 1A / Legal, Regulatory, and Litigation Risks / We may have additional tax liabilities",
+    "reference_excerpt": "In the NOPAs, the IRS is seeking an additional tax payment of $28.9 billion plus penalties and interest."
+  }
+]
