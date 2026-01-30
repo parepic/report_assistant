@@ -19,5 +19,12 @@
   "fiscal_year": 2024,
   "source_file_path": "data/reports/Apple/apple_10-k-item1a.docx",
   "questions_file_path": null
+  },
+  {
+  "doc_id": "MSFT_FY24Q4_10K-item1a",
+  "company": "Microsoft",
+  "fiscal_year": 2024,
+  "source_file_path": "data/reports/Microsoft/MSFT_FY24Q4_10K-item1a.docx",
+  "questions_file_path": "data/questions/Microsoft/MSFT_FY24Q4_10K_item1a.json"
   }
 ]
