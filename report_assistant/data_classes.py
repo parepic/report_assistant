@@ -31,6 +31,7 @@ class GlobalConfig(BaseModel):
     top_k: int
 
     print_chunks: Optional[bool] = True
+    threshold: Optional[float] = None
     question_types: Optional[List[str]] = None
 
 
