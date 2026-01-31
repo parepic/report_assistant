@@ -10,21 +10,25 @@ A RAG (Retrieval-Augmented Generation) system for Q&A over company documents usi
    cd report_assistant
    ```
 
-2. Install Ollama (for local LLM and embeddings):
+2. Set up OpenAI access (primary LLM for generation):
+   - Set `OPENAI_API_KEY` (env var or a `.env` file in the repo root).
+   - The model is configured via `LLM_MODEL` in `global.yaml` (default: `gpt-4o-mini`).
+
+3. Install Ollama (used for **embeddings**; generation is OpenAI-first):
    - Download from https://ollama.ai/
-   - Pull the required models:
+   - Pull the required embedding model:
      ```
-     ollama pull llama3.1:8b
      ollama pull nomic-embed-text
      ```
+   - Optional: you can also pull a local chat model (e.g. `llama3.1:8b`) if you want to experiment with local judging or fallback scripts.
 
-3. Install dependencies:
+4. Install dependencies:
    - Install PDM: https://pdm.fming.dev/latest/#installation
    - Set Python interpreter: `pdm use python` (requires Python >= 3.11)
    - Install deps: `pdm install`
    - Keep deps in sync (important when collaborators update pyproject/lock): `pdm sync`
 
-4. Start Qdrant (vector database):
+5. Start Qdrant (vector database):
    ```
    docker-compose up -d
    ```
@@ -39,8 +43,8 @@ pdm run python pipeline.py
 
 This will:
 - Chunk the document based on `global.yaml` config.
-- Generate embeddings and store in Qdrant.
-- Run tests to compare LLM outputs with expected answers from the questions file.
+- Generate embeddings (via Ollama) and store in Qdrant.
+- Run an evaluation / sanity-check pass to compare LLM outputs with expected answers (when a questions file exists).
 
 To run individual stages, use these flags:
 ```
@@ -67,7 +71,7 @@ In this repo, DeepEval is used to run those metrics. The high-level flow is:
 
 See `deepeval_eval/eval_rag.py` for a minimal, end-to-end example that mirrors the app’s RAG prompt while attaching retrieval context for evaluation.
 
-run the file to see how our llm-as-judge performs. In Amar's opinion, it is clear that llama3.1 is a bad judge, and to improve performance either we manually must judge answers or use a better model. My suggestion is migrating over to OpenAI's or Google's flagship models.
+Run the file to see how the LLM-as-judge performs. In practice, we’ve moved the main app generation to OpenAI, and we generally recommend using a strong judge model (OpenAI or a flagship Google model) rather than a small local model for evaluation. Ollama can still be used for local experiments, but treat it as a fallback.
 
 
 ## Data & Output Layout
