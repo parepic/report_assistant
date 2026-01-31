@@ -20,3 +20,4 @@ top_k: 4
 
 # Test variables
 print_chunks: True
+threshold: 0.7
