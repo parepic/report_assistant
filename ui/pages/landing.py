@@ -4,7 +4,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from ui.components.report_picker_amar import render_report_picker_single_select
+from ui.components.report_picker_amar import render_report_picker_multi_select, render_report_picker_single_select
+from ui.components.report_upload_modal import render_report_upload_modal
 from services.documents import load_report_entries, to_entry_dict
 from state.session_state import init_session_state
 
@@ -22,13 +23,6 @@ def _inject_css() -> None:
         css = css_path.read_text(encoding="utf-8")
         st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-
-def _go_to_chat_page() -> None:
-    if hasattr(st, "switch_page"):
-        st.switch_page("pages/chat.py")
-    else:
-        st.session_state["ui_phase"] = "chat"
-        st.rerun()
 
 
 def main() -> None:
@@ -49,7 +43,7 @@ def main() -> None:
 
 
     st.space("xlarge")
-    analyze_single_clicked = st.button("Analyze a Company's Report", key="start_analyzing", width="stretch")
+    analyze_single_clicked = st.button("Analyze a Company's Report", width="stretch")
 
     if analyze_single_clicked:
         st.session_state["ui_phase"] = "selecting_single_report"
@@ -62,13 +56,39 @@ def main() -> None:
             st.error("No reports found in data/reports/.")
             return
 
-        selected = render_report_picker_single_select(entries)
-        if selected:
-            st.session_state["selected_doc_id"] = selected.doc_id
-            st.session_state["selected_entry"] = to_entry_dict(selected)
-            st.session_state["chat_messages"] = []
-            st.session_state["ui_phase"] = "chat_single_report"
-            _go_to_chat_page()
+        render_report_picker_single_select(entries)
+
+
+    
+
+
+    st.space("small")
+    analyze_multi_clicked = st.button("Compare Multiple Reports", width="stretch")
+
+    if analyze_multi_clicked:
+        st.session_state["ui_phase"] = "selecting_multi_report"
+        st.rerun()
+
+    if st.session_state["ui_phase"] == "selecting_multi_report":
+        entries = load_report_entries()
+        if not entries:
+            st.error("No reports found in data/reports/.")
+            return
+
+        render_report_picker_multi_select(entries)
+
+
+
+
+    st.space("small")
+    upload_clicked = st.button("Add Your Own Report", width="stretch")
+
+    if upload_clicked:
+        st.session_state["ui_phase"] = "upload"
+        st.rerun()
+
+    if st.session_state["ui_phase"] == "upload":
+        render_report_upload_modal()
 
 
 main()

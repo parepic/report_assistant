@@ -63,7 +63,7 @@ Session state keys must:
 
 Example (illustrative only):
 ```python
-st.session_state["selected_doc_id"]
+st.session_state["selected_reports"]
 st.session_state["chat_messages"]
 ```
 
