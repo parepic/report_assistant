@@ -52,16 +52,12 @@ div.stButton > button:hover {
   background: #111827;
 }
 
-/* Modal */
-.ra-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(2px);
-  z-index: 0;
+.ra-report-hoverable:hover {
+  background: #F7F7F5;
 }
 
-.ra-modal-card {
+/* Modals */
+div[data-testid="stVerticalBlock"]:has(.ra-modal-header) {
   position: relative;
   z-index: 2;
   background: #FFFFFF;
@@ -83,22 +79,15 @@ div.stButton > button:hover {
   margin-top: 6px;
 }
 
-.ra-report-name {
-  font-size: 16px;
-  font-weight: 500;
+div[data-testid="stHorizontalBlock"]:has(.ra-report-name) {
+  padding: 10px 8px;
+  border-radius: 10px;
 }
 
-.ra-report-meta {
-  font-size: 13px;
-  color: #5F5F5F;
-  text-align: right;
-  padding-top: 6px;
+div[data-testid="stHorizontalBlock"]:has(.ra-report-name):hover {
+  background: #F7F7F5;
 }
 
-.ra-divider {
-  border-bottom: 1px solid #E5E7EB;
-  margin: 12px 0;
-}
 
 /* Chat */
 .ra-context {

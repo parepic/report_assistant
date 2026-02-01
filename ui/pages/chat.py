@@ -11,6 +11,13 @@ from services.rag import answer_for_entry
 from state.session_state import init_session_state
 
 
+st.set_page_config(
+    page_title="Report Assistant — Chat",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+
 def _inject_css() -> None:
     css_path = Path("ui/assets/styles.css")
     if css_path.is_file():
@@ -20,18 +27,13 @@ def _inject_css() -> None:
 
 def _go_to_start() -> None:
     if hasattr(st, "switch_page"):
-        st.switch_page("streamlit_app.py")
+        st.switch_page("pages/landing.py")
     else:
         st.session_state["ui_phase"] = "landing"
         st.rerun()
 
 
 def main() -> None:
-    st.set_page_config(
-        page_title="Report Assistant — Chat",
-        layout="wide",
-        initial_sidebar_state="collapsed",
-    )
     init_session_state()
     _inject_css()
 
@@ -68,5 +70,4 @@ def main() -> None:
         st.rerun()
 
 
-if __name__ == "__main__":
-    main()
+main()

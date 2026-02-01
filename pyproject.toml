@@ -22,6 +22,7 @@ dependencies = [
     "openai>=2.16.0",
     "python-dotenv>=1.2.1",
     "streamlit>=1.53.1",
+    "streamlit-file-browser>=3.2.22",
 ]
 
 [tool.pdm]

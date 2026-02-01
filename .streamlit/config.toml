@@ -1,0 +1,4 @@
+[server]
+runOnSave = true
+fileWatcherType = "poll"
+folderWatchList = ["/Users/amarmesic/Documents/AI-ML/ParvizProject/report_assistant/ui"]
