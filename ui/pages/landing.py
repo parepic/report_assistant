@@ -4,8 +4,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from ui.components.report_picker_amar import render_report_picker_multi_select, render_report_picker_single_select
-from ui.components.report_upload_modal import render_report_upload_modal
+from components.report_picker_amar import render_report_picker_multi_select, render_report_picker_single_select
+from components.report_upload_modal import render_report_upload_modal
 from services.documents import load_report_entries, to_entry_dict
 from state.session_state import init_session_state
 

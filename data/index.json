@@ -7,6 +7,13 @@
     "questions_file_path": "data/questions/Amazon/amazon_10-k-item1a.json"
   },
   {
+    "doc_id": "amazon_10-k-item1a-2023",
+    "company": "Amazon",
+    "fiscal_year": 2023,
+    "source_file_path": "data/reports/Amazon/amazon_10-k-item1a-2023.docx",
+    "questions_file_path": "data/questions/Amazon/amazon_10-k-item1a-2023.json"
+  },
+  {
     "doc_id": "alphabet_10-k-item1a",
     "company": "Alphabet",
     "fiscal_year": 2024,

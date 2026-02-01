@@ -6,6 +6,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 from report_assistant.data_classes import GlobalConfig, compute_strategy_hash
+from report_assistant.utils.qdrant_utils import slugify_name
 
 # Load environment variables from .env file
 load_dotenv()
@@ -51,6 +52,7 @@ def llm_generate(prompt: str, client: OpenAI, llm_model: str) -> str:
 
 def retrieve_top_k_from_qdrant(query: str,
                                collection_name: str,
+                               company: str,
                                qdrant_url: str,
                                ollama_url: str,
                                embed_model: str,
@@ -67,18 +69,26 @@ def retrieve_top_k_from_qdrant(query: str,
         "with_payload": ["text"]
     }
     
-    # Add filter if strategy_hash is provided
-    if strategy_hash:
-        payload["filter"] = {
-            "must": [
-                {
-                    "key": "strategy_hash",
-                    "match": {
-                        "value": strategy_hash
-                    }
-                }
-            ]
+    # Always filter by company, optionally by strategy_hash
+    must_filters = [
+        {
+            "key": "company",
+            "match": {
+                "value": company
+            }
         }
+    ]
+    
+    # Add strategy_hash filter if provided
+    if strategy_hash:
+        must_filters.append({
+            "key": "strategy_hash",
+            "match": {
+                "value": strategy_hash
+            }
+        })
+    
+    payload["filter"] = {"must": must_filters}
     
     resp = requests.post(f"{qdrant_url}/collections/{collection_name}/points/search", json=payload)
     resp.raise_for_status()
@@ -88,6 +98,7 @@ def retrieve_top_k_from_qdrant(query: str,
 
 def answer_question(question: str,
                     collection_name: str,
+                    company: str,
                     qdrant_url: str,
                     ollama_url: str,
                     embed_model: str,
@@ -102,7 +113,7 @@ def answer_question(question: str,
       3) Ask LLM with that context
     """
     top_chunks = retrieve_top_k_from_qdrant(
-        question, collection_name, qdrant_url, ollama_url, embed_model, 
+        question, collection_name, company, qdrant_url, ollama_url, embed_model, 
         strategy_hash=strategy_hash, k=top_k
     )
 
@@ -134,15 +145,15 @@ def main(config: GlobalConfig) -> None:
     ollama_url = config.OLLAMA_URL
     qdrant_url = config.QDRANT_URL
     llm_model = config.LLM_MODEL
-    embed_model = config.chunk_strategy.embed_model
+    embed_model = config.chunk_strategy_chatbot.embed_model
     top_k = config.top_k
 
     # Compute strategy hash from global config
-    strategy_hash = compute_strategy_hash(config.chunk_strategy)
+    strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
 
     # Ask for company name
     company_input = input("Enter company name (e.g. Microsoft): ").strip().lower()
-    collection_name = f"company__{company_input}"
+    collection_name = config.QDRANT_DB_NAME_CHATBOT
 
     print(f"\nUsing collection: {collection_name}")
     print("You can now ask questions! Type 'exit' to quit.\n")
@@ -153,11 +164,11 @@ def main(config: GlobalConfig) -> None:
         if q.lower() in {"exit", "quit"}:
             break
         ans = answer_question(
-            q, collection_name, qdrant_url, ollama_url, embed_model, client, llm_model,
+            q, collection_name, company_input, qdrant_url, ollama_url, embed_model, client, llm_model,
             strategy_hash=strategy_hash, top_k=top_k
         )
         print("\nAssistant:", ans, "\n")
-
+        
 
 if __name__ == "__main__":
     main()

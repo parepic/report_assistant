@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 
 from report_assistant.data_classes import GlobalConfig, compute_strategy_hash
 from report_assistant.utils.load_utils import get_index_path, load_document_entry
-from report_assistant.utils.utils import slugify_name
+from report_assistant.utils.qdrant_utils import slugify_name
 from report_assistant.llm import retrieve_top_k_from_qdrant, llm_generate
 
 

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import List, Optional
 from .chunking.strategies import ChunkStrategy
 from pydantic import BaseModel, Field, HttpUrl, computed_field, field_validator
+from report_assistant.utils.qdrant_utils import slugify_name
 
 
 class GlobalConfig(BaseModel):
@@ -24,11 +25,16 @@ class GlobalConfig(BaseModel):
 
     OLLAMA_URL: HttpUrl | str
     QDRANT_URL: HttpUrl | str
-    LLM_MODEL: str
+    POSTGRESQL_URL: HttpUrl | str
+    LLM_MODEL: Optional[str]
 
-    chunk_strategy: ChunkStrategy 
+    QDRANT_DB_NAME_CHATBOT: Optional[str] = "report_assistant_chatbot"
+    QDRANT_DB_NAME_YOY: Optional[str] = "report_assistant_yoy"
 
-    top_k: int
+    chunk_strategy_chatbot: Optional[ChunkStrategy] 
+    chunk_strategy_yoy: Optional[ChunkStrategy] 
+
+    top_k: Optional[int]
 
     print_chunks: Optional[bool] = True
     threshold: Optional[float] = None
@@ -53,7 +59,7 @@ def compute_strategy_hash(strategy: ChunkStrategy) -> str:
 class ChunkFile(BaseModel):
     version: str = Field(default="1")
     strategy: ChunkStrategy
-    chunks: List[str]
+    chunks: List[dict]
 
     @computed_field
     @property
@@ -102,9 +108,7 @@ def attach_processed_paths(config: GlobalConfig, entry: DocumentEntry) -> Docume
     """
     Derive processed paths from the global config base + normalized company/doc_id
     and assign them directly to the DocumentEntry.
-    """
-    from report_assistant.utils.utils import slugify_name
-    
+    """    
     company_slug = slugify_name(entry.company)
     processed_dir = Path(config.output_path) / company_slug
     text_dir = processed_dir / "text"

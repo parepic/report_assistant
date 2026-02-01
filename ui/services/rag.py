@@ -9,7 +9,7 @@ from openai import OpenAI
 from report_assistant.data_classes import DocumentEntry, GlobalConfig, compute_strategy_hash
 from report_assistant.llm import answer_question
 from report_assistant.utils.load_utils import load_global_config
-from report_assistant.utils.utils import slugify_name
+from report_assistant.utils.qdrant_utils import slugify_name
 
 
 @lru_cache(maxsize=1)
@@ -34,15 +34,16 @@ def _normalize_entry(entry: DocumentEntry | dict[str, Any]) -> DocumentEntry:
 def answer_for_entry(question: str, entry: DocumentEntry | dict[str, Any]) -> str:
     config = get_config()
     normalized = _normalize_entry(entry)
-    collection_name = slugify_name(normalized.company)
-    strategy_hash = compute_strategy_hash(config.chunk_strategy)
+    collection_name = config.QDRANT_DB_NAME_CHATBOT
+    strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
 
     return answer_question(
         question=question,
         collection_name=collection_name,
+        company=entry.company.lower().strip(),
         qdrant_url=str(config.QDRANT_URL),
         ollama_url=str(config.OLLAMA_URL),
-        embed_model=config.chunk_strategy.embed_model,
+        embed_model=config.chunk_strategy_chatbot.embed_model,
         client=get_openai_client(),
         llm_model=config.LLM_MODEL,
         top_k=config.top_k,

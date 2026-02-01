@@ -12,11 +12,11 @@ class ChunkStrategySentenceMetadata(BaseModel):
     overlap: int
     max_chunk_size: Optional[int] = 2000
 
-    def create_chunks(self, text: str) -> List[str]:
+    def create_chunks(self, text: str) -> List[dict]:
         """
         Sentence-based chunking (same windowing as ChunkStrategySentence)
         while tracking last seen section and subsection and
-        prepending them into each chunk as plain-text metadata.
+        returning per-chunk metadata alongside the text.
         """
 
         if not text:
@@ -78,7 +78,7 @@ class ChunkStrategySentenceMetadata(BaseModel):
         overlap = self.overlap
         step = chunk_size - overlap
 
-        chunks: List[str] = []
+        chunks: List[dict] = []
 
         for start in range(0, len(sentences_with_meta), step):
             window = sentences_with_meta[start : start + chunk_size]
@@ -92,22 +92,42 @@ class ChunkStrategySentenceMetadata(BaseModel):
             _, sec, subsec = window[0]
             prefix_parts: List[str] = []
             if sec:
-                prefix_parts.append(f"Section: {sec}")
+                prefix_parts.append(f"risk category: {sec}")
             if subsec:
-                prefix_parts.append(f"Subsection: {subsec}")
+                prefix_parts.append(f"risk factor: {subsec}")
 
-            if prefix_parts:
-                chunk_text = " | ".join(prefix_parts) + "\n" + body
+            prefix_line = " | ".join(prefix_parts)
+            if prefix_line:
+                chunk_text = prefix_line + "\n" + body
             else:
                 chunk_text = body
     
             # Split chunk if it exceeds max_chunk_size
             if self.max_chunk_size and len(chunk_text) > self.max_chunk_size:
                 # Split the chunk into smaller parts
-                for i in range(0, len(chunk_text), self.max_chunk_size):
-                    chunks.append(chunk_text[i:i + self.max_chunk_size])
+                if prefix_line:
+                    max_body_len = self.max_chunk_size - len(prefix_line) - 1
+                    if max_body_len <= 0:
+                        max_body_len = self.max_chunk_size
+                    for i in range(0, len(body), max_body_len):
+                        chunks.append({
+                            "text": prefix_line + "\n" + body[i:i + max_body_len],
+                            "risk_category": sec,
+                            "risk_factor": subsec,
+                        })
+                else:
+                    for i in range(0, len(chunk_text), self.max_chunk_size):
+                        chunks.append({
+                            "text": chunk_text[i:i + self.max_chunk_size],
+                            "risk_category": sec,
+                            "risk_factor": subsec,
+                        })
             else:
-                chunks.append(chunk_text)
+                chunks.append({
+                    "text": chunk_text,
+                    "risk_category": sec,
+                    "risk_factor": subsec,
+                })
 
             if len(window) < chunk_size:
                 break
