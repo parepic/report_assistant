@@ -7,8 +7,7 @@ import streamlit as st
 
 DEFAULT_STATE: dict[str, Any] = {
     "ui_phase": "landing",
-    "selected_doc_id": None,
-    "selected_entry": None,
+    "selected_reports": [],
     "chat_messages": [],
 }
 

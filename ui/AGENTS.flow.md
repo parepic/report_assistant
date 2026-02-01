@@ -1,4 +1,4 @@
-# Report Assistant – Simplified User Flow (MVP v1)
+# Report Assistant – Simplified User Flow (MVP v2)
 
 ## Entry Point: Landing Page
 
@@ -14,6 +14,19 @@ This is only the beginning, it does not outline all the features planned for the
 
 ---
 
+UI Phases:
+- landing
+- selecting_single_report
+- selecting_multi_report
+- chat
+
+Chat Options:
+- Single Report
+- Multi Report
+<!-- - Time Comparison -->
+
+---
+
 ## Hero Section
 
 - Large headline (centered):
@@ -22,70 +35,60 @@ This is only the beginning, it does not outline all the features planned for the
 - Supporting text (1–2 lines):
   “Analyze annual reports from leading publicly traded companies using natural language.”
 
-- Single primary CTA:
-  **“Start Analyzing”**
+- Three CTAs:
+  **"Analyze a Company's Report"**
+  **"Compare Multiple Reports"**
+  **"Add Your Own Report"**
 
-No secondary buttons, no navigation links.
-
----
-
-## Transition: Landing → Report Selection
-
-### Interaction
-- Clicking **“Start Analyzing”**:
-  - Opens a centered modal (pop-up)
-  - Background content is blurred and dimmed
-  - Focus is fully on report selection
-
-The landing page itself remains visually present but inactive.
-
-No page reload.
 
 ---
 
-## Report Selection Modal
-
-### Data Source (Strict)
+## Data Source
 - Reports are loaded **only** from:
 ```
 project_root/data/reports/
 ```
 
-- No uploads
-- No external browsing
-- No search
-- No sorting
-- No filtering
-
 This directory is assumed to contain a small, curated set of reports.
 
----
 
-### Modal Layout
+
+### Single Report Modal Layout
 
 **Header**
 - Title: “Select a report to analyze”
-- Optional short subtitle: “Choose one document to continue”
 
 **Content**
-- Vertical list (table-style)
-- One row per report file
-
-Each row displays:
+Vertical list, Each row displays:
 - Report name (derived from filename)
 - Optional metadata (e.g. company, year if parseable)
-- **Action button labeled: “Analyze”**
+- Action button labeled: “Analyze” on the right of the row
 
-The “Analyze” button occupies the rightmost column  
-(where a date or file size might normally appear).
 
----
+### Report Multi-Select Modal Layout
+- Button at top of modal which proceeds to chat session with selected files
+- Make use of the `st_file_browser` component
+- This feature is found here: https://github.com/pragmatic-streamlit/streamlit-file-browser
+- Browsing The database should allow for a nested structure, specifically root/company/reports.
 
-### Selection Rules
-- Only **one report** can be selected
-- No multi-select
-- Clicking “Analyze” immediately proceeds
-- No confirmation step
+
+
+## Uploading Reports
+- Clicking **“Add Your Own Report”**:
+  - Opens a file upload modal
+
+### Report Self-Upload Modal Layout
+Form containing:
+- File id name (what the file be reffered to as)
+- Year published
+- Company (If the comapny name exists in our database, while they type it in we offer autocomplete)
+- File in .docx format
+- Use `st.file_uploader()`
+
+The info should be enough to make an entry in the *project_root*/data/index.json
+
+
+
 
 ---
 
@@ -117,8 +120,7 @@ Single-column layout (for now):
 - Top: Report context
 - Middle: Conversation history
 - Bottom: Chat input
-
-No sidebars in MVP.
+- Sidebar top for navigation, below it the current selected files are displayed
 
 ---
 

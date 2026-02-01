@@ -2,7 +2,7 @@
 
 Run the Streamlit app from the repo root:
 ```
-PYTHONPATH=. streamlit run ui/streamlit_app.py
+pdm run streamlit run ui/streamlit_app.py
 ```
 
 Prereqs:

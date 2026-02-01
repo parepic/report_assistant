@@ -59,7 +59,21 @@ You can combine multiple flags to run specific stages in sequence:
 pdm run python pipeline.py --chunk --embed
 ```
 
+
+## UI
+To run the app in a GUI with streamlit, run:
+```bash
+pdm run streamlit run ui/streamlit_app.py
+```
+
+For more informaysh check the [UI-specific README.md](ui/README.md)
+
 ## Evaluation
+
+To run the evaluation, type the following into the terminal:
+```bash
+pdm run deepeval_eval/eval_rag.py
+```
 
 Evaluating a RAG system means testing two things: (1) whether retrieval finds the right context, and (2) whether the model answers correctly using that context. We use an **LLM-as-judge** approach, where a separate model scores outputs with metrics that quantify retrieval quality (context relevance) and answer quality (relevance/faithfulness to context).
 

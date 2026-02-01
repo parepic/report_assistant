@@ -11,6 +11,13 @@ from services.rag import answer_for_entry
 from state.session_state import init_session_state
 
 
+st.set_page_config(
+    page_title="Report Assistant — Chat",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+
 def _inject_css() -> None:
     css_path = Path("ui/assets/styles.css")
     if css_path.is_file():
@@ -20,29 +27,46 @@ def _inject_css() -> None:
 
 def _go_to_start() -> None:
     if hasattr(st, "switch_page"):
-        st.switch_page("streamlit_app.py")
+        st.switch_page("pages/landing.py")
     else:
         st.session_state["ui_phase"] = "landing"
         st.rerun()
 
 
 def main() -> None:
-    st.set_page_config(
-        page_title="Report Assistant — Chat",
-        layout="wide",
-        initial_sidebar_state="collapsed",
-    )
     init_session_state()
     _inject_css()
 
-    selected_entry = st.session_state.get("selected_entry")
-    if not selected_entry:
+    selected_reports = st.session_state.get("selected_reports") or []
+
+    if len(selected_reports) >= 2:
+        entries = [
+            from_entry_dict(entry) if isinstance(entry, dict) else entry
+            for entry in selected_reports
+        ]
+        st.markdown(
+            """
+            <div class="ra-context">
+                <div class="ra-context-title">Comparing multiple reports</div>
+                <div class="ra-context-subtitle">Multi-report chat is not implemented yet.</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        for entry in entries:
+            st.markdown(f"- {report_display_name(entry)}")
+        st.info("Select a single report to start chatting.")
+        return
+
+    if not selected_reports:
         st.error("Select a report before entering chat.")
         if st.button("Go to Start"):
             _go_to_start()
         return
 
-    entry = from_entry_dict(selected_entry)
+    entry = selected_reports[0]
+    if isinstance(entry, dict):
+        entry = from_entry_dict(entry)
     st.markdown(
         f"""
         <div class="ra-context">
@@ -68,5 +92,4 @@ def main() -> None:
         st.rerun()
 
 
-if __name__ == "__main__":
-    main()
+main()
