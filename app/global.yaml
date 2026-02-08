@@ -1,0 +1,33 @@
+data_path: "app/data/"
+output_path: "app/output/"
+
+report_id: "amazon_10-k-item1a-2023"
+
+OLLAMA_URL: "http://localhost:11434"
+POSTGRESQL_URL: "postgresql+psycopg://postgres:postgres@localhost:5432/report_assistant"
+QDRANT_URL: "http://localhost:6333"
+LLM_MODEL_CHATBOT: "gpt-4o-mini"
+LLM_MODEL_SUMMARIZER: "gpt-4o-mini"
+
+QDRANT_DB_NAME_CHATBOT: "report_assistant_chatbot"
+QDRANT_DB_NAME_YOY: "report_assistant_yoy"
+
+# Chunking variables
+chunk_strategy_chatbot: {
+  "embed_model": "nomic-embed-text",
+  "method":"sentence_metadata",
+  "chunk_size": 3,
+  "overlap": 1
+}
+
+chunk_strategy_yoy: {
+  "embed_model": "nomic-embed-text",
+  "method":"paragraph",
+}
+
+# Retrieval variables
+top_k: 4
+
+# Test variables
+print_chunks: True
+threshold: 0.7

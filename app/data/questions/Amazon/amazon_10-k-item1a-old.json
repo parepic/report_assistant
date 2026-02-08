@@ -1,0 +1,122 @@
+[
+  {
+    "question": "What does Amazon identify as the core competitive risk across its businesses in the report?",
+    "answer": "Amazon says its businesses are rapidly evolving and intensely competitive across many industries and geographies, and that competitors may have greater resources, secure better vendor terms, price more aggressively, and invest more in technology, infrastructure, fulfillment, and marketing, which could reduce Amazon’s sales and profits.",
+    "type": "extraction",
+    "location": "We Face Intense Competition"
+  },
+  {
+    "question": "What risks does Amazon highlight when it expands into new products, services, technologies, or geographic regions?",
+    "answer": "Amazon says it may have limited experience in newer segments, customers may not adopt offerings, and new technology challenges can lead to claims if customers experience service disruptions, delays, failures, or quality issues. It also warns it may not recoup investments and could face write-downs or write-offs.",
+    "type": "extraction",
+    "location": "Our Expansion into New Products, Services, Technologies, and Geographic Regions Subjects Us to Additional Risks"
+  },
+  {
+    "question": "What categories of risk does Amazon list for its international operations?",
+    "answer": "Amazon lists risks such as local economic and political conditions; regulation and restrictive governmental actions (including tariffs and trade measures); licensing/certification; repatriation and foreign exchange restrictions; limited infrastructure; privacy/data-related laws; lower internet and credit card usage; staffing challenges due to distance/language/culture; labor relations; and anti-corruption compliance.",
+    "type": "extraction",
+    "location": "Our International Operations Expose Us to a Number of Risks"
+  },
+  {
+    "question": "How does Amazon describe risk from fraudulent or unlawful third-party sellers?",
+    "answer": "Amazon says liability rules for online service providers are unsettled and agencies could require operational changes. If seller policies and processes are circumvented or fail, Amazon can face reputational harm and civil or criminal liability, and reimbursements under its customer protection programs may increase as third-party sales grow.",
+    "type": "extraction",
+    "location": "We Are Impacted by Fraudulent or Unlawful Activities of Sellers"
+  },
+  {
+    "question": "What does Amazon say about intellectual-property risks, including being accused of infringing others’ IP?",
+    "answer": "Amazon says effective IP protection is not available in every country and its efforts may not prevent infringement or misappropriation. It expects IP claims and proceedings that can create major costs, injunction risk, or payments for damages or licenses, and it notes AI development and use may increase infringement-related or related claims.",
+    "type": "extraction",
+    "location": "We Face Risks Related to Adequately Protecting Our Intellectual Property Rights and Being Accused of Infringing Intellectual Property Rights of Third Parties"
+  },
+  {
+    "question": "Summarize the main business and industry risk themes emphasized in the report.",
+    "answer": "Main themes include intense competition; risk from expansion into new offerings; international operational and regulatory complexity; retail-demand variability that strains operations during peak periods; and exposure from fraudulent or unlawful seller activity.",
+    "type": "summarization",
+    "location": "Business and Industry Risks (multiple subsections)"
+  },
+  {
+    "question": "Summarize the key operating risk themes described in the report.",
+    "answer": "Amazon highlights strain from rapid growth and scale; difficulty forecasting growth and managing fixed costs; challenges optimizing and operating fulfillment and data center networks; risk of data loss or security incidents; risk of system interruptions and limited redundancy; and hiring/retention risk for senior management and skilled personnel.",
+    "type": "summarization",
+    "location": "Operating Risks (multiple subsections)"
+  },
+  {
+    "question": "Summarize why Amazon says its operating results and growth rate can fluctuate significantly.",
+    "answer": "Amazon says it cannot always forecast growth accurately, it bases spending on sales estimates, and many expenses are fixed so it may not adjust quickly if sales are less than expected. It lists drivers such as competitive changes, infrastructure timing/cost, legal outcomes, inflation and resource costs, constrained labor markets, security incidents/outages, and disruptions from disasters, geopolitical events, and climate-related impacts.",
+    "type": "summarization",
+    "location": "We Experience Significant Fluctuations in Our Operating Results and Growth Rate"
+  },
+  {
+    "question": "Summarize the main legal and regulatory risk themes described in the report.",
+    "answer": "Amazon says it operates under broad and evolving regulations across many products and services, and it faces reviews, investigations, and proceedings by regulators. Unfavorable laws, decisions, or enforcement actions could raise costs, create civil or criminal liability and penalties, reduce demand or availability of offerings, require materially adverse business practice changes, damage reputation, and impede growth.",
+    "type": "summarization",
+    "location": "Government Regulation Is Evolving and Unfavorable Changes Could Harm Our Business; Claims, Litigation, Government Investigations, and Other Proceedings May Adversely Affect Our Business and Results of Operations"
+  },
+  {
+    "question": "Summarize the main financial and market-related risk themes described in the report.",
+    "answer": "Amazon highlights payments-related regulation, compliance, and fraud risk; stock-price volatility driven by business and market factors; foreign exchange exposure from international operations and balances; and additional tax liabilities or collection obligations driven by changing laws, audits, and enforcement trends.",
+    "type": "summarization",
+    "location": "We Are Subject to Payments-Related Risks; We Have a Rapidly Evolving Business Model and Our Stock Price Is Highly Volatile; We Have Foreign Exchange Risk; We Face Additional Tax Liabilities and Collection Obligations"
+  },
+  {
+    "question": "What specific consequences does Amazon list if it fails to prevent, detect, or mitigate data loss or other security incidents?",
+    "answer": "Amazon lists consequences including risk of loss, disclosure, or misuse of information; adverse effects on operating results; litigation, liability, or regulatory action; deterrence of customers or sellers from using its stores, products, and services; and harm to business and reputation.",
+    "type": "specificity_check",
+    "location": "We Could Be Harmed by Data Loss or Other Security Incidents"
+  },
+  {
+    "question": "Which third-party technologies or systems does Amazon explicitly name as being used for security and operations?",
+    "answer": "Amazon explicitly lists third-party technology and systems including encryption and authentication technology, employee email, content delivery to customers, back-office support, and other functions.",
+    "type": "specificity_check",
+    "location": "We Could Be Harmed by Data Loss or Other Security Incidents"
+  },
+  {
+    "question": "What does Amazon say about redundancy, disaster recovery limits, and insurance coverage if systems are disrupted?",
+    "answer": "Amazon says its systems are not fully redundant, its disaster recovery planning may not be sufficient, and its insurance may not provide sufficient coverage to compensate for related losses.",
+    "type": "specificity_check",
+    "location": "We Face Risks Related to System Interruption and Lack of Redundancy"
+  },
+  {
+    "question": "What concrete supplier concentration example does Amazon give that relates to AI infrastructure?",
+    "answer": "Amazon says it relies on a limited group of suppliers for semiconductor products, including AI infrastructure products such as graphics processing units (GPUs), and that constraints on availability could adversely affect its ability to develop and operate AI technologies, products, or services.",
+    "type": "specificity_check",
+    "location": "Our Supplier Relationships Subject Us to a Number of Risks"
+  },
+  {
+    "question": "What does Amazon say about the impact of supplier decisions to limit or stop selling to Amazon on acceptable terms?",
+    "answer": "Amazon says supplier decisions to limit or stop selling/licensing (or to delay delivery) could leave Amazon unable to procure alternatives in a timely manner, on acceptable terms, or at all, which could negatively affect operations and results.",
+    "type": "specificity_check",
+    "location": "Our Supplier Relationships Subject Us to a Number of Risks"
+  },
+  {
+    "question": "Does the report explicitly mention ransomware as a risk?",
+    "answer": "No. The term “ransomware” does not appear in the report text provided.",
+    "type": "negative_absence",
+    "location": "Not found in the report (term absent)"
+  },
+  {
+    "question": "Does the report discuss Bitcoin or cryptocurrency exposure as a risk factor?",
+    "answer": "No. The terms “bitcoin” and “cryptocurrency” do not appear in the report text provided.",
+    "type": "negative_absence",
+    "location": "Not found in the report (terms absent)"
+  },
+  {
+    "question": "Does the report mention modern slavery or forced labor risk by name?",
+    "answer": "No. The phrases “modern slavery” and “forced labor” do not appear in the report text provided.",
+    "type": "negative_absence",
+    "location": "Not found in the report (terms absent)"
+  },
+  {
+    "question": "Does the report state a dividend policy risk (for example, that Amazon does not intend to pay dividends)?",
+    "answer": "No. The terms “dividend” and “dividends” do not appear in the report text provided.",
+    "type": "negative_absence",
+    "location": "Not found in the report (terms absent)"
+  },
+  {
+    "question": "Does the report discuss quantum computing as a competitive or security risk?",
+    "answer": "No. The term “quantum” does not appear in the report text provided.",
+    "type": "negative_absence",
+    "location": "Not found in the report (term absent)"
+  }
+]

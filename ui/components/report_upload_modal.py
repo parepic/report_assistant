@@ -48,14 +48,14 @@ def render_report_upload_modal() -> None:
                 st.error("Please upload a .docx report.")
                 return
 
-            reports_root = Path("data/reports")
+            reports_root = Path("app/data/reports")
             target_dir = reports_root / chosen_company / file_id.strip()
             target_dir.mkdir(parents=True, exist_ok=True)
             target_path = target_dir / f"{file_id.strip()}.docx"
             with target_path.open("wb") as handle:
                 handle.write(upload.getbuffer())
 
-            index_path = Path("data/index.json")
+            index_path = Path("app/data/index.json")
             if index_path.is_file():
                 index_data = json.loads(index_path.read_text(encoding="utf-8"))
             else:

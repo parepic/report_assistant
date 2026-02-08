@@ -1,0 +1,121 @@
+[
+  {
+    "doc_id": "amazon_10-k-item1a-2024",
+    "company": "Amazon",
+    "fiscal_year": 2024,
+    "source_file_path": "app/data/reports/Amazon/amazon_10-k-item1a-2024.docx",
+    "questions_file_path": "app/data/questions/Amazon/amazon_10-k-item1a-2024.json"
+  },
+  {
+    "doc_id": "amazon_10-k-item1a-2023",
+    "company": "Amazon",
+    "fiscal_year": 2023,
+    "source_file_path": "app/data/reports/Amazon/amazon_10-k-item1a-2023.docx",
+    "questions_file_path": "app/data/questions/Amazon/amazon_10-k-item1a-2023.json"
+  },
+    {
+    "doc_id": "amazon_10-k-item1a-2021",
+    "company": "Amazon",
+    "fiscal_year": 2021,
+    "source_file_path": "app/data/reports/Amazon/amazon_10-k-item1a-2021.docx",
+    "questions_file_path": "app/data/questions/Amazon/amazon_10-k-item1a-2021.json"
+  },
+  {
+    "doc_id": "alphabet_10-k-item1a",
+    "company": "Alphabet",
+    "fiscal_year": 2024,
+    "source_file_path": "app/data/reports/Alphabet/alphabet_10-k-item1a.docx",
+    "questions_file_path": null
+  },
+  {
+    "doc_id": "alphabet_10-k-item1a-2023",
+    "company": "Alphabet",
+    "fiscal_year": 2023,
+    "source_file_path": "app/data/reports/Alphabet/alphabet_10-k-item1a-2023.docx",
+    "questions_file_path": null
+  },
+  {
+  "doc_id": "apple_10-k-item1a",
+  "company": "Apple",
+  "fiscal_year": 2025,
+  "source_file_path": "app/data/reports/Apple/apple_10-k-item1a.docx",
+  "questions_file_path": null
+  },
+  {
+  "doc_id": "apple_10-k-item1a-2021",
+  "company": "Apple",
+  "fiscal_year": 2021,
+  "source_file_path": "app/data/reports/Apple/apple_10-k-item1a-2021.docx",
+  "questions_file_path": null
+  },
+    {
+  "doc_id": "apple_10-k-item1a-2023",
+  "company": "Apple",
+  "fiscal_year": 2023,
+  "source_file_path": "app/data/reports/Apple/apple_10-k-item1a-2023.docx",
+  "questions_file_path": null
+  },
+    {
+  "doc_id": "apple_10-k-item1a-2024",
+  "company": "Apple",
+  "fiscal_year": 2024,
+  "source_file_path": "app/data/reports/Apple/apple_10-k-item1a-2024.docx",
+  "questions_file_path": null
+  },
+  {
+  "doc_id": "microsoft_10-k-item1a-2024",
+  "company": "Microsoft",
+  "fiscal_year": 2024,
+  "source_file_path": "app/data/reports/Microsoft/microsoft_10-k-item1a-2024.docx",
+  "questions_file_path": "app/data/questions/Microsoft/microsoft_10-k-item1a-2024.json"
+  },
+{
+  "doc_id": "microsoft_10-k-item1a-2022",
+  "company": "Microsoft",
+  "fiscal_year": 2022,
+  "source_file_path": "app/data/reports/Microsoft/microsoft_10-k-item1a-2022.docx",
+  "questions_file_path": "app/data/questions/Microsoft/microsoft_10-k-item1a-2022.json"
+  },
+  {
+  "doc_id": "meta_10-k-item1a-2025",
+  "company": "Meta",
+  "fiscal_year": 2025,
+  "source_file_path": "app/data/reports/Meta/meta_10-k-item1a-2025.docx",
+  "questions_file_path": "data/questions/Meta/meta_10-k-item1a-2025.json"
+  },
+  {
+  "doc_id": "meta_10-k-item1a-2024",
+  "company": "Meta",
+  "fiscal_year": 2024,
+  "source_file_path": "app/data/reports/Meta/meta_10-k-item1a-2024.docx",
+  "questions_file_path": "app/data/questions/Meta/meta_10-k-item1a-2024.json"
+  },
+    {
+  "doc_id": "tesla_10-k-item1a-2024",
+  "company": "Tesla",
+  "fiscal_year": 2024,
+  "source_file_path": "app/data/reports/Tesla/tesla_10-k-item1a-2024.docx",
+  "questions_file_path": "app/data/questions/Tesla/tesla_10-k-item1a-2024.json"
+  },
+    {
+  "doc_id": "tesla_10-k-item1a-2025",
+  "company": "Tesla",
+  "fiscal_year": 2025,
+  "source_file_path": "app/data/reports/Tesla/tesla_10-k-item1a-2025.docx",
+  "questions_file_path": "app/data/questions/Tesla/tesla_10-k-item1a-2025.json"
+  },
+    {
+    "doc_id": "netflix_10-k-item1a-2024",
+    "company": "Netflix",
+    "fiscal_year": 2024,
+    "source_file_path": "app/data/reports/Netflix/netflix_10-k-item1a-2024.docx",
+    "questions_file_path": "app/data/questions/Netflix/netflix_10-k-item1a-2024.json"
+  },
+  {
+    "doc_id": "netflix_10-k-item1a-2025",
+    "company": "Netflix",
+    "fiscal_year": 2025,
+    "source_file_path": "app/data/reports/Netflix/netflix_10-k-item1a-2025.docx",
+    "questions_file_path": "app/data/questions/Netflix/netflix_10-k-item1a-2025.json"
+  }
+]

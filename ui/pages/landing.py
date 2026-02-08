@@ -4,9 +4,9 @@ from pathlib import Path
 
 import streamlit as st
 
-from ui.components.report_picker_amar import render_report_picker_multi_select, render_report_picker_single_select
-from ui.components.report_upload_modal import render_report_upload_modal
-from services.documents import load_report_entries, to_entry_dict
+from components.report_picker_amar import render_report_picker_multi_select, render_report_picker_single_select
+from components.report_upload_modal import render_report_upload_modal
+from services.documents import load_report_entries
 from state.session_state import init_session_state
 
 
@@ -51,9 +51,13 @@ def main() -> None:
 
 
     if st.session_state["ui_phase"] == "selecting_single_report":
-        entries = load_report_entries()
+        try:
+            entries = load_report_entries()
+        except Exception as exc:
+            st.error(f"Failed to load documents: {exc}")
+            return
         if not entries:
-            st.error("No reports found in data/reports/.")
+            st.error("No reports found.")
             return
 
         render_report_picker_single_select(entries)
@@ -70,9 +74,13 @@ def main() -> None:
         st.rerun()
 
     if st.session_state["ui_phase"] == "selecting_multi_report":
-        entries = load_report_entries()
+        try:
+            entries = load_report_entries()
+        except Exception as exc:
+            st.error(f"Failed to load documents: {exc}")
+            return
         if not entries:
-            st.error("No reports found in data/reports/.")
+            st.error("No reports found.")
             return
 
         render_report_picker_multi_select(entries)

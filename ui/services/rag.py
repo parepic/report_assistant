@@ -1,50 +1,27 @@
 from __future__ import annotations
 
 import os
-from functools import lru_cache
-from typing import Any
+from typing import Any, Dict
 
-from openai import OpenAI
-
-from report_assistant.data_classes import DocumentEntry, GlobalConfig, compute_strategy_hash
-from report_assistant.llm import answer_question
-from report_assistant.utils.load_utils import load_global_config
-from report_assistant.utils.utils import slugify_name
+import requests
 
 
-@lru_cache(maxsize=1)
-def get_config() -> GlobalConfig:
-    return load_global_config()
+def _get_api_base_url() -> str:
+    return os.getenv("REPORT_ASSISTANT_API_URL", "http://localhost:8000").rstrip("/")
 
 
-@lru_cache(maxsize=1)
-def get_openai_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY is not set.")
-    return OpenAI(api_key=api_key)
+def answer_for_entry(question: str, entry: Dict[str, Any]) -> str:
+    doc_id = entry.get("doc_id")
+    if not doc_id:
+        raise ValueError("Selected document is missing doc_id.")
 
-
-def _normalize_entry(entry: DocumentEntry | dict[str, Any]) -> DocumentEntry:
-    if isinstance(entry, DocumentEntry):
-        return entry
-    return DocumentEntry.model_validate(entry)
-
-
-def answer_for_entry(question: str, entry: DocumentEntry | dict[str, Any]) -> str:
-    config = get_config()
-    normalized = _normalize_entry(entry)
-    collection_name = slugify_name(normalized.company)
-    strategy_hash = compute_strategy_hash(config.chunk_strategy)
-
-    return answer_question(
-        question=question,
-        collection_name=collection_name,
-        qdrant_url=str(config.QDRANT_URL),
-        ollama_url=str(config.OLLAMA_URL),
-        embed_model=config.chunk_strategy.embed_model,
-        client=get_openai_client(),
-        llm_model=config.LLM_MODEL,
-        top_k=config.top_k,
-        strategy_hash=strategy_hash,
+    response = requests.post(
+        f"{_get_api_base_url()}/chatbot",
+        json={"doc_id": doc_id, "prompt": question},
+        timeout=60,
     )
+    response.raise_for_status()
+    payload = response.json()
+    if isinstance(payload, dict) and "llm_response" in payload:
+        return str(payload["llm_response"])
+    return str(payload)

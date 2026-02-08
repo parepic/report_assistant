@@ -6,8 +6,10 @@ import streamlit as st
 
 from components.chat_history import render_chat_history
 from components.chat_input import get_user_input
+from components.compare_results import render_compare_results
 from services.documents import from_entry_dict, report_display_name
 from services.rag import answer_for_entry
+from services.comparison import compare_to_last_year
 from state.session_state import init_session_state
 
 
@@ -79,6 +81,25 @@ def main() -> None:
 
     messages = st.session_state["chat_messages"]
     render_chat_history(messages)
+
+    if st.session_state.get("compare_to_last_year_clicked"):
+        if st.session_state.get("compare_to_last_year_result") is None:
+            with st.spinner("Comparing to last year..."):
+                try:
+                    st.session_state["compare_to_last_year_result"] = compare_to_last_year(
+                        doc_id=str(entry.get("doc_id"))
+                    )
+                except Exception as exc:
+                    st.session_state["compare_to_last_year_result"] = {
+                        "changed": [],
+                        "added": [],
+                        "removed": [],
+                    }
+                    st.error(f"Compare to last year failed: {exc}")
+
+        result = st.session_state.get("compare_to_last_year_result")
+        if isinstance(result, dict):
+            render_compare_results(result)
 
     user_input = get_user_input()
     if user_input:
