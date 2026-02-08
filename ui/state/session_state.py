@@ -9,6 +9,9 @@ DEFAULT_STATE: dict[str, Any] = {
     "ui_phase": "landing",
     "selected_reports": [],
     "chat_messages": [],
+    "compare_to_last_year_clicked": False,
+    "compare_to_last_year_result": None,
+    "compare_to_last_year_rendered": False,
 }
 
 

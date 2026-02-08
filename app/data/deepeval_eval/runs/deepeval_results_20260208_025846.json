@@ -1,0 +1,60 @@
+{
+  "run_at": "2026-02-08T02:58:46",
+  "questions_path": "data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json",
+  "collection_name": "report_assistant_chatbot",
+  "model": "gpt-4.1",
+  "top_k": 4,
+  "strategy_hash": "dd36a83757aab16160f8ff37a6691b99aae03b65ec47a4514680e44cddc3d3aa",
+  "retrieval_metrics": [
+    {
+      "metric": "ContextualPrecisionMetric",
+      "threshold": 0.7,
+      "passes": 0,
+      "fails": 3,
+      "average_score": 0.0,
+      "scores": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "metric": "ContextualRecallMetric",
+      "threshold": 0.7,
+      "passes": 0,
+      "fails": 3,
+      "average_score": 0.0,
+      "scores": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "response_metrics": [
+    {
+      "metric": "AnswerRelevancyMetric",
+      "threshold": 0.7,
+      "passes": 3,
+      "fails": 0,
+      "average_score": 1.0,
+      "scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "metric": "FaithfulnessMetric",
+      "threshold": 0.7,
+      "passes": 3,
+      "fails": 0,
+      "average_score": 1.0,
+      "scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ]
+}

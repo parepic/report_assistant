@@ -1,60 +1,46 @@
 from __future__ import annotations
 
-from functools import lru_cache
-from pathlib import Path
-from typing import Iterable, List
+import os
+from typing import Dict, List
 
-from report_assistant.data_classes import DocumentEntry, GlobalConfig
-from report_assistant.utils.load_utils import get_index_path, load_document_entries, load_global_config
+import requests
 
 
-@lru_cache(maxsize=1)
-def get_config() -> GlobalConfig:
-    return load_global_config()
+DocumentListItem = Dict[str, str | int]
 
 
-def _is_under_reports_root(path: Path, reports_root: Path) -> bool:
-    try:
-        return path.resolve().is_relative_to(reports_root.resolve())
-    except AttributeError:
-        try:
-            path.resolve().relative_to(reports_root.resolve())
-            return True
-        except ValueError:
-            return False
+def _get_api_base_url() -> str:
+    return os.getenv("REPORT_ASSISTANT_API_URL", "http://localhost:8000").rstrip("/")
 
 
-def load_report_entries() -> List[DocumentEntry]:
-    config = get_config()
-    index_path = get_index_path(config)
-    entries = load_document_entries(index_path)
-    reports_root = Path(config.data_path) / "reports"
-
-    filtered: List[DocumentEntry] = []
-    for entry in entries:
-        source_path = Path(entry.source_file_path)
-        if source_path.name.startswith("~$") or source_path.name.startswith("."):
-            continue
-        if not _is_under_reports_root(source_path, reports_root):
-            continue
-        filtered.append(entry)
-    return filtered
+def load_report_entries() -> List[DocumentListItem]:
+    response = requests.get(
+        f"{_get_api_base_url()}/documents",
+        timeout=30,
+    )
+    response.raise_for_status()
+    data = response.json()
+    if not isinstance(data, list):
+        raise ValueError("Unexpected documents response format.")
+    return data
 
 
-def report_display_name(entry: DocumentEntry) -> str:
-    filename = Path(entry.source_file_path).stem.replace("_", " ").replace("-", " ")
-    company = entry.company.strip()
-    year = entry.fiscal_year
-    return f"{company} — {year} · {filename}"
+def report_display_name(entry: DocumentListItem) -> str:
+    company = str(entry.get("company", "")).strip() or "Unknown"
+    year = entry.get("fiscal_year", "?")
+    doc_id = entry.get("doc_id", "")
+    return f"{company} — {year} · {doc_id}"
 
 
-def report_metadata(entry: DocumentEntry) -> str:
-    return f"{entry.company} · FY{entry.fiscal_year}"
+def report_metadata(entry: DocumentListItem) -> str:
+    company = str(entry.get("company", "")).strip() or "Unknown"
+    year = entry.get("fiscal_year", "?")
+    return f"{company} · FY{year}"
 
 
-def to_entry_dict(entry: DocumentEntry) -> dict:
-    return entry.model_dump()
+def to_entry_dict(entry: DocumentListItem) -> dict:
+    return dict(entry)
 
 
-def from_entry_dict(data: dict) -> DocumentEntry:
-    return DocumentEntry.model_validate(data)
+def from_entry_dict(data: dict) -> DocumentListItem:
+    return dict(data)
