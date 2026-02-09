@@ -1,5 +1,5 @@
 ## 10-K Risk Analysis RAG Assistant
-
+![Architecture Diagram](./assets/diagram_assistant.png)
 A production-style **Retrieval-Augmented Generation (RAG)** system designed to analyze SEC **10-K Risk Factors**. This tool moves beyond basic search by offering deep semantic comparison and grounded synthesis of financial disclosures.
 
 ### Core Capabilities
