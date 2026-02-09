@@ -28,7 +28,8 @@ class GlobalConfig(BaseModel):
     POSTGRESQL_URL: HttpUrl | str
     LLM_MODEL_CHATBOT: Optional[str]
     LLM_MODEL_SUMMARIZER: Optional[str]
-
+    LLM_MODEL_EVAL: Optional[str]
+    
     QDRANT_DB_NAME_CHATBOT: Optional[str] = "report_assistant_chatbot"
     QDRANT_DB_NAME_YOY: Optional[str] = "report_assistant_yoy"
 

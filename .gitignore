@@ -50,5 +50,7 @@ out/
 .turbo/
 
 output/
+app/output/
 
-.deepeval/
+app/data/deepeval_eval/runs/
+dev.py

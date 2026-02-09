@@ -13,6 +13,7 @@ def main(
     doc_id: str,
     qdrant_client: QdrantClientWrapper,
     openai_client: OpenAIClientWrapper,
+    return_chunks: bool = False,
 ) -> Dict[str, Any]:
     strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
     top_chunks = qdrant_client.fetch_top_k_query(
@@ -25,7 +26,11 @@ def main(
     print("here is context: ", context)
     prompt_template = prompt_chatbot.format(context=context, question=prompt)
     response = openai_client.llm_generate(prompt_template)
-
+    if return_chunks:
+        return {
+            "llm_response": response,
+            "retrieved_chunks": top_chunks,
+        }
     return {
         "llm_response": response,
     }

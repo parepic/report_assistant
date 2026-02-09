@@ -1,12 +1,8 @@
-
-
-
 from openai import OpenAI
 
 class OpenAIClientWrapper:
     def __init__(self, api_key: str, llm_model: str):
         self.api_key = api_key
-        print(api_key, " blabla")
         self.llm_model = llm_model
         self.client = OpenAI(api_key=api_key)
 
