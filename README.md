@@ -1,6 +1,6 @@
 # report_assistant
 
-A RAG (Retrieval-Augmented Generation) system for Q&A over company documents using chunking, embeddings, and vector search.
+A RAG (Retrieval-Augmented Generation) system for Q&A and year-over-year change detection over company 10k reports using chunking, embeddings, and vector search.
 
 ## Setup
 
