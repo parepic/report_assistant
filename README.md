@@ -34,7 +34,7 @@ Test run using `gpt-4.1-mini` for generation and `nomic-embed-text` for retrieva
 
 * **Zero Hallucinations (High Faithfulness):** The system achieved a near-perfect faithfulness score (0.98), confirming that the prompt engineering effectively grounds the model. The system refuses to invent information when context is missing.
 * **High User Alignment:** The perfect 1.0 score in relevancy demonstrates that the generation layer effectively parses user intent, even for complex financial queries regarding risk factors.
-* **Retrieval Trade-offs:** The retrieval metrics (Precision 0.75 / Recall 0.80) indicates that while the system answers 80% of queries perfectly, the remaining 20% represent edge cases where the embedding model struggled to distinguish specific financial nuances (e.g., distinguishing specific "margin risks" from general "investment risks").
+* **Retrieval Trade-offs:** The retrieval metrics (Precision 0.78 / Recall 0.80) indicates that while the system answers 80% of queries perfectly, the remaining 20% represent edge cases where the embedding model struggled to distinguish specific financial nuances (e.g., distinguishing specific "margin risks" from general "investment risks").
 
 ### Running the Evaluation
 
@@ -43,7 +43,33 @@ You can reproduce these benchmarks by running the DeepEval suite:
 ```bash
 pdm run deepeval_eval/eval_rag.py
 ```
+---
 
+## Architecture
+
+### API Layer (`api`)
+- **FastAPI** routers for chat, comparison, and document listing.
+- Clean dependency injection and wiring via `dep.py`.
+
+### Service Layer (`services`)
+- **Chat Service:** Orchestrates the retrieval → prompt construction → generation flow.
+- **Comparison Service:** Handles YoY diffing logic and automated change summarization.
+
+### Ingestion Layer (`ingestion`)
+- Robust pipelines for parsing, markdown conversion, chunking, and vector indexing.
+- Modular entry points for Postgres (metadata), Qdrant (chatbot), and YoY comparison collections.
+
+### Storage & Data Layout (`data/`, `output/`)
+- **Input Management:** Centralized `index.json` for tracking document metadata (ID, company, fiscal year).
+- **Structured Output:** Per-company directory structure containing cleaned Markdown (optimized for table retention) and JSON-serialized chunks with associated metadata.
+
+### Data Contracts (`data_classes.py`, `models.py`)
+- **Pydantic** models for strict enforcement of API and config contracts.
+- **SQLAlchemy** models for persistent document and metadata storage in PostgreSQL.
+
+### Clients & UI Boundary
+- **Clients:** Low-latency wrappers for Qdrant and OpenAI.
+- **UI (`ui`):** Streamlit frontend decoupled from core logic to allow for modularity.
 
 ---
 ## Tech stack
@@ -130,41 +156,6 @@ pdm run streamlit run ui/streamlit_app.py
 ```
 
 More details live in `ui/README.md`.
-
----
-
-## Data & output layout
-
-- Input data under `data/` with `index.json` (doc_id, company, fiscal_year, paths)
-- Outputs per company under `output/<company_slug>/`:
-  - `text/<doc_id>.md` Markdown version (keeps tables well)
-  - `chunks/<doc_id>.json` chunked content + metadata
-
----
-
-## Architecture
-
-### API Layer (`api`)
-- FastAPI routers for chat, comparison, and document listing
-- Dependency wiring in `dep.py`
-
-### Service Layer (`services`)
-- Chat service: retrieval → prompt construction → generation
-- Comparison service: YoY diffing + change summaries
-
-### Ingestion Layer (`ingestion`)
-- Parsing, markdown conversion, chunking, embedding, and indexing
-- Separate entry points for DB, chatbot, and YoY flows
-
-### Clients (`clients`)
-- Thin wrappers around external services (Qdrant, OpenAI)
-
-### Data Contracts (`data_classes.py`, `models.py`)
-- Pydantic models for config and contracts
-- SQLAlchemy models for persistence
-
-### UI Boundary (`ui`)
-- Streamlit UI kept separate from core application logic
 
 ---
 
