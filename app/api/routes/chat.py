@@ -1,3 +1,4 @@
+import anyio
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
@@ -22,7 +23,8 @@ async def chatbot(
     qdrant_client: QdrantClientWrapper = Depends(get_qdrant_client),
     openai_client: OpenAIClientWrapper = Depends(get_openai_client_chatbot),
 ) -> dict:
-    return chatbot_main(
+    return await anyio.to_thread.run_sync(
+        chatbot_main,
         config=config,
         prompt=request.prompt,
         doc_id=request.doc_id,

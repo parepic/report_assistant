@@ -6,6 +6,7 @@ from pathlib import Path
 import json
 
 import numpy as np
+import anyio
 from qdrant_client.models import Filter, FieldCondition, MatchValue
 from sqlalchemy import select
 
@@ -585,7 +586,8 @@ async def main(
     print("LCWS paragraph matching")
     print(f"Comparing: {doc_id} vs {doc_id_old}")
     strategy_hash = compute_strategy_hash(config.chunk_strategy_yoy)
-    return compare_documents(
+    return await anyio.to_thread.run_sync(
+        compare_documents,
         config,
         doc_id_old=doc_id_old,
         doc_id_new=doc_id,

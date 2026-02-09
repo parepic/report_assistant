@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pipeline 2: chunk -> save_qdrant (chatbot)
+Pipeline 3: chunk -> save_qdrant (yoy)
 """
 
 from app.ingestion.chunking.chunk import main as chunk_main
@@ -10,10 +10,10 @@ from app.utils.load_utils import load_global_config
 
 def main() -> None:
     config = load_global_config()
-    print("Starting chunking (chatbot)...")
-    chunk_main(config, mode="chatbot")
-    print("Chunking completed. Starting embedding (chatbot)...")
-    embed_main(config, mode="chatbot")
+    print("Starting chunking (yoy)...")
+    chunk_main(config, mode="yoy")
+    print("Chunking completed. Starting embedding (yoy)...")
+    embed_main(config, mode="yoy")
     print("Pipeline completed successfully.")
 
 

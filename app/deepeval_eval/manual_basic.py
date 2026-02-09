@@ -7,7 +7,7 @@ from deepeval.test_case import LLMTestCase
 from ollama_eval_model import OllamaEvalModel
 from deepeval.models import OllamaModel
 
-from report_assistant.utils.load_utils import load_global_config
+from app.utils.load_utils import load_global_config
 
 
 # Manual evaluation setup
@@ -46,7 +46,7 @@ def main() -> None:
     else:
         # Use openai by default
         config = load_global_config()
-        eval_llm = config.get("LLM_MODEL", "gpt-4o-mini")
+        eval_llm = config.get("LLM_MODEL_EVAL", "gpt-4o-mini")
 
 
     retrieval_metrics = [
