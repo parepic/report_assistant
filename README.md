@@ -8,6 +8,19 @@ A production-style **Retrieval-Augmented Generation (RAG)** system designed to a
 * **YoY Change Detection:** Automated comparison of filings across fiscal years. The system identifies and categorizes **added, removed, and modified** risk paragraphs, generating concise bullet summaries of how a company's risk profile has evolved.
 
 Built using best AI Engineering best practices, such as clean architectural boundaries, repeatable ingestion pipelines, and a rigorous evaluation harness to ensure scalability.
+<table style="width: 100%;">
+  <tr>
+    <td style="width: 50%; text-align: center;">
+      <img src="./assets/chatbot_feature.gif" alt="Chatbot Demo" style="width: 100%;">
+      <br><em>Grounded Q&A Chat</em>
+    </td>
+    <td style="width: 50%; text-align: center;">
+      <img src="./assets/comparison_feature.gif" alt="Comparison Feature" style="width: 100%;">
+      <br><em>YoY Change Detection</em>
+    </td>
+  </tr>
+</table>
+
 
 ---
 ## Tech stack
