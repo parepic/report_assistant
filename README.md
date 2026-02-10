@@ -5,9 +5,18 @@ A production-style **Retrieval-Augmented Generation (RAG)** system designed to a
 ### Core Capabilities
 
 * **Grounded Q&A Chatbot:** Perform deep-dives into specific filings using an LLM-as-a-Judge verified pipeline. The system provides answers with **exact source citations**, ensuring every claim is backed by the original 10-K text.
-* **YoY Change Detection:** Automated comparison of filings across fiscal years. The system identifies and categorizes **added, removed, and modified** risk paragraphs, generating concise bullet summaries of how a company's risk profile has evolved.
+* **YoY (Year-over-Year) Change Detection:** Automated comparison of filings across fiscal years. The system identifies and categorizes **added, removed, and modified** risk paragraphs, generating concise bullet summaries of how a company's risk profile has evolved.
 
 Built using best AI Engineering best practices, such as clean architectural boundaries, repeatable ingestion pipelines, and a rigorous evaluation harness to ensure scalability.
+
+### 💬 Grounded Q&A Chat
+![Chatbot Demo](./assets/chatbot_feature.gif)
+*Querying specific 10-K risk factors with automated source attribution and metadata extraction.*
+
+### 📊 YoY (Year-over-Year) Change Detection
+![Comparison Feature](./assets/comparison_feature.gif)
+*Automated delta analysis identifying added, removed, and modified risk disclosures between fiscal years.*
+
 
 ---
 ## Tech stack
