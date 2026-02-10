@@ -1,5 +1,5 @@
 ## 10-K Risk Analysis RAG Assistant
-
+![Architecture Diagram](./assets/diagram_assistant.png)
 A production-style **Retrieval-Augmented Generation (RAG)** system designed to analyze SEC **10-K Risk Factors**. This tool moves beyond basic search by offering deep semantic comparison and grounded synthesis of financial disclosures.
 
 ### Core Capabilities
@@ -10,6 +10,17 @@ A production-style **Retrieval-Augmented Generation (RAG)** system designed to a
 Built using best AI Engineering best practices, such as clean architectural boundaries, repeatable ingestion pipelines, and a rigorous evaluation harness to ensure scalability.
 
 ---
+## Tech stack
+
+- **FastAPI** (API)
+- **Qdrant** (vector database)
+- **PostgreSQL** (document + metadata storage)
+- **Ollama** (`nomic-embed-text`) for embeddings
+- **OpenAI** for generation
+- **Streamlit** UI
+- **DeepEval** evaluation (LLM-as-judge metrics)
+---
+
 
 ## Evaluation & Performance
 
@@ -71,16 +82,6 @@ pdm run deepeval_eval/eval_rag.py
 - **Clients:** Low-latency wrappers for Qdrant and OpenAI.
 - **UI (`ui`):** Streamlit frontend decoupled from core logic to allow for modularity.
 
----
-## Tech stack
-
-- **FastAPI** (API)
-- **Qdrant** (vector database)
-- **PostgreSQL** (document + metadata storage)
-- **Ollama** (`nomic-embed-text`) for embeddings
-- **OpenAI** for generation
-- **Streamlit** UI
-- **DeepEval** evaluation (LLM-as-judge metrics)
 ---
 
 
