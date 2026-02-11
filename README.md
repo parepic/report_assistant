@@ -39,6 +39,8 @@ The evaluation measures two critical dimensions of RAG performance:
 1.  **Retrieval Metrics:** Is the system finding the right data? (Precision/Recall)
 2.  **Generation Metrics:** Is the LLM answering correctly and sticking to the facts? (Relevancy/Faithfulness)
 
+![LLM-as-judge](./assets/LLM-eval.png)
+
 ### Benchmark Results (Feb 2026)
 
 Test run using `gpt-4.1-mini` for generation and `nomic-embed-text` for retrieval ($k=6$).
