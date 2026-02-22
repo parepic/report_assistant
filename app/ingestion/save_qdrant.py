@@ -37,7 +37,6 @@ def upsert_to_company_collection(
         payload["chunk_idx"] = i
         payload["text"] = chunk["text"]
         payload["risk_factor"] = chunk["risk_factor"]
-        payload["risk_category"] = chunk["risk_category"]
         # Stable point id. Later you can include doc_id / cfg hash here.
         point_id = str(uuid.uuid4())
 
@@ -96,7 +95,6 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
     payload_example["company"] = entry.company
     payload_example["fiscal_year"] = entry.fiscal_year
     payload_example["risk_factor"] = "dummy"
-    payload_example["risk_category"] = "dummy"
     payload_example["strategy_hash"] = chunks_file.strategy_hash
     qdrant.create_payload_indexes_if_missing(collection_name, payload_example)
     print(len(chunks), " ", len(vectors))

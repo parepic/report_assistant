@@ -1,0 +1,72 @@
+{
+  "run_at": "2026-02-09T18:22:25",
+  "questions_path": "app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json",
+  "collection_name": "report_assistant_chatbot",
+  "model": "gpt-4.1-mini",
+  "top_k": 6,
+  "strategy_hash": "dd36a83757aab16160f8ff37a6691b99aae03b65ec47a4514680e44cddc3d3aa",
+  "retrieval_metrics": [
+    {
+      "metric": "ContextualPrecisionMetric",
+      "threshold": 0.7,
+      "passes": 8,
+      "fails": 2,
+      "average_score": 0.7701666666666667,
+      "scores": [
+        1.0,
+        0.26666666666666666,
+        1.0,
+        0.8333333333333334,
+        0.8099999999999999,
+        0.9166666666666666,
+        0.29166666666666663,
+        0.8333333333333333,
+        0.9166666666666666,
+        0.8333333333333334
+      ],
+      "reasons": [
+        "The score is 1.00 because the first node in retrieval contexts clearly explains the structural features making sustained competitive advantage difficult, stating 'Barriers to entry in many of our businesses are low and many of the areas in which we compete evolve rapidly with changing and disruptive technologies, shifting user needs, and frequent introductions of new products and services.' All subsequent nodes, ranked lower, focus on related but less directly relevant topics such as innovation importance, competition, risks, and investment, which justifies their lower ranking and supports the perfect contextual precision score.",
+        "The score is 0.27 because the first four nodes in retrieval contexts, which are ranked higher, are irrelevant as they focus on risks unrelated to market entry barriers, as indicated by the reasons mentioning talent recruitment, trade policies, and sanctions. The relevant nodes appear only at ranks five and six, discussing competition laws and antitrust scrutiny, which justifies the presence of some relevant information but at lower ranks, preventing a higher score.",
+        "The score is 1.00 because all nodes in retrieval contexts that discuss margin risks related to vertically integrated systems are ranked higher (nodes 1 to 3) than those focusing on ecosystem benefits or innovation without addressing margin risks (nodes 4 to 6). This perfect ordering ensures relevant information is prioritized, making the score excellent.",
+        "The score is 0.83 because the first, second, and sixth nodes in retrieval contexts are correctly ranked higher due to their direct relevance, as they mention 'competition among platform-based ecosystems,' 'significant competition from competing platforms for new devices,' and 'users turning to devices that replace PCs,' respectively. However, the score is not higher because nodes three, four, and five, which discuss competition in marketplaces and business models without directly addressing the long-term threat to the Windows PC ecosystem, appear interspersed and slightly disrupt the ideal ranking order.",
+        "The score is 0.81 because most relevant nodes are ranked higher, such as the first node explaining 'Advertising-funded free services' and the third and fourth nodes detailing 'open source software monetized through services or advertising.' However, the second node, which is irrelevant as it focuses on Microsoft's own model rather than competitors, appears too high at rank 2, lowering the score. Overall, the ranking effectively prioritizes relevant contexts but is slightly impacted by the misplaced irrelevant node.",
+        "The score is 0.92 because the first, second, and fourth nodes in retrieval contexts, which are relevant, are ranked highly and clearly state that AI services are expected to be highly competitive and rapidly evolving. However, the score is not higher due to the presence of irrelevant nodes at ranks three, five, and six, which discuss related topics like platform-agnostic services and execution risks but do not explicitly address the expectation about AI services, slightly lowering the precision.",
+        "The score is 0.29 because the first three nodes in retrieval contexts are irrelevant, discussing financial risks and competition without mentioning AI investment or margin pressure, which should be ranked lower. However, the fourth and sixth nodes, ranked fourth and sixth respectively, are relevant as they discuss Microsoft's AI investments and their impact on margins, justifying the score not being lower.",
+        "The score is 0.83 because the first and third nodes in retrieval contexts, which are relevant, are ranked high (1st and 3rd), demonstrating good prioritization of relevant information. However, the presence of irrelevant nodes ranked 2nd, 4th, 5th, and 6th lowers the score, as these nodes discuss topics unrelated to open-source competitors' cost advantages, such as Microsoft's sales pressures and platform competition, which should ideally be ranked lower.",
+        "The score is 0.92 because the first, second, and fourth nodes in retrieval contexts, ranked 1st, 2nd, and 4th respectively, are relevant and directly mention execution areas critical to cloud and AI success, as indicated by the reasons quoting specific execution areas. However, the presence of irrelevant nodes at ranks 3, 5, and 6, which discuss unrelated topics such as organizational changes, investments, and risks, prevents the score from being higher, as these irrelevant nodes are not perfectly ranked below all relevant ones.",
+        "The score is 0.83 because the first, second, and sixth nodes in retrieval contexts, which are relevant, are ranked higher and provide direct insights about the financial risks of mismatched cloud and AI usage growth and infrastructure investment. However, the score is not higher because the third, fourth, and fifth nodes, which are irrelevant, appear interspersed among the relevant nodes, as seen with the third node ranked third, which discusses infrastructure demands but lacks direct connection to financial consequences, thus lowering the precision."
+      ]
+    },
+    {
+      "metric": "ContextualRecallMetric",
+      "threshold": 0.7,
+      "passes": 7,
+      "fails": 3,
+      "average_score": 0.7,
+      "scores": [
+        1.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because the sentence in the expected output is fully supported by the first node in the retrieval context, which explicitly mentions low barriers to entry, rapid technological change, disruptive innovation, shifting user needs, and frequent product introductions, perfectly aligning with the content of the sentence.",
+        "The score is 0.00 because the expected output 'Yes.' is a standalone affirmation that does not correspond to any specific content or detail in the node(s) in retrieval context, resulting in no relevant connection.",
+        "The score is 1.00 because the sentence in the expected output is fully supported by the 2nd node in the retrieval context, which explicitly mentions that shifting to a vertically integrated model may increase cost of revenue and reduce operating margins, perfectly aligning with the statement.",
+        "The score is 1.00 because the sentence about low- or no-cost operating systems on smartphones, tablets, and new device form factors is directly supported by node 2 in the retrieval context, which discusses competing platforms on new devices and their impact on price and utility, perfectly aligning with the expected output.",
+        "The score is 1.00 because all parts of the expected output are directly supported by specific nodes in the retrieval context: sentence 1 aligns with node 3's discussion of advertising-funded free services; sentence 2 is backed by nodes 3 and 4 on open source software monetized through services or advertising; sentence 3 corresponds to node 6's mention of cloud-based subscription models; and sentence 4 is supported by node 5's description of vertically integrated hardware\u2013software ecosystems. There are no unsupported elements, reflecting a comprehensive and accurate recall.",
+        "The score is 0.00 because the sentence 'Yes.' is a standalone affirmation that does not correspond to any specific content or statement in the node(s) in retrieval context, resulting in no relevant connection.",
+        "The score is 0.00 because none of the nodes in retrieval context mention Microsoft incurring significant development, operational, and infrastructure costs before revenue and usage are assured, so the expected output cannot be supported.",
+        "The score is 1.00 because the expected output is fully supported by node 1 in the retrieval context, which clearly states that some companies distribute open source software at little or no cost and monetize through advertising or integrated services, while not bearing the full costs of research and development. There are no unsupported elements in the output, making the recall complete and accurate.",
+        "The score is 1.00 because all elements of the expected output are directly supported by information found in nodes 1 and 4 of the retrieval context, with no missing or unsupported content. This comprehensive alignment reflects excellent recall and accurate synthesis.",
+        "The score is 1.00 because the expected output is fully supported by node 1 and node 2 in the retrieval context, which clearly state that revenue may not grow in line with investments, adversely affecting operations and financial performance. This complete alignment justifies a perfect score."
+      ]
+    }
+  ]
+}

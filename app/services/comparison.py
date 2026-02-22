@@ -6,7 +6,6 @@ from pathlib import Path
 import json
 
 import numpy as np
-import anyio
 from qdrant_client.models import Filter, FieldCondition, MatchValue
 from sqlalchemy import select
 
@@ -19,7 +18,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 def _build_single_prompt(
     change_type: str,
-    section_name: str,
     risk_factor_title: str,
     paragraph_text: str,
 ) -> str:
@@ -33,7 +31,6 @@ Do NOT paraphrase the paragraph. Do NOT restate background or examples unless th
 INPUT
 ------------------------
 Change type: {change_type}   # ADDED | REMOVED
-Risk category: {section_name}
 Risk factor title: {risk_factor_title}
 Paragraph:
 {paragraph_text}
@@ -119,7 +116,6 @@ def _add_llm_outputs(change_result: Dict[str, List[Dict[str, Any]]], config: Glo
         payload = item.get("added", {})
         prompt = _build_single_prompt(
             "ADDED",
-            payload.get("risk_category") or "",
             payload.get("risk_factor") or "",
             payload.get("text") or "",
         )
@@ -132,7 +128,6 @@ def _add_llm_outputs(change_result: Dict[str, List[Dict[str, Any]]], config: Glo
         payload = item.get("removed", {})
         prompt = _build_single_prompt(
             "REMOVED",
-            payload.get("risk_category") or "",
             payload.get("risk_factor") or "",
             payload.get("text") or "",
         )
@@ -191,7 +186,6 @@ def get_paragraphs_from_qdrant(
                 "text": point.payload.get("text", ""),
                 "chunk_idx": point.payload.get("chunk_idx", 0),
                 "doc_id": point.payload.get("doc_id", ""),
-                "risk_category": point.payload.get("risk_category"),
                 "risk_factor": point.payload.get("risk_factor"),
             })
 
@@ -401,7 +395,7 @@ def _build_old_payload(
     if isinstance(match_info, dict):
         merged_indices = match_info.get("merged_old_indices", [])
         if not merged_indices:
-            return {"text": "", "risk_category": None, "risk_factor": None}
+            return {"text": "", "risk_factor": None}
 
         merged_text = " ".join(
             [paras_old[old_idx]["text"] for old_idx, _ in merged_indices]
@@ -409,7 +403,6 @@ def _build_old_payload(
         first_old = paras_old[merged_indices[0][0]]
         return {
             "text": merged_text,
-            "risk_category": first_old.get("risk_category"),
             "risk_factor": match_info.get("risk_factor") or first_old.get("risk_factor"),
         }
 
@@ -417,7 +410,6 @@ def _build_old_payload(
     para_old = paras_old[old_idx]
     return {
         "text": para_old.get("text", ""),
-        "risk_category": para_old.get("risk_category"),
         "risk_factor": para_old.get("risk_factor"),
     }
 
@@ -504,7 +496,6 @@ def compare_documents(
         para_new = paras_new[new_idx]
         payload_new = {
             "text": para_new.get("text", ""),
-            "risk_category": para_new.get("risk_category"),
             "risk_factor": para_new.get("risk_factor"),
         }
 
@@ -532,7 +523,6 @@ def compare_documents(
             {
                 "removed": {
                     "text": para_old.get("text", ""),
-                    "risk_category": para_old.get("risk_category"),
                     "risk_factor": para_old.get("risk_factor"),
                 },
                 "similarity": score,
@@ -586,8 +576,7 @@ async def main(
     print("LCWS paragraph matching")
     print(f"Comparing: {doc_id} vs {doc_id_old}")
     strategy_hash = compute_strategy_hash(config.chunk_strategy_yoy)
-    return await anyio.to_thread.run_sync(
-        compare_documents,
+    return compare_documents(
         config,
         doc_id_old=doc_id_old,
         doc_id_new=doc_id,

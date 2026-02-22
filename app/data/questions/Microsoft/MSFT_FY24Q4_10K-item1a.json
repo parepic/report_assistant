@@ -6,34 +6,16 @@
     "reference_excerpt": "Barriers to entry in many of our businesses are low and many of the areas in which we compete evolve rapidly with changing and disruptive technologies, shifting user needs, and frequent introductions of new products and services."
   },
   {
-    "question": "Yes or no: Does Microsoft consider barriers to entry in many of its markets to be low?",
-    "expected_answer": "Yes.",
-    "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition in the Technology Sector",
-    "reference_excerpt": "Barriers to entry in many of our businesses are low"
-  },
-  {
     "question": "Which competitive model—platform ecosystems or vertically integrated systems—poses margin risks for Microsoft, and why?",
     "expected_answer": "Vertically integrated systems pose margin risks because shifting toward this model can increase cost of revenue and reduce operating margins.",
     "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition Among Platform-Based Ecosystems",
     "reference_excerpt": "A competing vertically-integrated model, in which a single firm controls the software and hardware elements of a product and related services, has succeeded with some consumer products such as PCs, tablets, smartphones, gaming consoles, wearables, and other endpoint devices. Competitors pursuing this model also earn revenue from services integrated with the hardware and software platform, including applications and content sold through their integrated marketplaces. They may also be able to claim security and performance benefits from their vertically integrated offer. We also offer some vertically-integrated hardware and software products and services. Shifting a portion of our business to a vertically integrated model may increase our cost of revenue and reduce our operating margins."
   },
   {
-    "question": "What is the most significant long-term competitive threat to Microsoft’s Windows PC ecosystem?",
-    "expected_answer": "The report does not identify a single most significant long-term competitive threat, but notes that low- or no-cost operating systems on smartphones, tablets, and new device form factors that reduce PC usage, weaken developer incentives, and compress operating system margins.",
-    "section_path": null,
-    "reference_excerpt": null
-  },
-  {
     "question": "What distinct business models do competitors use to compete with Microsoft’s proprietary software model?",
     "expected_answer": "Advertising-funded free services, open source software monetized through services or advertising, cloud-based subscription models, and vertically integrated hardware–software ecosystems.",
     "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
     "reference_excerpt": "Other competitors develop and offer free applications, online services, and content, and make money by selling third-party advertising. Advertising revenue funds development of products and services these competitors provide to users at little or no cost, competing directly with our revenue-generating products."
-  },
-  {
-    "question": "Yes or no: Does Microsoft expect AI services to be both highly competitive and rapidly evolving?",
-    "expected_answer": "Yes.",
-    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
-    "reference_excerpt": "We expect AI technology and services to be a highly competitive and rapidly evolving market, and new competitors continue to enter the market."
   },
   {
     "question": "Why does AI investment increase short-term margin pressure for Microsoft?",
@@ -58,12 +40,6 @@
     "expected_answer": "Revenue may fail to grow in line with costs, negatively affecting margins, operations, and financial performance.",
     "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
     "reference_excerpt": "if we fail to generate sufficient usage of our new products and services, we may not grow revenue in line with the infrastructure and development investments described above."
-  },
-  {
-    "question": "Yes or no: Does Microsoft commit to making its cloud services platform-agnostic, including on competitor ecosystems?",
-    "expected_answer": "Yes.",
-    "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
-    "reference_excerpt": "Making our suite of cloud-based services platform-agnostic, available on a wide range of devices and ecosystems, including those of our competitors."
   },
   {
     "question": "Why may Microsoft fail to achieve expected returns on new product and technology investments?",
@@ -96,6 +72,24 @@
     "reference_excerpt": "Cyberattacks may adversely impact our customers even if our production services are not directly compromised."
   },
   {
+    "question": "Yes or no: Does Microsoft expect AI services to be both highly competitive and rapidly evolving?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Business Model Competition",
+    "reference_excerpt": "We expect AI technology and services to be a highly competitive and rapidly evolving market, and new competitors continue to enter the market."
+  },
+  {
+    "question": "Yes or no: Does Microsoft consider barriers to entry in many of its markets to be low?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Competition in the Technology Sector",
+    "reference_excerpt": "Barriers to entry in many of our businesses are low"
+  },
+  {
+    "question": "Yes or no: Does Microsoft commit to making its cloud services platform-agnostic, including on competitor ecosystems?",
+    "expected_answer": "Yes.",
+    "section_path": "ITEM 1A / Strategic and Competitive Risks / Our focus on cloud-based and AI services presents execution and competitive risks",
+    "reference_excerpt": "Making our suite of cloud-based services platform-agnostic, available on a wide range of devices and ecosystems, including those of our competitors."
+  },
+  {
     "question": "What forms of platform abuse could damage Microsoft’s reputation or user engagement?",
     "expected_answer": "Impersonation, misinformation, fraudulent activity, harmful or illegal content, and AI-enabled abuse of platforms.",
     "section_path": "ITEM 1A / Cybersecurity, Data Privacy, and Platform Abuse Risks / Advertising, professional, marketplace, and gaming platform abuses",
@@ -118,5 +112,11 @@
     "expected_answer": "$28.9 billion.",
     "section_path": "ITEM 1A / Legal, Regulatory, and Litigation Risks / We may have additional tax liabilities",
     "reference_excerpt": "In the NOPAs, the IRS is seeking an additional tax payment of $28.9 billion plus penalties and interest."
+  },
+  {
+    "question": "What is the most significant long-term competitive threat to Microsoft’s Windows PC ecosystem?",
+    "expected_answer": "The report does not identify a single most significant long-term competitive threat, but notes that low- or no-cost operating systems on smartphones, tablets, and new device form factors that reduce PC usage, weaken developer incentives, and compress operating system margins.",
+    "section_path": null,
+    "reference_excerpt": null
   }
 ]

@@ -7,7 +7,7 @@ from deepeval.test_case import LLMTestCase
 from deepeval.models import OllamaModel
 from deepeval.config.settings import get_settings
 
-os.environ.setdefault("DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS_OVERRIDE", "360")
+os.environ.setdefault("DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS_OVERRIDE", "1000")
 model = OllamaModel(model="llama3.1:8b", base_url="http://localhost:11434")
 
 

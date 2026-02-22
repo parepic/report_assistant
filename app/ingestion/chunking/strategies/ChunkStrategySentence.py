@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
+import re
 import spacy
 
 
@@ -8,58 +9,143 @@ class ChunkStrategySentence(BaseModel):
     method: Literal["sentence"] = "sentence"
     chunk_size: int
     overlap: int
-    max_chunk_chars: Optional[int] = 2500  # hard cap to avoid oversized table chunks
+    max_chunk_size: Optional[int] = 2000
 
-    def create_chunks(self, text: str) -> List[str]:
+    def create_chunks(self, text: str) -> List[dict]:
         """
-        Chunking based on sentence boundaries using Spacy with optional character
-        cap to prevent extremely long table-only chunks from being embedded.
+        Sentence-based chunking using same windowing as ChunkStrategySentenceMetadata.
+        Uses same risk_factor detection logic but does NOT prepend metadata to chunk.
         """
 
+        if not text:
+            return []
+
+        # Lightweight sentence tokenizer
         nlp = spacy.blank("en")
         nlp.add_pipe("sentencizer")
 
-        doc = nlp(text)
-        sents = [s.text for s in doc.sents]
+        current_risk_factor: Optional[str] = None
 
-        def split_long_chunk(chunk: str) -> List[str]:
-            max_len = self.max_chunk_chars
-            if not max_len or len(chunk) <= max_len:
-                return [chunk]
+        def _is_heading(block_text: str) -> bool:
+            stripped = block_text.lstrip()
+            return stripped.startswith("*") or stripped.startswith("#")
 
-            parts: List[str] = []
-            words = chunk.split()
-            current: List[str] = []
-            current_len = 0
+        def _clean_heading(block_text: str) -> str:
+            return block_text.lstrip("*# ").strip()
 
-            for word in words:
-                if current and current_len + 1 + len(word) > max_len:
-                    parts.append(" ".join(current))
-                    current = [word]
-                    current_len = len(word)
-                else:
-                    if current:
-                        current_len += 1 + len(word)
+        # Collect sentences with associated risk factor metadata
+        sentences_with_meta: List[Tuple[str, Optional[str]]] = []
+
+        # Split on two or more newlines to detect headings cleanly
+        raw_blocks = re.split(r"(?:\r?\n){2,}", text.strip())
+        _BOLD_HEADING_RE = re.compile(
+            r"(?m)(^|\n)\s*(\*{2,})\s*([^\n]+?)\s*\2"
+        )
+        _HASH_HEADING_RE = re.compile(
+            r"(?m)(^|\n)\s*(#{1,6})\s*([^\n]+)"
+        )
+
+        def _split_blocks_on_headings(blocks: List[str]) -> List[str]:
+            refined: List[str] = []
+
+            for block in blocks:
+                remaining = block.strip()
+
+                while remaining:
+                    star_match = _BOLD_HEADING_RE.search(remaining)
+                    hash_match = _HASH_HEADING_RE.search(remaining)
+
+                    if star_match and hash_match:
+                        next_match = star_match if star_match.start() <= hash_match.start() else hash_match
                     else:
-                        current_len = len(word)
-                    current.append(word)
+                        next_match = star_match or hash_match
 
-            if current:
-                parts.append(" ".join(current))
+                    if not next_match:
+                        refined.append(remaining.strip())
+                        break
 
-            return parts
+                    prefix = remaining[:next_match.start()].strip()
+                    if prefix:
+                        refined.append(prefix)
+
+                    heading_block = remaining[next_match.start():next_match.end()].strip()
+                    if heading_block:
+                        refined.append(heading_block)
+                    remaining = remaining[next_match.end():].lstrip()
+            return [b for b in refined if b]
+
+        raw_blocks = _split_blocks_on_headings(raw_blocks)
+        raw_blocks = [block.strip() for block in raw_blocks if block.strip()]
+
+        for idx, block in enumerate(raw_blocks):
+
+            # Skip Pandoc grid tables that become one gigantic "sentence"
+            # if looks_like_grid_table(block):
+            #     continue
+
+            # Detect headings based on prefix and lookahead (same logic as ChunkStrategyParagraph)
+            if _is_heading(block):
+                next_block = ""
+                for next_candidate in raw_blocks[idx + 1:]:
+                    next_candidate = next_candidate.strip()
+                    if next_candidate:
+                        next_block = next_candidate
+                        break
+                if next_block and _is_heading(next_block):
+                    # This heading is followed by another heading - skip it
+                    current_risk_factor = None
+                else:
+                    # This heading is NOT followed by another heading - it's a risk factor
+                    current_risk_factor = _clean_heading(block)
+                continue
+
+            # Non-heading text: split into sentences and normalize
+            doc = nlp(block)
+            for sent in doc.sents:
+                sent_text = " ".join(sent.text.split())
+                if len(sent_text) > 2500:
+                    # Skip pathological sentences (usually tables without punctuation)
+                    continue
+                if not sent_text:
+                    continue
+                sentences_with_meta.append((sent_text, current_risk_factor))
+
+        if not sentences_with_meta:
+            return []
 
         chunk_size = self.chunk_size
         overlap = self.overlap
-
-        chunks: List[str] = []
         step = chunk_size - overlap
 
-        for start in range(0, len(sents), step):
-            window = sents[start : start + chunk_size]
-            combined = " ".join(window)
-            for part in split_long_chunk(combined):
-                chunks.append(part)
+        chunks: List[dict] = []
+
+        for start in range(0, len(sentences_with_meta), step):
+            window = sentences_with_meta[start : start + chunk_size]
+            if not window:
+                break
+
+            # Build body from sentences in the window
+            body = " ".join(sent for sent, _ in window)
+
+            # Derive metadata from the first sentence in the window
+            _, risk_factor = window[0]
+            
+            chunk_text = body
+    
+            # Split chunk if it exceeds max_chunk_size
+            if self.max_chunk_size and len(chunk_text) > self.max_chunk_size:
+                # Split the chunk into smaller parts
+                for i in range(0, len(chunk_text), self.max_chunk_size):
+                    chunks.append({
+                        "text": chunk_text[i:i + self.max_chunk_size],
+                        "risk_factor": risk_factor,
+                    })
+            else:
+                chunks.append({
+                    "text": chunk_text,
+                    "risk_factor": risk_factor,
+                })
+
             if len(window) < chunk_size:
                 break
 

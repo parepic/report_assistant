@@ -11,22 +11,19 @@ class ChunkStrategyParagraph(BaseModel):
 
     def create_chunks(self, text: str) -> List[Dict[str, Any]]:
         """
-        Paragraph-based chunking while tracking last seen section and subsection.
+        Paragraph-based chunking while tracking risk factors.
         Paragraphs are separated by blank lines.
-        Headings do NOT create new chunks (they update metadata only).
-        Text does NOT include risk factor/category prefix (metadata only stored in dict).
+        Headings do NOT create new chunks (they are tracked for context only).
+        Only risk_factor headings (those not followed by another heading) are tracked.
         
         Returns list of dicts with keys:
-        - 'text': the paragraph text (without prefix)
-        - 'risk_category': section heading (if any)
-        - 'risk_factor': subsection heading (if any)
+        - 'text': the paragraph text
         """
 
         if not text:
             return []
 
-        current_section: Optional[str] = None
-        current_subsection: Optional[str] = None
+        current_risk_factor: Optional[str] = None
 
         def _is_heading(block_text: str) -> bool:
             stripped = block_text.lstrip()
@@ -35,8 +32,8 @@ class ChunkStrategyParagraph(BaseModel):
         def _clean_heading(block_text: str) -> str:
             return block_text.lstrip("*# ").strip()
 
-        # Collect paragraphs with associated section/subsection metadata
-        paragraphs_with_meta: List[Tuple[str, Optional[str], Optional[str]]] = []
+        # Collect paragraphs with associated risk factor metadata
+        paragraphs_with_meta: List[Tuple[str, Optional[str]]] = []
 
         # Split on two or more newlines to detect paragraphs and headings
         raw_blocks = re.split(r"(?:\r?\n){2,}", text.strip())
@@ -92,10 +89,11 @@ class ChunkStrategyParagraph(BaseModel):
                         next_block = next_candidate
                         break
                 if next_block and _is_heading(next_block):
-                    current_section = _clean_heading(block)
-                    current_subsection = None
+                    # This heading is followed by another heading - skip it
+                    current_risk_factor = None
                 else:
-                    current_subsection = _clean_heading(block)
+                    # This heading is NOT followed by another heading - it's a risk factor
+                    current_risk_factor = _clean_heading(block)
                 continue
 
             # Non-heading text: treat block as a paragraph
@@ -109,30 +107,25 @@ class ChunkStrategyParagraph(BaseModel):
                 # Split paragraph into chunks of max_chunk_chars
                 for i in range(0, len(para_text), self.max_chunk_chars):
                     chunk_part = para_text[i : i + self.max_chunk_chars]
-                    paragraphs_with_meta.append((chunk_part, current_section, current_subsection))
+                    paragraphs_with_meta.append((chunk_part, current_risk_factor))
             else:
-                paragraphs_with_meta.append((para_text, current_section, current_subsection))
+                paragraphs_with_meta.append((para_text, current_risk_factor))
 
         if not paragraphs_with_meta:
             return []
 
-        # Create dict for each paragraph
         chunks: List[Dict[str, Any]] = []
-        for para_text, sec, subsec in paragraphs_with_meta:
-            # No prefix - just use the paragraph text as-is
+        for para_text, risk_factor in paragraphs_with_meta:
             if self.max_chunk_chars and len(para_text) > self.max_chunk_chars:
                 for i in range(0, len(para_text), self.max_chunk_chars):
                     chunks.append({
                         "text": para_text[i:i + self.max_chunk_chars],
-                        "risk_category": sec,
-                        "risk_factor": subsec
+                        "risk_factor": risk_factor
                     })
             else:
-                chunk_dict = {
+                chunks.append({
                     "text": para_text,
-                    "risk_category": sec,
-                    "risk_factor": subsec
-                }
-                chunks.append(chunk_dict)
+                    "risk_factor": risk_factor
+                })
 
         return chunks

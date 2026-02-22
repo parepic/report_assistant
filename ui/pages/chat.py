@@ -35,6 +35,12 @@ def _go_to_start() -> None:
         st.rerun()
 
 
+@st.dialog("Comparison Summary")
+def _show_compare_dialog(result: dict) -> None:
+    with st.container(height=800):
+        render_compare_results(result)
+
+
 def main() -> None:
     init_session_state()
     _inject_css()
@@ -69,18 +75,27 @@ def main() -> None:
     entry = selected_reports[0]
     if isinstance(entry, dict):
         entry = from_entry_dict(entry)
-    st.markdown(
-        f"""
-        <div class="ra-context">
-            <div class="ra-context-title">{report_display_name(entry)}</div>
-            <div class="ra-context-subtitle">You are analyzing this document.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    company = str(entry.get("company", "")).strip() or "Unknown"
+    year = entry.get("fiscal_year", "?")
+    with st.sidebar:
+        st.subheader("Active Document")
+        st.markdown(
+            f"""
+            <div class="ra-active-doc">
+                <div class="ra-doc-company">Company: {company}</div>
+                <div class="ra-doc-year" style="font-weight: 700;">FY {year}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.divider()
+        st.subheader("Document Actions")
+        if st.button("✨ Compare to Prev. Fiscal Year", key="compare_to_prev_fiscal_year"):
+            st.session_state["compare_to_last_year_clicked"] = True
+            st.rerun()
 
     messages = st.session_state["chat_messages"]
-    render_chat_history(messages)
+    render_chat_history(messages, company=company, year=year)
 
     if st.session_state.get("compare_to_last_year_clicked"):
         if st.session_state.get("compare_to_last_year_result") is None:
@@ -96,10 +111,10 @@ def main() -> None:
                         "removed": [],
                     }
                     st.error(f"Compare to last year failed: {exc}")
-
         result = st.session_state.get("compare_to_last_year_result")
+        st.session_state["compare_to_last_year_clicked"] = False
         if isinstance(result, dict):
-            render_compare_results(result)
+            _show_compare_dialog(result)
 
     user_input = get_user_input()
     if user_input:
@@ -108,8 +123,19 @@ def main() -> None:
             try:
                 response = answer_for_entry(user_input, entry)
             except Exception as exc:
-                response = f"Something went wrong while retrieving an answer: {exc}"
-        messages.append({"role": "assistant", "content": response})
+                response = {"error": f"Something went wrong while retrieving an answer: {exc}"}
+        if isinstance(response, dict) and response.get("error"):
+            messages.append({"role": "assistant", "content": response["error"]})
+        elif isinstance(response, dict):
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": str(response.get("llm_response", "")),
+                    "citations": response.get("citations", []),
+                }
+            )
+        else:
+            messages.append({"role": "assistant", "content": str(response)})
         st.rerun()
 
 

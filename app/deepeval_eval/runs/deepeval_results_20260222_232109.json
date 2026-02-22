@@ -1,0 +1,72 @@
+{
+  "run_at": "2026-02-22T23:21:09",
+  "questions_path": "app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json",
+  "collection_name": "report_assistant_chatbot",
+  "model": "gpt-4.1-mini",
+  "top_k": 4,
+  "strategy_hash": "dd36a83757aab16160f8ff37a6691b99aae03b65ec47a4514680e44cddc3d3aa",
+  "response_metrics": [
+    {
+      "metric": "AnswerRelevancyMetric",
+      "threshold": 0.7,
+      "passes": 9,
+      "fails": 1,
+      "average_score": 0.9666666666666666,
+      "scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.6666666666666666,
+        1.0,
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because the response fully addresses the question without any irrelevant information, providing a clear and focused explanation of the structural challenges Microsoft faces in sustaining competitive advantage in the technology sector.",
+        "The score is 1.00 because the response directly and clearly answers the yes/no question without any irrelevant information, making it fully relevant and concise.",
+        "The score is 1.00 because the response directly addresses which competitive model poses margin risks for Microsoft and explains why, with no irrelevant statements present.",
+        "The score is 1.00 because the response fully addresses the question without any irrelevant information, providing a clear and focused answer.",
+        "The score is 1.00 because the response fully addresses the question about competitors' distinct business models without including any irrelevant information, providing a clear and focused answer.",
+        "The score is 1.00 because the response directly and clearly answers the question without any irrelevant information, making it fully relevant and concise.",
+        "The score is 1.00 because the response directly addresses the question without any irrelevant information, providing a clear and focused explanation.",
+        "The score is 0.67 because the response partially addresses cost advantages but includes irrelevant points about revenue generation, which do not directly relate to cost advantages over Microsoft. It is not higher due to these off-topic statements, but it still provides some relevant reasons related to open-source software.",
+        "The score is 1.00 because the response fully addresses the question without any irrelevant information, providing a clear and focused answer on the five critical execution areas identified by Microsoft for cloud and AI success. There are no extraneous statements that detract from the relevancy.",
+        "The score is 1.00 because the response fully addresses the input without any irrelevant information, providing a clear and focused explanation."
+      ]
+    },
+    {
+      "metric": "FaithfulnessMetric",
+      "threshold": 0.7,
+      "passes": 10,
+      "fails": 0,
+      "average_score": 0.9909090909090909,
+      "scores": [
+        0.9090909090909091,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "reasons": [
+        "The score is 0.91 because the actual output incorrectly suggests that platform-based ecosystems face challenges from new devices like smartphones and tablets, whereas the context only states that Microsoft faces competition from platforms developed for these devices.",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "run_at": "2026-02-09T18:19:57",
+  "questions_path": "app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json",
+  "collection_name": "report_assistant_chatbot",
+  "model": "gpt-4.1-mini",
+  "top_k": 6,
+  "strategy_hash": "dd36a83757aab16160f8ff37a6691b99aae03b65ec47a4514680e44cddc3d3aa",
+  "retrieval_metrics": [
+    {
+      "metric": "ContextualPrecisionMetric",
+      "threshold": 0.7,
+      "passes": 1,
+      "fails": 0,
+      "average_score": 1.0,
+      "scores": [
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because the first node in retrieval contexts clearly explains that 'Barriers to entry in many of our businesses are low and many of the areas in which we compete evolve rapidly with changing and disruptive technologies,' which directly addresses why sustained competitive advantage is difficult. All subsequent nodes, ranked lower, focus on related but less directly relevant topics such as innovation importance, competition, and risks, which justifies their lower ranking and supports the perfect contextual precision score."
+      ]
+    },
+    {
+      "metric": "ContextualRecallMetric",
+      "threshold": 0.7,
+      "passes": 1,
+      "fails": 0,
+      "average_score": 1.0,
+      "scores": [
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because the sentence in the expected output is fully supported by the first node in the retrieval context, which explicitly mentions low barriers to entry, rapid technological change, disruptive innovation, shifting user needs, and frequent product introductions, perfectly aligning with the content of the sentence."
+      ]
+    }
+  ]
+}

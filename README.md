@@ -61,7 +61,7 @@ Test run using `gpt-4.1-mini` for generation and `nomic-embed-text` for retrieva
 You can reproduce these benchmarks by running the DeepEval suite:
 
 ```bash
-pdm run deepeval_eval/eval_rag.py
+python -m app.deepeval_eval.eval_rag
 ```
 ---
 
@@ -158,9 +158,23 @@ pdm run python pipeline_chatbot.py --chunk --embed
 
 ---
 
+## FastAPI Server
+
+Start the FastAPI backend server:
+
+```bash
+pdm run uvicorn app.main:app --reload
+```
+
+The server will be available at `http://localhost:8000`. The `--reload` flag enables auto-restart on code changes during development.
+
+---
+
 ## UI
 
-Run the Streamlit app:
+To use the full application, you must run **both the FastAPI server and Streamlit UI** in separate terminals.
+
+First, start the FastAPI server (see section above), then run the Streamlit app:
 ```bash
 pdm run streamlit run ui/streamlit_app.py
 ```

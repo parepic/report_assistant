@@ -1,0 +1,192 @@
+.ra-landing {
+  text-align: center;
+  margin: 24px 0 8px;
+}
+
+.ra-hero {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.ra-subtext {
+  font-size: 18px;
+  color: #5f6368;
+}
+
+.ra-context {
+  background: #ffffff;
+  border: 1px solid #e6e8ec;
+  border-radius: 14px;
+  padding: 14px 18px 16px;
+  margin: 8px 0 18px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.ra-context-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin-bottom: 6px;
+}
+
+.ra-context-subtitle {
+  display: inline-block;
+  font-size: 12px;
+  color: #475467;
+  background: #f2f4f7;
+  border: 1px solid #e4e7ec;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.ra-empty {
+  background: #f8fafc;
+  border: 1px dashed #d5d9e0;
+  border-radius: 10px;
+  padding: 16px;
+  color: #5f6368;
+  text-align: center;
+  margin: 12px 0 16px;
+}
+
+.ra-chat-prompt {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  margin: 28px 0 20px;
+  color: #101828;
+}
+
+div[data-testid="stTextInput"] {
+  max-width: 520px;
+  margin: 0 auto 24px;
+}
+
+div[data-testid="stTextInput"] > div > div > input {
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+  text-align: center;
+}
+
+.ra-report-hoverable {
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.ra-report-hoverable:hover {
+  background: #f3f4f6;
+}
+
+.ra-report-metadata {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.ra-modal-header {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ra-modal-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stButton"] > button {
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(16, 24, 40, 0.16);
+}
+
+.ra-active-doc {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  line-height: 1.15;
+}
+
+.ra-doc-company {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ra-doc-year {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-top: 0;
+  font-weight: 700 !important;
+
+}
+
+.ra-citations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ra-citation-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  cursor: default;
+}
+
+.ra-citation-tooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  min-width: 260px;
+  max-width: 420px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(16, 24, 40, 0.18);
+  color: #111827;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 1000;
+  white-space: pre-wrap;
+}
+
+.ra-citation-chip:hover .ra-citation-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+div[role="dialog"] {
+  max-width: 1200px;
+  width: 92vw;
+}
+
+div[data-testid="stDialog"] [data-testid="stVerticalBlock"] {
+  max-height: 90vh;
+  overflow-y: auto;
+}

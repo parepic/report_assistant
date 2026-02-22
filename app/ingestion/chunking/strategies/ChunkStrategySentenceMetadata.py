@@ -14,8 +14,9 @@ class ChunkStrategySentenceMetadata(BaseModel):
     def create_chunks(self, text: str) -> List[dict]:
         """
         Sentence-based chunking (same windowing as ChunkStrategySentence)
-        while tracking last seen section and subsection and
-        returning per-chunk metadata alongside the text.
+        while tracking risk factors and returning per-chunk metadata alongside the text.
+        Uses same risk_factor detection logic as ChunkStrategyParagraph.
+        Prepends risk_factor to chunk text if present.
         """
 
         if not text:
@@ -25,8 +26,7 @@ class ChunkStrategySentenceMetadata(BaseModel):
         nlp = spacy.blank("en")
         nlp.add_pipe("sentencizer")
 
-        current_section: Optional[str] = None
-        current_subsection: Optional[str] = None
+        current_risk_factor: Optional[str] = None
 
         def _is_heading(block_text: str) -> bool:
             stripped = block_text.lstrip()
@@ -35,8 +35,8 @@ class ChunkStrategySentenceMetadata(BaseModel):
         def _clean_heading(block_text: str) -> str:
             return block_text.lstrip("*# ").strip()
 
-        # Collect sentences with associated section/subsection metadata
-        sentences_with_meta: List[Tuple[str, Optional[str], Optional[str]]] = []
+        # Collect sentences with associated risk factor metadata
+        sentences_with_meta: List[Tuple[str, Optional[str]]] = []
 
         # Split on two or more newlines to detect headings cleanly
         raw_blocks = re.split(r"(?:\r?\n){2,}", text.strip())
@@ -77,17 +77,15 @@ class ChunkStrategySentenceMetadata(BaseModel):
             return [b for b in refined if b]
 
         raw_blocks = _split_blocks_on_headings(raw_blocks)
+        raw_blocks = [block.strip() for block in raw_blocks if block.strip()]
 
         for idx, block in enumerate(raw_blocks):
-            block = block.strip()
-            if not block:
-                continue
 
             # Skip Pandoc grid tables that become one gigantic "sentence"
             # if looks_like_grid_table(block):
             #     continue
 
-            # Detect headings based on prefix and lookahead
+            # Detect headings based on prefix and lookahead (same logic as ChunkStrategyParagraph)
             if _is_heading(block):
                 next_block = ""
                 for next_candidate in raw_blocks[idx + 1:]:
@@ -96,10 +94,11 @@ class ChunkStrategySentenceMetadata(BaseModel):
                         next_block = next_candidate
                         break
                 if next_block and _is_heading(next_block):
-                    current_section = _clean_heading(block)
-                    current_subsection = None
+                    # This heading is followed by another heading - skip it
+                    current_risk_factor = None
                 else:
-                    current_subsection = _clean_heading(block)
+                    # This heading is NOT followed by another heading - it's a risk factor
+                    current_risk_factor = _clean_heading(block)
                 continue
 
             # Non-heading text: split into sentences and normalize
@@ -111,7 +110,7 @@ class ChunkStrategySentenceMetadata(BaseModel):
                     continue
                 if not sent_text:
                     continue
-                sentences_with_meta.append((sent_text, current_section, current_subsection))
+                sentences_with_meta.append((sent_text, current_risk_factor))
 
         if not sentences_with_meta:
             return []
@@ -128,47 +127,29 @@ class ChunkStrategySentenceMetadata(BaseModel):
                 break
 
             # Build body from sentences in the window
-            body = " ".join(sent for sent, _, _ in window)
+            body = " ".join(sent for sent, _ in window)
 
             # Derive metadata from the first sentence in the window
-            _, sec, subsec = window[0]
-            prefix_parts: List[str] = []
-            if sec:
-                prefix_parts.append(f"risk category: {sec}")
-            if subsec:
-                prefix_parts.append(f"risk factor: {subsec}")
-
-            prefix_line = " | ".join(prefix_parts)
-            if prefix_line:
-                chunk_text = prefix_line + "\n" + body
+            _, risk_factor = window[0]
+            
+            # Prepend risk_factor to chunk text if present
+            if risk_factor:
+                chunk_text = f"risk factor: {risk_factor} |\n" + body
             else:
                 chunk_text = body
     
             # Split chunk if it exceeds max_chunk_size
             if self.max_chunk_size and len(chunk_text) > self.max_chunk_size:
                 # Split the chunk into smaller parts
-                if prefix_line:
-                    max_body_len = self.max_chunk_size - len(prefix_line) - 1
-                    if max_body_len <= 0:
-                        max_body_len = self.max_chunk_size
-                    for i in range(0, len(body), max_body_len):
-                        chunks.append({
-                            "text": prefix_line + "\n" + body[i:i + max_body_len],
-                            "risk_category": sec,
-                            "risk_factor": subsec,
-                        })
-                else:
-                    for i in range(0, len(chunk_text), self.max_chunk_size):
-                        chunks.append({
-                            "text": chunk_text[i:i + self.max_chunk_size],
-                            "risk_category": sec,
-                            "risk_factor": subsec,
-                        })
+                for i in range(0, len(chunk_text), self.max_chunk_size):
+                    chunks.append({
+                        "text": chunk_text[i:i + self.max_chunk_size],
+                        "risk_factor": risk_factor,
+                    })
             else:
                 chunks.append({
                     "text": chunk_text,
-                    "risk_category": sec,
-                    "risk_factor": subsec,
+                    "risk_factor": risk_factor,
                 })
 
             if len(window) < chunk_size:

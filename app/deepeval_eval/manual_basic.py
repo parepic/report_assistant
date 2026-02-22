@@ -46,6 +46,7 @@ def main() -> None:
     else:
         # Use openai by default
         config = load_global_config()
+        print(config)
         eval_llm = config.get("LLM_MODEL_EVAL", "gpt-4o-mini")
 
 

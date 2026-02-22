@@ -115,7 +115,7 @@ class QdrantClientWrapper:
 		payload = {
 			"vector": query_emb,
 			"limit": k,
-			"with_payload": ["text", "risk_factor", "risk_category", "doc_id", "company", "fiscal_year", "strategy_hash", "chunk_idx"]
+			"with_payload": ["text", "risk_factor", "doc_id", "company", "fiscal_year", "strategy_hash", "chunk_idx"]
 		}
 		# Always filter by company, optionally by strategy_hash
 		must_filters = []
@@ -142,9 +142,10 @@ class QdrantClientWrapper:
 		return [
 			{
 				"id": hit.get("id"),
+				"rank": idx + 1,
 				"payload": hit.get("payload", {}),
 			}
-			for hit in data["result"]
+			for idx, hit in enumerate(data["result"])
 		]
 
 
@@ -163,7 +164,7 @@ class QdrantClientWrapper:
 		payload = {
 			"vector": vector,
 			"limit": k,
-			"with_payload": ["text", "risk_factor", "risk_category", "doc_id", "company", "fiscal_year", "strategy_hash", "chunk_idx"]
+			"with_payload": ["text", "risk_factor", "doc_id", "company", "fiscal_year", "strategy_hash", "chunk_idx"]
 		}
 		# Always filter by company, optionally by strategy_hash
 		must_filters = []

@@ -161,7 +161,6 @@ def _flatten_items(change_result: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "type": "Changed",
                 "similarity": item.get("similarity"),
-                "risk_category": new_data.get("risk_category") or "N/A",
                 "risk_factor": new_data.get("risk_factor") or old_data.get("risk_factor") or "N/A",
                 "new_text": new_data.get("text", ""),
                 "old_text": old_data.get("text", ""),
@@ -175,7 +174,6 @@ def _flatten_items(change_result: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "type": "Added",
                 "similarity": item.get("similarity"),
-                "risk_category": new_data.get("risk_category") or "N/A",
                 "risk_factor": new_data.get("risk_factor") or "N/A",
                 "new_text": new_data.get("text", ""),
                 "old_text": "",
@@ -189,7 +187,6 @@ def _flatten_items(change_result: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "type": "Removed",
                 "similarity": item.get("similarity"),
-                "risk_category": old_data.get("risk_category") or "N/A",
                 "risk_factor": old_data.get("risk_factor") or "N/A",
                 "new_text": "",
                 "old_text": old_data.get("text", ""),
@@ -240,7 +237,7 @@ def render_compare_results(change_result: dict[str, Any]) -> None:
     st.markdown(
         f"""
         <div class="ra-compare-header">
-            <div class="ra-compare-title">Document A (Year) vs Document B (Year)</div>
+            <div class="ra-compare-title">Current FY vs Previous FY</div>
             <div>
                 <span class="ra-chip changed">Changed ({changed_count})</span>
                 <span class="ra-chip added">Added ({added_count})</span>
@@ -304,8 +301,8 @@ def render_compare_results(change_result: dict[str, Any]) -> None:
         }
         type_class = type_class_map.get(item["type"], "changed")
         similarity_text = _format_similarity(item.get("similarity"))
-        risk_category = _truncate(item.get("risk_category", "N/A"), 80)
-        risk_category_html = html.escape(risk_category)
+        risk_factor = _truncate(item.get("risk_factor", "N/A"), 80)
+        risk_factor_html = html.escape(risk_factor)
         new_block = ""
         old_block = ""
         if item["type"] in {"Changed", "Added"}:
@@ -329,7 +326,7 @@ def render_compare_results(change_result: dict[str, Any]) -> None:
         llm_block = ""
         if llm_output:
             llm_block = _build_text_block_html(
-                "LLM insights",
+                "Key changes",
                 llm_output,
                 None,
                 f"compare_{idx}_llm",
@@ -341,7 +338,7 @@ def render_compare_results(change_result: dict[str, Any]) -> None:
             "<div class='ra-card'>"
             "<div class='ra-card-header'>"
             f"<span class='ra-chip {type_class}'>{item['type']}</span>"
-            f"<div class='ra-card-title'>{risk_category_html}</div>"
+            f"<div class='ra-card-title'>{risk_factor_html}</div>"
             f"<span class='ra-badge'>{similarity_text}</span>"
             "</div>"
             "</div>"

@@ -1,0 +1,136 @@
+{
+  "run_at": "2026-02-22T23:27:21",
+  "questions_path": "app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json",
+  "collection_name": "report_assistant_chatbot",
+  "model": "gpt-4.1-mini",
+  "top_k": 4,
+  "strategy_hash": "dd36a83757aab16160f8ff37a6691b99aae03b65ec47a4514680e44cddc3d3aa",
+  "retrieval_metrics": [
+    {
+      "metric": "ContextualPrecisionMetric",
+      "threshold": 0.7,
+      "passes": 8,
+      "fails": 2,
+      "average_score": 0.8138888888888889,
+      "scores": [
+        1.0,
+        1.0,
+        0.8055555555555555,
+        0.3333333333333333,
+        0.8333333333333333,
+        1.0,
+        0.9166666666666666,
+        1.0,
+        1.0,
+        0.25
+      ],
+      "reasons": [
+        "The score is 1.00 because the first node in retrieval contexts clearly highlights key structural features such as low barriers to entry and rapid technological change, which are central to the input question. The subsequent nodes, ranked lower, focus on related but less directly relevant topics like AI competition and platform ecosystems, which do not explicitly address the structural challenges to sustained competitive advantage. This ranking ensures that the most pertinent information is prioritized, justifying the perfect score.",
+        "The score is 1.00 because the first node in retrieval contexts clearly highlights margin risks associated with vertically integrated models for Microsoft, while all subsequent nodes, ranked lower, discuss related topics without addressing margin risks or cost impacts. This perfect ranking ensures relevant information is prioritized, making the score excellent.",
+        "The score is 0.81 because the first node in retrieval contexts correctly ranks relevant information about competitors using advertising-funded free services, which is crucial. However, the second node, which is irrelevant as it focuses on Microsoft's own model, appears too high at rank 2, lowering the score. The subsequent relevant nodes at ranks 3 and 4 provide valuable details on open source software monetized through services or advertising, justifying the score being above average but not perfect.",
+        "The score is 0.33 because the relevant node is ranked third in the retrieval contexts, while the first and second nodes, which are irrelevant, are ranked higher. Specifically, the first node discusses 'Adverse economic or market conditions' and investment portfolio risks, and the second node mentions acquisitions and strategic alliances including the OpenAI partnership, neither of which directly explain the short-term margin pressure from AI investment. The relevant third node clearly states that significant investments in products and services may not achieve expected returns and that investments in new technology are speculative, directly addressing the input question. The low score reflects the misplacement of this relevant node below irrelevant ones, but the presence of a clearly relevant node justifies the score being above zero.",
+        "The score is 0.83 because the first and third nodes in retrieval contexts effectively highlight how open-source competitors distribute software at low cost and monetize through advertising, which are key reasons for their cost advantage. However, the second and fourth nodes, ranked second and fourth respectively, discuss Microsoft's costs and competitive pressures without addressing open-source competitors' cost advantages, which slightly lowers the score due to irrelevant nodes appearing relatively high in the ranking.",
+        "The score is 1.00 because the first and second nodes in retrieval contexts clearly present the critical execution areas, while the third and fourth nodes, ranked lower, discuss related but less directly relevant topics such as costs and investments. This perfect ranking ensures all relevant information is prioritized above irrelevant content, resulting in an excellent contextual precision score.",
+        "The score is 0.92 because the first, second, and fourth nodes in retrieval contexts are relevant and ranked higher, effectively addressing the consequences of mismatched growth between cloud and AI usage and infrastructure investment. However, the third node, which is irrelevant as it focuses only on ongoing investments without discussing the impact of growth mismatch, appears before some relevant nodes, preventing a perfect score.",
+        "The score is 1.00 because all nodes in retrieval contexts that provide relevant information about the risks and challenges Microsoft faces with new product and technology investments are ranked higher (nodes 1 to 3). The fourth node, although mentioning speculation, is ranked lower because it lacks additional insights on profitability or adoption, making it less directly useful.",
+        "The score is 1.00 because the first and second nodes in retrieval contexts clearly emphasize that customer perception of new offerings directly impacts revenue decline, which is the key factor linking innovation failure to revenue decline. The third and fourth nodes, ranked lower, discuss unrelated topics like business model competition and profitability without addressing customer perception, justifying their lower ranking and resulting in a perfect contextual precision score.",
+        "The score is 0.25 because the first three nodes in retrieval contexts, ranked 1st to 3rd, are irrelevant as they do not explicitly identify types of threat actors, while the relevant node is ranked 4th. This lowers the score since relevant information is not prioritized higher, but the presence of a relevant node still gives a non-zero score."
+      ]
+    },
+    {
+      "metric": "ContextualRecallMetric",
+      "threshold": 0.7,
+      "passes": 8,
+      "fails": 2,
+      "average_score": 0.85,
+      "scores": [
+        1.0,
+        1.0,
+        0.5,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because the sentence in the expected output directly reflects the information from the 1st node in the retrieval context, capturing all key elements such as low barriers to entry, rapid technological change, disruptive innovation, shifting user needs, and frequent product introductions, resulting in a complete and accurate summary.",
+        "The score is 1.00 because the sentence in the expected output is fully supported by node 1 in the retrieval context, which clearly states that shifting to a vertically integrated model may increase cost of revenue and reduce operating margins. There are no unsupported elements, making the recall complete and accurate.",
+        "The score is 0.50 because while node(s) 3 and 4 support the mentions of advertising-funded free services and open source software monetized through services or advertising (sentences 1 and 2), there is no support in the retrieval context for cloud-based subscription models or vertically integrated hardware\u2013software ecosystems (sentences 3 and 4). This partial alignment leads to a moderate recall score.",
+        "The score is 0.00 because the expected output about Microsoft incurring significant development, operational, and infrastructure costs is not supported or implied by any node in the retrieval context, which instead focus on risk factors such as economic conditions, acquisitions, investments, and competition.",
+        "The score is 1.00 because the sentence in the expected output is fully supported by node(s) 1, 3, and 4 in the retrieval context, which collectively explain how companies distribute software at little or no cost while monetizing through advertising or integrated services, and how the original company bears the full costs of research and development.",
+        "The score is 1.00 because the expected output fully aligns with the information in node 1 of the retrieval context, covering all aspects such as bringing compelling cloud-based and AI products to market, maintaining performance and compatibility, and enhancing attractiveness to third-party developers, with no missing or unsupported elements.",
+        "The score is 1.00 because the sentence in the expected output directly reflects information from node(s) 1 and 2 in the retrieval context, which clearly discuss revenue not growing in line with investments and the adverse effects on operations and financial condition, perfectly supporting the statement about margins, operations, and financial performance.",
+        "The score is 1.00 because the expected output accurately reflects information from multiple nodes in the retrieval context: sentence 1 aligns with node 1 on speculation and customer engagement, sentence 2 corresponds to node 3 on development cycles, and sentence 3 matches node 2 on profitability, demonstrating comprehensive coverage without any unsupported elements.",
+        "The score is 1.00 because the first and second nodes in retrieval context clearly support the statement about customer perception of new offerings lacking significant new functionality or value, with no conflicting information present. Great alignment!",
+        "The score is 1.00 because the expected output perfectly matches the information in node 4 of the retrieval context, which explicitly mentions individual and groups of hackers, sophisticated organizations, and state-sponsored entities, covering all elements in the output."
+      ]
+    }
+  ],
+  "response_metrics": [
+    {
+      "metric": "AnswerRelevancyMetric",
+      "threshold": 0.7,
+      "passes": 9,
+      "fails": 1,
+      "average_score": 0.9121212121212121,
+      "scores": [
+        1.0,
+        1.0,
+        0.8333333333333334,
+        1.0,
+        0.8333333333333334,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.45454545454545453
+      ],
+      "reasons": [
+        "The score is 1.00 because the response fully addresses the question without any irrelevant information, providing a clear and focused explanation of the structural challenges Microsoft faces in sustaining competitive advantage in the technology sector.",
+        "The score is 1.00 because the response directly addresses which competitive model poses margin risks for Microsoft and explains why, with no irrelevant information included.",
+        "The score is 0.83 because the response mostly addresses competitors' business models but includes an irrelevant focus on Microsoft's internal cost structure, which detracts from full relevance.",
+        "The score is 1.00 because the response directly addresses the question without any irrelevant information, providing a clear and focused explanation.",
+        "The score is 0.83 because the response correctly identifies relevant reasons for cost advantage but includes an irrelevant statement about reducing investment in research and development, which is not a primary reason. This lowers the score slightly, but overall the answer remains mostly relevant and informative.",
+        "The score is 1.00 because the response directly addresses the question about Microsoft's five critical execution areas for cloud and AI success without including any irrelevant information.",
+        "The score is 1.00 because the response fully addresses the input without any irrelevant information, providing a clear and focused explanation.",
+        "The score is 1.00 because the response fully addresses the question without any irrelevant information, providing a clear and focused explanation.",
+        "The score is 1.00 because the response directly addresses the question without any irrelevant information, providing a clear and focused answer.",
+        "The score is 0.45 because the response focuses on the methods and goals of threat actors rather than explicitly identifying the types of threat actors Microsoft considers major cybersecurity risks. While it provides relevant context, it lacks direct answers about the specific threat actor categories, preventing a higher score."
+      ]
+    },
+    {
+      "metric": "FaithfulnessMetric",
+      "threshold": 0.7,
+      "passes": 10,
+      "fails": 0,
+      "average_score": 1.0,
+      "scores": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "reasons": [
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!",
+        "The score is 1.00 because there are no contradictions; the actual output fully aligns with the retrieval context. Great job maintaining accuracy!"
+      ]
+    }
+  ]
+}

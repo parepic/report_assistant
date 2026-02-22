@@ -40,7 +40,7 @@ QUESTIONS_PATH = Path("app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json"
 COLLECTION_NAME = config.QDRANT_DB_NAME_CHATBOT
 raw = QUESTIONS_PATH.read_text(encoding="utf-8")
 items = json.loads(raw)
-items = items[:1]
+items = items[:10]
 
 ollama_url = config.OLLAMA_URL
 qdrant_url = config.QDRANT_URL
@@ -100,8 +100,11 @@ def summarize_metrics(test_cases: list[LLMTestCase], metrics: list) -> list[dict
         passes = 0
         fails = 0
         reasons = []
+        i = 0
         for test_case in test_cases:
             metric.measure(test_case)
+            # print("iteration ", i, test_case, "\n\n\n")
+            i+=1
             score = getattr(metric, "score", None)
             success = getattr(metric, "success", None)
             reason = getattr(metric, "reason", None)
@@ -132,7 +135,7 @@ def summarize_metrics(test_cases: list[LLMTestCase], metrics: list) -> list[dict
         )
     return summaries
 
-# Evaluate retrieval metrics (context quality).
+# # Evaluate retrieval metrics (context quality).
 retrieval_metrics = [
     # Keep the smallest set first: one retrieval metric
     ContextualPrecisionMetric(threshold=threshold, model=llm_model, include_reason=True),
@@ -142,9 +145,11 @@ retrieval_metrics = [
 # Evaluate response metrics (answer quality).
 response_metrics = [
     # Keep the smallest set first: one response metric
-    AnswerRelevancyMetric(threshold=threshold, model=llm_model, include_reason=True),
-    FaithfulnessMetric(threshold=threshold, model=llm_model, include_reason=True),
+    AnswerRelevancyMetric(threshold=threshold, model=llm_model, verbose_mode=True),
+    FaithfulnessMetric(threshold=threshold, model=llm_model, verbose_mode=True),
 ]
+
+
 
 print("Evaluating retrieval metrics:")
 retrieval_summary = summarize_metrics(dataset.test_cases, retrieval_metrics)
