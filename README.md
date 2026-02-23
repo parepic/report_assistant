@@ -148,6 +148,7 @@ python -m app.ingestion.pipeline_comparison
 # Chunk + embed for YoY comparison (separate collection)
 ```
 
+## TODO - Confirm these functions can be run with these flags.
 You can run a single stage too. For example:
 ```bash
 pdm run python pipeline_chatbot.py --chunk
@@ -189,3 +190,8 @@ More details live in `ui/README.md`.
 
 `global.yaml` controls major components (LLM model, embedding model, chunking strategy) to speed up experimentation.
 
+---
+
+## TODO
+
+- Add a batch ingestion/indexing command to process multiple `report_id` entries (from `app/data/index.json` or a provided list) in one run, so comparisons do not require manual one-by-one pipeline execution.
