@@ -20,14 +20,12 @@ EMBEDDING_PROFILE: {
 
 # Chunking variables
 chunk_strategy_chatbot: {
-  "embed_model": "nomic-embed-text",
   "method":"sentence_metadata",
   "chunk_size": 3,
   "overlap": 1
 }
 
 chunk_strategy_yoy: {
-  "embed_model": "nomic-embed-text",
   "method":"paragraph",
 }
 

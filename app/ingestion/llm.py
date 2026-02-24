@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from app.data_classes import GlobalConfig, compute_strategy_hash
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from app.clients.OpenAiClientWrapper import OpenAIClientWrapper
+from app.ingestion.save_qdrant import derive_collection_name
 
 # Load environment variables from .env file
 load_dotenv()
@@ -59,12 +60,15 @@ def main(config: GlobalConfig) -> None:
     
     ollama_url = config.OLLAMA_URL
     llm_model = config.LLM_MODEL_CHATBOT
-    embed_model = config.chunk_strategy_chatbot.embed_model
+    embed_model = config.EMBEDDING_PROFILE.embed_model
     top_k = config.top_k
 
     # Compute strategy hash from global config
     strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
-    collection_name = config.QDRANT_DB_NAME_CHATBOT
+    collection_name = derive_collection_name(
+        config.QDRANT_DB_NAME_CHATBOT,
+        config.EMBEDDING_PROFILE,
+    )
 
     print(f"\nUsing collection: {collection_name}")
     print("You can now ask questions! Type 'exit' to quit.\n")

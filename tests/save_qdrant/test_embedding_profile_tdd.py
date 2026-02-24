@@ -1,13 +1,24 @@
-"""TDD tests for multi-embedding profile support.
+"""TDD/roadmap tests for pending embedding-profile enhancements.
 
-These tests intentionally describe target behavior for the upcoming refactor.
-They are marked xfail until profile-aware routing and metadata are implemented.
+Scope of this file:
+- Documents behavior that is either already implemented or intentionally marked
+  as future work (`xfail`).
+- Keeps forward-looking profile features separate from current baseline tests.
+
+Why this file exists:
+- It acts as an executable specification for the next refactor increments.
+- `xfail` scenarios preserve design intent without breaking CI today.
+
+Scenario map:
+- Deterministic collection-name derivation from embedding profile.
+- Profile-specific collection routing in ingestion path.
+- (xfail) payload metadata persistence for embed provider/model/dimension.
+- (xfail) dimension mismatch guard before upsert.
+- (xfail) profile-scoped delete behavior during overwrite flow.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -15,40 +26,7 @@ import pytest
 
 from app.data_classes import EmbeddingProfileConfig
 from app.ingestion import save_qdrant
-
-
-def _profile_config() -> SimpleNamespace:
-    """Build a minimal config with a future embedding-profile section."""
-    return SimpleNamespace(
-        report_id="doc-1",
-        OLLAMA_URL="http://ollama:11434",
-        QDRANT_DB_NAME_CHATBOT="report_assistant_chatbot",
-        QDRANT_DB_NAME_YOY="report_assistant_yoy",
-        EMBEDDING_PROFILE=EmbeddingProfileConfig(
-            provider="openai",
-            embed_model="text-embedding-3-small",
-        ),
-    )
-
-
-def _fake_entry() -> SimpleNamespace:
-    """Create a minimal entry object for save_qdrant main flow tests."""
-    return SimpleNamespace(
-        doc_id="doc-1",
-        company="Microsoft",
-        fiscal_year=2024,
-        chunks_dir=Path("app/output/company__microsoft/chunks"),
-    )
-
-
-def _fake_chunks_file() -> SimpleNamespace:
-    """Create a minimal chunk file test double with strategy metadata."""
-    strategy = SimpleNamespace(embed_model="nomic-embed-text", model_dump=lambda: {"method": "sentence_metadata"})
-    return SimpleNamespace(
-        strategy=strategy,
-        strategy_hash="strategy-hash-1",
-        chunks=[{"text": "risk text", "risk_factor": "Operations"}],
-    )
+from tests.helpers import make_real_chunk_file_fixed_size, make_real_document_entry, make_runtime_config
 
 
 def test_collection_name_derivation_is_deterministic_and_normalized() -> None:
@@ -77,14 +55,17 @@ def test_main_routes_to_profile_specific_collection(
 ) -> None:
     """Main indexing flow should route into profile-specific collection names."""
     mock_get_index_path.return_value = "app/data/index.json"
-    mock_load_document_entry.return_value = _fake_entry()
-    mock_load_chunks.return_value = _fake_chunks_file()
+    mock_load_document_entry.return_value = make_real_document_entry()
+    mock_load_chunks.return_value = make_real_chunk_file_fixed_size(chunk_size=200, overlap=20)
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")]
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
     mock_qdrant_cls.return_value = mock_qdrant
 
-    save_qdrant.main(config=_profile_config(), mode="chatbot")
+    save_qdrant.main(
+        config=make_runtime_config(provider="openai", embed_model="text-embedding-3-small"),
+        mode="chatbot",
+    )
 
     create_call = mock_qdrant.create_collection_if_missing.call_args.args
     assert create_call[0] == "report_assistant_chatbot__openai_text-embedding-3-small"
@@ -94,6 +75,7 @@ def test_main_routes_to_profile_specific_collection(
 @pytest.mark.xfail(reason="Embedding-profile payload metadata not implemented yet.")
 def test_upsert_payload_contains_embedding_profile_metadata() -> None:
     """Payload written to Qdrant should include provider/model/dimension metadata."""
+
     class _RecordingClient:
         """Collect all upserted points for payload assertions."""
 
@@ -104,9 +86,15 @@ def test_upsert_payload_contains_embedding_profile_metadata() -> None:
             """Record points passed during upsert."""
             self.points.extend(list(points))
 
-    strategy = SimpleNamespace(embed_model="text-embedding-3-small", model_dump=lambda: {"method": "sentence"})
-    chunk_file = SimpleNamespace(strategy=strategy, strategy_hash="strategy-hash")
-    entry = SimpleNamespace(doc_id="doc-1", company="Microsoft", fiscal_year=2024)
+    strategy = MagicMock()
+    strategy.model_dump.return_value = {"method": "sentence"}
+    chunk_file = MagicMock()
+    chunk_file.strategy = strategy
+    chunk_file.strategy_hash = "strategy-hash"
+    entry = MagicMock()
+    entry.doc_id = "doc-1"
+    entry.company = "Microsoft"
+    entry.fiscal_year = 2024
     client = _RecordingClient()
 
     save_qdrant.upsert_to_company_collection(
@@ -141,8 +129,8 @@ def test_main_fails_fast_on_collection_dimension_mismatch(
 ) -> None:
     """Main flow should fail before upsert when collection dimension mismatches embedding dimension."""
     mock_get_index_path.return_value = "app/data/index.json"
-    mock_load_document_entry.return_value = _fake_entry()
-    mock_load_chunks.return_value = _fake_chunks_file()
+    mock_load_document_entry.return_value = make_real_document_entry()
+    mock_load_chunks.return_value = make_real_chunk_file_fixed_size(chunk_size=200, overlap=20)
     mock_embed_chunks.return_value = [np.array([0.1, 0.2, 0.3], dtype="float32")]
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
@@ -150,7 +138,7 @@ def test_main_fails_fast_on_collection_dimension_mismatch(
     mock_qdrant_cls.return_value = mock_qdrant
 
     with pytest.raises(ValueError, match="dimension mismatch"):
-        save_qdrant.main(config=_profile_config(), mode="chatbot")
+        save_qdrant.main(config=make_runtime_config(), mode="chatbot")
 
     mock_upsert.assert_not_called()
 
@@ -174,14 +162,17 @@ def test_delete_scope_includes_embedding_profile(
 ) -> None:
     """Overwrite deletion should be scoped by document, strategy, and active embedding profile."""
     mock_get_index_path.return_value = "app/data/index.json"
-    mock_load_document_entry.return_value = _fake_entry()
-    mock_load_chunks.return_value = _fake_chunks_file()
+    mock_load_document_entry.return_value = make_real_document_entry()
+    mock_load_chunks.return_value = make_real_chunk_file_fixed_size(chunk_size=200, overlap=20)
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")]
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
 
-    save_qdrant.main(config=_profile_config(), mode="chatbot")
+    save_qdrant.main(
+        config=make_runtime_config(provider="openai", embed_model="text-embedding-3-small"),
+        mode="chatbot",
+    )
 
     mock_input.assert_called_once()
     kwargs = mock_qdrant.delete_existing_points.call_args.kwargs

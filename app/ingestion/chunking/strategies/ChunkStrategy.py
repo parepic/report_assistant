@@ -3,7 +3,6 @@ from typing import List
 
 
 class ChunkStrategy(BaseModel):
-    embed_model: str
     method: str
 
     def create_chunks(self, text: str) -> List[str]:
@@ -11,4 +10,3 @@ class ChunkStrategy(BaseModel):
         Placeholder for chunk creation logic.
         """
         pass
-

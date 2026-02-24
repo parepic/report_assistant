@@ -19,6 +19,7 @@ from deepeval.test_case import LLMTestCase
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from app.clients.OpenAiClientWrapper import OpenAIClientWrapper
 from app.services.chatbot import main as chatbot_main
+from app.ingestion.save_qdrant import derive_collection_name
 
 # Ensure repo root is on sys.path so sibling packages are importable.
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +38,10 @@ from app.utils.load_utils import load_global_config
 config = load_global_config()
 strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
 QUESTIONS_PATH = Path("app/data/questions/Microsoft/MSFT_FY24Q4_10K-item1a.json")
-COLLECTION_NAME = config.QDRANT_DB_NAME_CHATBOT
+COLLECTION_NAME = derive_collection_name(
+    config.QDRANT_DB_NAME_CHATBOT,
+    config.EMBEDDING_PROFILE,
+)
 raw = QUESTIONS_PATH.read_text(encoding="utf-8")
 items = json.loads(raw)
 items = items[:10]
@@ -45,7 +49,7 @@ items = items[:10]
 ollama_url = config.OLLAMA_URL
 qdrant_url = config.QDRANT_URL
 llm_model = config.LLM_MODEL_CHATBOT
-embed_model = config.chunk_strategy_chatbot.embed_model
+embed_model = config.EMBEDDING_PROFILE.embed_model
 company = "microsoft"
 top_k = config.top_k
 threshold = config.threshold

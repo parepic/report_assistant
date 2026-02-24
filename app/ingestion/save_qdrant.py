@@ -16,11 +16,6 @@ def derive_collection_name(
 ) -> str:
     """
     Derive a deterministic profile-specific collection name.
-
-    The naming contract intentionally avoids user-provided suffixes to reduce
-    accidental duplication across collaborators. If no valid profile is provided,
-    the base collection name is returned unchanged to preserve backward
-    compatibility.
     """
     provider = embedding_profile.provider.strip()
     embed_model = embedding_profile.embed_model.strip()
@@ -82,9 +77,7 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
     chunks_file = load_chunks(entry.chunks_dir / f"{entry.doc_id}.json")
 
     chunk_strategy = chunks_file.strategy
-    embed_model = chunk_strategy.embed_model
-    if not embed_model:
-        raise ValueError("Missing embed model in chunk strategy.")
+    embed_model = config.EMBEDDING_PROFILE.embed_model
     
     ollama_url = config.OLLAMA_URL
     vector_dim = 768

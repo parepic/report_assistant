@@ -5,7 +5,6 @@ import re
 
 
 class ChunkStrategyParagraph(BaseModel):
-    embed_model: str
     method: Literal["paragraph"] = "paragraph"
     max_chunk_chars: Optional[int] = None 
 

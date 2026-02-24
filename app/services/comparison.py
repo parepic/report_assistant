@@ -12,6 +12,7 @@ from sqlalchemy import select
 from app.data_classes import GlobalConfig, compute_strategy_hash
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from app.clients.OpenAiClientWrapper import OpenAIClientWrapper
+from app.ingestion.save_qdrant import derive_collection_name
 from app.models import Document
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -433,7 +434,10 @@ def compare_documents(
     
     Writes results to text files.
     """
-    collection_name = config.QDRANT_DB_NAME_YOY or "report_assistant_yoy"
+    collection_name = derive_collection_name(
+        config.QDRANT_DB_NAME_YOY or "report_assistant_yoy",
+        config.EMBEDDING_PROFILE,
+    )
 
     paras_old = get_paragraphs_from_qdrant(qdrant_client, collection_name, doc_id_old)
     paras_new = get_paragraphs_from_qdrant(qdrant_client, collection_name, doc_id_new)

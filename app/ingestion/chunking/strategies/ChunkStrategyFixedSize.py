@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import List, Literal
 
 class ChunkStrategyFixedSize(BaseModel):
-    embed_model: str
     method: Literal["fixed_size"] = "fixed_size"
     chunk_size: int
     overlap: int
