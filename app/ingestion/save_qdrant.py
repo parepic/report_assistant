@@ -5,9 +5,9 @@ import numpy as np
 from qdrant_client.models import PointStruct
 
 from app.data_classes import ChunkFile, DocumentEntry, EmbeddingProfileConfig, GlobalConfig
+from app.embeddings import build_embedding_client
 from app.utils.load_utils import get_index_path, load_chunks, load_document_entry, load_global_config
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
-from app.utils.utils import embed_chunks
 
 
 def derive_collection_name(
@@ -20,6 +20,48 @@ def derive_collection_name(
     provider = embedding_profile.provider.strip()
     embed_model = embedding_profile.embed_model.strip()
     return f"{base_collection_name}__{provider}_{embed_model}"
+
+
+def resolve_vector_dim(config: GlobalConfig) -> int:
+    """
+    Resolve embedding vector dimension for collection creation.
+
+    Resolution order:
+    1. Explicit `EMBEDDING_PROFILE.dimension` from configuration.
+    2. Known provider/model defaults for currently supported embedding models.
+
+    This keeps collection creation deterministic and avoids requiring an API call
+    to infer dimensions before duplicate-check logic runs.
+    """
+    profile = config.EMBEDDING_PROFILE
+    if profile.dimension is not None:
+        return profile.dimension
+
+    known_dims = {
+        ("ollama", "nomic-embed-text"): 768,
+        ("openai", "text-embedding-3-small"): 1536,
+        ("openai", "text-embedding-3-large"): 3072,
+    }
+    key = (profile.provider, profile.embed_model)
+    if key in known_dims:
+        return known_dims[key]
+
+    raise ValueError(
+        "Unable to resolve embedding vector dimension for "
+        f"provider='{profile.provider}', model='{profile.embed_model}'. "
+        "Set EMBEDDING_PROFILE.dimension in app/global.yaml."
+    )
+
+
+def embed_chunks(chunks: List[Dict[str, Any]], config: GlobalConfig) -> List[np.ndarray]:
+    """
+    Embed chunks through the provider-agnostic embedding client factory.
+
+    This helper is intentionally local to `save_qdrant` so ingestion tests can
+    patch one seam while provider-specific details remain isolated.
+    """
+    embedding_client = build_embedding_client(config)
+    return embedding_client.embed_chunks(chunks)
 
 
 def upsert_to_company_collection(
@@ -77,10 +119,7 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
     chunks_file = load_chunks(entry.chunks_dir / f"{entry.doc_id}.json")
 
     chunk_strategy = chunks_file.strategy
-    embed_model = config.EMBEDDING_PROFILE.embed_model
-    
-    ollama_url = config.OLLAMA_URL
-    vector_dim = 768
+    vector_dim = resolve_vector_dim(config)
 
     base_collection_name = config.QDRANT_DB_NAME_CHATBOT if mode == "chatbot" else config.QDRANT_DB_NAME_YOY
     embedding_profile = config.EMBEDDING_PROFILE
@@ -102,7 +141,7 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
             return
 
     chunks = chunks_file.chunks
-    vectors = embed_chunks(chunks, ollama_url, embed_model)
+    vectors = embed_chunks(chunks, config)
     payload_example = chunk_strategy.model_dump()
     payload_example["doc_id"] = entry.doc_id
     payload_example["company"] = entry.company

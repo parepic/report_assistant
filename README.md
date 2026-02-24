@@ -24,7 +24,7 @@ Built using best AI Engineering best practices, such as clean architectural boun
 - **FastAPI** (API)
 - **Qdrant** (vector database)
 - **PostgreSQL** (document + metadata storage)
-- **Ollama** (`nomic-embed-text`) for embeddings
+- **Embeddings provider (configurable):** Ollama or OpenAI via `EMBEDDING_PROFILE.provider`
 - **OpenAI** for generation
 - **Streamlit** UI
 - **DeepEval** evaluation (LLM-as-judge metrics)
@@ -108,9 +108,12 @@ cd report_assistant
 2) Configure OpenAI (primary generator):
 - Set `OPENAI_API_KEY` via env var or a `.env` file in the repo root.
 
-3) Install Ollama (embeddings):
-- Install: https://ollama.ai/
-- Pull the embedding model:
+3) Configure embeddings provider:
+- `EMBEDDING_PROFILE.provider: "openai"` uses OpenAI embeddings and requires `OPENAI_API_KEY`.
+- `EMBEDDING_PROFILE.provider: "ollama"` uses local Ollama embeddings.
+- If you use Ollama:
+  - Install: https://ollama.ai/
+  - Pull the embedding model:
 ```bash
 ollama pull nomic-embed-text
 ```
