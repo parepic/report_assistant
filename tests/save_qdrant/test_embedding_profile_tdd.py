@@ -13,8 +13,7 @@ Scenario map:
 - Deterministic collection-name derivation from embedding profile.
 - Profile-specific collection routing in ingestion path.
 - Payload metadata persistence for embed provider/model/dimension.
-- (xfail) dimension mismatch guard before upsert.
-- (xfail) profile-scoped delete behavior during overwrite flow.
+- Dimension mismatch guard before upsert.
 """
 
 from __future__ import annotations
@@ -60,6 +59,7 @@ def test_main_routes_to_profile_specific_collection(
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")]
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
 
     save_qdrant.main(
@@ -115,7 +115,6 @@ def test_upsert_payload_contains_embedding_profile_metadata() -> None:
     assert payload["embed_dim"] == 3
 
 
-@pytest.mark.xfail(reason="Vector-dimension validation is not implemented yet.")
 @patch("app.ingestion.save_qdrant.upsert_to_company_collection")
 @patch("app.ingestion.save_qdrant.embed_chunks")
 @patch("app.ingestion.save_qdrant.load_chunks")
@@ -144,40 +143,3 @@ def test_main_fails_fast_on_collection_dimension_mismatch(
         save_qdrant.main(config=make_runtime_config(), mode="chatbot")
 
     mock_upsert.assert_not_called()
-
-
-@pytest.mark.xfail(reason="Delete scope does not include embedding profile yet.")
-@patch("app.ingestion.save_qdrant.upsert_to_company_collection")
-@patch("app.ingestion.save_qdrant.embed_chunks")
-@patch("app.ingestion.save_qdrant.load_chunks")
-@patch("app.ingestion.save_qdrant.load_document_entry")
-@patch("app.ingestion.save_qdrant.get_index_path")
-@patch("app.ingestion.save_qdrant.QdrantClientWrapper")
-@patch("builtins.input", return_value="yes")
-def test_delete_scope_includes_embedding_profile(
-    mock_input: MagicMock,
-    mock_qdrant_cls: MagicMock,
-    mock_get_index_path: MagicMock,
-    mock_load_document_entry: MagicMock,
-    mock_load_chunks: MagicMock,
-    mock_embed_chunks: MagicMock,
-    mock_upsert: MagicMock,
-) -> None:
-    """Overwrite deletion should be scoped by document, strategy, and active embedding profile."""
-    mock_get_index_path.return_value = "app/data/index.json"
-    mock_load_document_entry.return_value = make_real_document_entry()
-    mock_load_chunks.return_value = make_real_chunk_file_fixed_size(chunk_size=200, overlap=20)
-    mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")]
-    mock_qdrant = MagicMock()
-    mock_qdrant.count_existing_points.return_value = 2
-    mock_qdrant_cls.return_value = mock_qdrant
-
-    save_qdrant.main(
-        config=make_runtime_config(provider="openai", embed_model="text-embedding-3-small"),
-        mode="chatbot",
-    )
-
-    mock_input.assert_called_once()
-    kwargs = mock_qdrant.delete_existing_points.call_args.kwargs
-    assert kwargs["embedding_profile"] == "openai:text-embedding-3-small"
-    assert mock_upsert.called

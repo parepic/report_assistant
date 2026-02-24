@@ -13,6 +13,8 @@ Why these tests exist:
 Scenario map:
 - Create collection when absent.
 - Skip create when already present.
+- Read collection vector dimension for strict unnamed vector config.
+- Raise when collection uses named vectors or omits vector size.
 - Build strict count/delete filters with `strategy_hash + doc_id`.
 - Map Python primitive values to Qdrant payload schema types.
 - Create payload indexes only for missing non-text fields.
@@ -22,6 +24,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from qdrant_client.models import Distance, PayloadSchemaType
@@ -56,6 +60,64 @@ def test_create_collection_if_missing_skips_when_present(mock_qdrant_client_cls:
     wrapper.create_collection_if_missing("collection_b", vector_dim=768)
 
     mock_client.create_collection.assert_not_called()
+
+
+@patch("app.clients.QdrantClientWrapper.QdrantClient")
+def test_get_collection_vector_dim_reads_unnamed_vector_size(mock_qdrant_client_cls: MagicMock) -> None:
+    """Returns vector size from standard (unnamed) vectors configuration."""
+    mock_client = MagicMock()
+    mock_client.get_collection.return_value = SimpleNamespace(
+        config=SimpleNamespace(
+            params=SimpleNamespace(
+                vectors=SimpleNamespace(size=1536)
+            )
+        )
+    )
+    mock_qdrant_client_cls.return_value = mock_client
+    wrapper = QdrantClientWrapper(make_qdrant_config())
+
+    result = wrapper.get_collection_vector_dim("collection_x")
+
+    assert result == 1536
+
+
+@patch("app.clients.QdrantClientWrapper.QdrantClient")
+def test_get_collection_vector_dim_raises_for_named_vectors(mock_qdrant_client_cls: MagicMock) -> None:
+    """Named-vector collections are unsupported by this app's strict contract."""
+    mock_client = MagicMock()
+    mock_client.get_collection.return_value = SimpleNamespace(
+        config=SimpleNamespace(
+            params=SimpleNamespace(
+                vectors={
+                    "text": SimpleNamespace(size=3072),
+                    "image": SimpleNamespace(size=1024),
+                }
+            )
+        )
+    )
+    mock_qdrant_client_cls.return_value = mock_client
+    wrapper = QdrantClientWrapper(make_qdrant_config())
+
+    with pytest.raises(ValueError, match="named vectors"):
+        wrapper.get_collection_vector_dim("collection_x")
+
+
+@patch("app.clients.QdrantClientWrapper.QdrantClient")
+def test_get_collection_vector_dim_raises_when_size_attribute_missing(mock_qdrant_client_cls: MagicMock) -> None:
+    """Missing `vectors.size` should fail naturally via attribute access."""
+    mock_client = MagicMock()
+    mock_client.get_collection.return_value = SimpleNamespace(
+        config=SimpleNamespace(
+            params=SimpleNamespace(
+                vectors=SimpleNamespace()
+            )
+        )
+    )
+    mock_qdrant_client_cls.return_value = mock_client
+    wrapper = QdrantClientWrapper(make_qdrant_config())
+
+    with pytest.raises(AttributeError, match="size"):
+        wrapper.get_collection_vector_dim("collection_x")
 
 
 @patch("app.clients.QdrantClientWrapper.QdrantClient")

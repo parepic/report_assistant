@@ -57,6 +57,7 @@ def test_main_chatbot_mode_runs_full_noninteractive_flow(
 
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
 
     config = make_runtime_config()
@@ -105,6 +106,7 @@ def test_main_deletes_existing_vectors_when_user_confirms(
 
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 3
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config()
 
@@ -139,6 +141,7 @@ def test_main_uses_fixed_vector_dimension_of_768(
 
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config()
 
@@ -172,6 +175,7 @@ def test_main_uses_openai_default_dimension_for_text_embedding_3_small(
 
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config(provider="openai", embed_model="text-embedding-3-small")
 
@@ -207,6 +211,7 @@ def test_main_uses_yoy_collection_in_yoy_mode(
 
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config()
 
@@ -246,6 +251,7 @@ def test_main_stops_when_existing_vectors_and_user_declines_overwrite(
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 2
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config()
 

@@ -40,6 +40,22 @@ class QdrantClientWrapper:
 			vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE),
 		)
 
+	def get_collection_vector_dim(self, collection_name: str) -> int:
+		"""Return vector dimension for strict single-vector collection contracts.
+
+		This application expects every collection to use one unnamed vector schema.
+		Named-vector configurations are treated as unsupported to avoid ambiguous
+		dimension selection during ingestion validation.
+		"""
+		info = self.client.get_collection(collection_name)
+		vectors_config = info.config.params.vectors
+		if isinstance(vectors_config, dict):
+			raise ValueError(
+				f"Collection '{collection_name}' uses named vectors, which are not "
+				"supported by this app. Expected a single unnamed vector schema."
+			)
+		return int(vectors_config.size)
+
 	def _build_strategy_doc_filter(self, strategy_hash: str, doc_id: str) -> Filter:
 		return Filter(must=[
 			FieldCondition(key="strategy_hash", match=MatchValue(value=strategy_hash)),

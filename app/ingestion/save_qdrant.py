@@ -172,6 +172,17 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
 
     chunks = chunks_file.chunks
     vectors = embed_chunks(chunks, config)
+    if not vectors:
+        raise ValueError("No embeddings were produced for the loaded chunks.")
+
+    embedded_dim = int(len(vectors[0]))
+    collection_vector_dim = qdrant.get_collection_vector_dim(collection_name)
+    if collection_vector_dim != embedded_dim:
+        raise ValueError(
+            "dimension mismatch between collection and embedding vectors: "
+            f"collection_dim={collection_vector_dim}, embedding_dim={embedded_dim}"
+        )
+
     # TODO(typed-payload-schema): Replace this ad-hoc payload_example dict with a
     # typed payload contract (e.g., Pydantic model) and derive Qdrant index fields
     # from that schema instead of hand-maintained keys.

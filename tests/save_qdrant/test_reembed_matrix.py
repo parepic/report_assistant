@@ -84,6 +84,7 @@ def test_skips_reembedding_when_same_strategy_and_same_profile_exist(
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 5
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config(provider="ollama", embed_model="nomic-embed-text")
 
@@ -144,6 +145,7 @@ def test_reembeds_when_strategy_changes_with_same_embedding_profile(
     mock_load_chunks.return_value = current_chunk_file
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
+    mock_qdrant.get_collection_vector_dim.return_value = 2
 
     def _count_side_effect(collection_name: str, strategy_hash: str, doc_id: str) -> int:
         if strategy_hash == old_chunk_file.strategy_hash:
@@ -208,6 +210,7 @@ def test_reembeds_when_embedding_profile_changes_with_same_strategy(
     mock_load_chunks.return_value = real_chunk_file
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
+    mock_qdrant.get_collection_vector_dim.return_value = 2
 
     def _count_side_effect(collection_name: str, strategy_hash: str, doc_id: str) -> int:
         if collection_name == "report_assistant_chatbot__ollama_nomic-embed-text":
@@ -271,6 +274,7 @@ def test_main_uses_profile_specific_collection_for_existence_check(
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config(provider="openai", embed_model="text-embedding-3-small")
 
@@ -324,6 +328,7 @@ def test_main_uses_real_computed_strategy_hash_in_existence_check(
     mock_embed_chunks.return_value = [np.array([0.1, 0.2], dtype="float32")] * 2
     mock_qdrant = MagicMock()
     mock_qdrant.count_existing_points.return_value = 0
+    mock_qdrant.get_collection_vector_dim.return_value = 2
     mock_qdrant_cls.return_value = mock_qdrant
     config = make_runtime_config(provider="ollama", embed_model="nomic-embed-text")
 
