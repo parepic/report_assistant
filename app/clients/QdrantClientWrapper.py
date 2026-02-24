@@ -39,6 +39,7 @@ class QdrantClientWrapper:
 			collection_name=collection_name,
 			vectors_config=VectorParams(size=vector_dim, distance=Distance.COSINE),
 		)
+		print(f"Created Qdrant collection '{collection_name}' with vector dimension {vector_dim}.")
 
 	def get_collection_vector_dim(self, collection_name: str) -> int:
 		"""Return vector dimension for strict single-vector collection contracts.

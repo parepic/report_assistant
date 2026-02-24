@@ -14,8 +14,8 @@ LLM_MODEL_EVAL: "gpt-4.1-mini"
 QDRANT_DB_NAME_CHATBOT: "report_assistant_chatbot"
 QDRANT_DB_NAME_YOY: "report_assistant_yoy"
 EMBEDDING_PROFILE: {
-  "provider": "ollama",
-  "embed_model": "nomic-embed-text",
+  "provider": "openai",
+  "embed_model": "text-embedding-3-small",
 }
 
 # Chunking variables
