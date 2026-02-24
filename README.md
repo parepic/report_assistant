@@ -190,6 +190,14 @@ More details live in `ui/README.md`.
 
 `global.yaml` controls major components (LLM model, embedding model, chunking strategy) to speed up experimentation.
 
+For deterministic multi-model indexing, set:
+- `EMBEDDING_PROFILE.provider` (e.g., `ollama`, `openai`)
+- `EMBEDDING_PROFILE.embed_model` (e.g., `nomic-embed-text`, `text-embedding-3-small`)
+- `EMBEDDING_PROFILE.dimension` (optional, reserved for future validation)
+
+Qdrant collection names for ingestion are automatically derived as:
+`<base_collection>__<provider>_<model>` (normalized).
+
 ---
 
 ## TODO

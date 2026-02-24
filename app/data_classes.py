@@ -9,10 +9,27 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import Annotated, List, Literal, Optional
 from .ingestion.chunking.strategies import ChunkStrategy
-from pydantic import BaseModel, Field, HttpUrl, computed_field, field_validator
+from pydantic import BaseModel, Field, HttpUrl, StringConstraints, computed_field, field_validator
 from app.utils.utils import slugify_name
+
+
+class EmbeddingProfileConfig(BaseModel):
+    """
+    Embedding profile definition used for deterministic collection naming.
+
+    `provider` identifies the embedding backend family (for example: `ollama`,
+    `openai`), while `embed_model` identifies the exact embedding model identifier.
+    `dimension` is optional and reserved for future validation and safety checks.
+    """
+
+    provider: Literal["ollama", "openai"]
+    embed_model: Annotated[
+        str,
+        StringConstraints(strip_whitespace=True, min_length=1, pattern=r".*[A-Za-z0-9].*"),
+    ]
+    dimension: Optional[int] = None
 
 
 class GlobalConfig(BaseModel):
@@ -32,6 +49,7 @@ class GlobalConfig(BaseModel):
     
     QDRANT_DB_NAME_CHATBOT: Optional[str] = "report_assistant_chatbot"
     QDRANT_DB_NAME_YOY: Optional[str] = "report_assistant_yoy"
+    EMBEDDING_PROFILE: EmbeddingProfileConfig
 
     chunk_strategy_chatbot: Optional[ChunkStrategy] 
     chunk_strategy_yoy: Optional[ChunkStrategy] 

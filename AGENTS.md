@@ -17,7 +17,7 @@ Your role is to work with me as an AI coding partner, helping me *build the app 
 - Break down large tasks: If a request is too big, propose a *minimal small step* we can complete first. 
 - Explain unfamiliar concepts: I know Python but not modules such as FastAPI, Azure, Docker, so explain them for a beginner.  Use examples where appropriate.
 - Update docs/examples when behavior changes.
-- Add documentation for large methods that I need time to understand.
+- Add documentation to explain a the function of a file, when creating a new file. Add documentation to any method that you make, and be verbose and precise.
 
 ### Senstive Changes
 - Do not add, remove, or upgrade dependencies without asking first. I will approve/reject.

@@ -4,10 +4,28 @@ from typing import List, Dict, Any
 import numpy as np
 from qdrant_client.models import PointStruct
 
-from app.data_classes import ChunkFile, DocumentEntry, GlobalConfig
+from app.data_classes import ChunkFile, DocumentEntry, EmbeddingProfileConfig, GlobalConfig
 from app.utils.load_utils import get_index_path, load_chunks, load_document_entry, load_global_config
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from app.utils.utils import embed_chunks
+
+
+def derive_collection_name(
+    base_collection_name: str,
+    embedding_profile: EmbeddingProfileConfig,
+) -> str:
+    """
+    Derive a deterministic profile-specific collection name.
+
+    The naming contract intentionally avoids user-provided suffixes to reduce
+    accidental duplication across collaborators. If no valid profile is provided,
+    the base collection name is returned unchanged to preserve backward
+    compatibility.
+    """
+    provider = embedding_profile.provider.strip()
+    embed_model = embedding_profile.embed_model.strip()
+    return f"{base_collection_name}__{provider}_{embed_model}"
+
 
 def upsert_to_company_collection(
     client: QdrantClientWrapper,
@@ -71,7 +89,9 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
     ollama_url = config.OLLAMA_URL
     vector_dim = 768
 
-    collection_name = config.QDRANT_DB_NAME_CHATBOT if mode == "chatbot" else config.QDRANT_DB_NAME_YOY
+    base_collection_name = config.QDRANT_DB_NAME_CHATBOT if mode == "chatbot" else config.QDRANT_DB_NAME_YOY
+    embedding_profile = config.EMBEDDING_PROFILE
+    collection_name = derive_collection_name(base_collection_name, embedding_profile)
     qdrant = QdrantClientWrapper(config)
     qdrant.create_collection_if_missing(collection_name, vector_dim)
     existing_count = qdrant.count_existing_points(collection_name, chunks_file.strategy_hash, entry.doc_id)
