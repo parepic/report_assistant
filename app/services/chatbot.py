@@ -73,8 +73,6 @@ def main(
     top_chunks = qdrant_client.fetch_top_k_query(
         prompt, 
         collection_name, 
-        config.OLLAMA_URL, 
-        config.EMBEDDING_PROFILE.embed_model, 
         strategy_hash=strategy_hash, 
         doc_id=doc_id, 
         k=config.top_k

@@ -18,7 +18,7 @@ from qdrant_client.models import (
 )
 
 from app.data_classes import GlobalConfig
-from app.utils.utils import get_embedding
+from app.embeddings import build_embedding_client
 
 
 class QdrantClientWrapper:
@@ -75,6 +75,10 @@ class QdrantClientWrapper:
 		"""
 		Creates a payload index for each key in payload_example if the field is not indexed yet.
 		Qdrant stores current payload schema in collection info.
+
+		TODO(typed-payload-schema): Accept a typed payload schema/index contract
+		instead of a runtime example payload dict so index definitions are explicit
+		and centrally validated.
 		"""
 		info = self.client.get_collection(collection_name)
 		existing_schema = info.payload_schema or {}
@@ -101,17 +105,31 @@ class QdrantClientWrapper:
 		self,
 		query: str,
 		collection_name: str,
-		ollama_url: str,
-		embed_model: str,
 		strategy_hash: Optional[str] = None,
 		doc_id: Optional[str] = None,
 		k: int = 4
-	) -> List[str]:
+	) -> List[Dict[str, Any]]:
 		"""
-		Embed the query and retrieve top-k chunk texts from Qdrant using REST API.
-		Optionally filter by strategy_hash to only retrieve chunks created with a specific chunking strategy.
+		Embed a query through the active embedding provider and retrieve top-k chunks from Qdrant.
+
+		This method uses the runtime `GlobalConfig` attached to the wrapper to build
+		a provider-specific embedding client via the embedding factory. That keeps
+		retrieval provider-agnostic: if `EMBEDDING_PROFILE.provider` changes from
+		`ollama` to `openai`, this retrieval path automatically follows the same
+		profile used during ingestion.
+
+		Args:
+			query: End-user query text to embed.
+			collection_name: Target Qdrant collection name.
+			strategy_hash: Optional chunking strategy hash filter.
+			doc_id: Optional document identifier filter.
+			k: Maximum number of hits to return.
+
+		Returns:
+			A ranked list of hit dictionaries (`id`, `rank`, `payload`).
 		"""
-		query_emb = get_embedding(query, ollama_url, embed_model)
+		embedding_client = build_embedding_client(self.config)
+		query_emb = embedding_client.embed_text(query).tolist()
 		payload = {
 			"vector": query_emb,
 			"limit": k,

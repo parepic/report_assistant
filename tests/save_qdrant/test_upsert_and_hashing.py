@@ -24,6 +24,7 @@ import numpy as np
 import pytest
 
 from app.data_classes import compute_strategy_hash
+from app.data_classes import EmbeddingProfileConfig
 from app.ingestion.chunking.strategies import ChunkStrategySentenceMetadata
 from app.ingestion.chunking.strategies.ChunkStrategyFixedSize import ChunkStrategyFixedSize
 from app.ingestion.chunking.strategies.ChunkStrategySentence import ChunkStrategySentence
@@ -67,6 +68,10 @@ def test_upsert_to_company_collection_batches_and_includes_payload_fields() -> N
         vectors=vectors,
         chunk_file=chunk_file,
         entry_file=entry,
+        embedding_profile=EmbeddingProfileConfig(
+            provider="ollama",
+            embed_model="nomic-embed-text",
+        ),
     )
 
     assert len(recording_client.calls) == 2
@@ -79,6 +84,9 @@ def test_upsert_to_company_collection_batches_and_includes_payload_fields() -> N
     assert first_payload["company"] == "apple"
     assert first_payload["fiscal_year"] == 2025
     assert first_payload["strategy_hash"] == "hash-123"
+    assert first_payload["embed_provider"] == "ollama"
+    assert first_payload["embed_model"] == "nomic-embed-text"
+    assert first_payload["embed_dim"] == 2
     assert first_payload["chunk_idx"] == 0
     assert first_payload["risk_factor"] == "Liquidity"
 
@@ -97,6 +105,10 @@ def test_upsert_to_company_collection_rejects_mismatched_lengths() -> None:
             vectors=[],
             chunk_file=chunk_file,
             entry_file=entry,
+            embedding_profile=EmbeddingProfileConfig(
+                provider="ollama",
+                embed_model="nomic-embed-text",
+            ),
         )
 
 

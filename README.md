@@ -206,3 +206,4 @@ Qdrant collection names for ingestion are automatically derived as:
 ## TODO
 
 - Add a batch ingestion/indexing command to process multiple `report_id` entries (from `app/data/index.json` or a provided list) in one run, so comparisons do not require manual one-by-one pipeline execution.
+- Replace ad-hoc `payload_example` index bootstrap in Qdrant with a typed payload schema (for example, a Pydantic model + explicit index mapping) so payload fields/indexes are centrally validated.

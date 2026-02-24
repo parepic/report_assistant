@@ -70,10 +70,37 @@ def upsert_to_company_collection(
     chunks: List[Dict[str, Any]],
     vectors: List[np.ndarray],
     chunk_file: ChunkFile,
-    entry_file: DocumentEntry
+    entry_file: DocumentEntry,
+    embedding_profile: EmbeddingProfileConfig,
 ) -> None:
+    """
+    Upsert document chunks and embeddings into a profile-specific Qdrant collection.
+
+    This function constructs one Qdrant point per chunk and stores both chunking
+    metadata and embedding-profile metadata in each payload so downstream queries
+    and audits can identify exactly which embedding configuration produced a vector.
+
+    Payload metadata added for embedding lineage:
+    - `embed_provider`: embedding backend family (for example: `ollama`, `openai`)
+    - `embed_model`: exact embedding model identifier
+    - `embed_dim`: stored vector length used for this point batch
+
+    Args:
+        client: Qdrant wrapper used for batch upserts.
+        collection_name: Target collection name.
+        chunks: Chunk payloads containing `text` and `risk_factor`.
+        vectors: Embedding vectors aligned by index with `chunks`.
+        chunk_file: Chunk file object containing strategy metadata and hash.
+        entry_file: Document metadata for payload enrichment.
+        embedding_profile: Active embedding profile used for this ingestion run.
+
+    Raises:
+        ValueError: If chunk/vector lengths do not match or vectors are empty.
+    """
     if len(chunks) != len(vectors):
         raise ValueError("Chunks count does not match vectors count.")
+    if not vectors:
+        raise ValueError("Vectors must be non-empty for upsert.")
 
     # Payload fields shared for all points
     strategy_dict = chunk_file.strategy.model_dump()
@@ -82,6 +109,9 @@ def upsert_to_company_collection(
     base_payload["company"] = entry_file.company.strip().lower()
     base_payload["fiscal_year"] = entry_file.fiscal_year
     base_payload["strategy_hash"] = chunk_file.strategy_hash
+    base_payload["embed_provider"] = embedding_profile.provider
+    base_payload["embed_model"] = embedding_profile.embed_model
+    base_payload["embed_dim"] = int(len(vectors[0]))
 
     # Build and upsert points in batches
     batch_size = 128
@@ -142,15 +172,29 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
 
     chunks = chunks_file.chunks
     vectors = embed_chunks(chunks, config)
+    # TODO(typed-payload-schema): Replace this ad-hoc payload_example dict with a
+    # typed payload contract (e.g., Pydantic model) and derive Qdrant index fields
+    # from that schema instead of hand-maintained keys.
     payload_example = chunk_strategy.model_dump()
     payload_example["doc_id"] = entry.doc_id
     payload_example["company"] = entry.company
     payload_example["fiscal_year"] = entry.fiscal_year
     payload_example["risk_factor"] = "dummy"
     payload_example["strategy_hash"] = chunks_file.strategy_hash
+    payload_example["embed_provider"] = embedding_profile.provider
+    payload_example["embed_model"] = embedding_profile.embed_model
+    payload_example["embed_dim"] = vector_dim
     qdrant.create_payload_indexes_if_missing(collection_name, payload_example)
     print(len(chunks), " ", len(vectors))
-    upsert_to_company_collection(qdrant, collection_name, chunks, vectors, chunks_file, entry)
+    upsert_to_company_collection(
+        qdrant,
+        collection_name,
+        chunks,
+        vectors,
+        chunks_file,
+        entry,
+        embedding_profile,
+    )
     print(f"Upserted {len(vectors)} vectors into Qdrant collection '{collection_name}'.")
 
 

@@ -12,7 +12,7 @@ Why this file exists:
 Scenario map:
 - Deterministic collection-name derivation from embedding profile.
 - Profile-specific collection routing in ingestion path.
-- (xfail) payload metadata persistence for embed provider/model/dimension.
+- Payload metadata persistence for embed provider/model/dimension.
 - (xfail) dimension mismatch guard before upsert.
 - (xfail) profile-scoped delete behavior during overwrite flow.
 """
@@ -72,7 +72,6 @@ def test_main_routes_to_profile_specific_collection(
     assert mock_upsert.called
 
 
-@pytest.mark.xfail(reason="Embedding-profile payload metadata not implemented yet.")
 def test_upsert_payload_contains_embedding_profile_metadata() -> None:
     """Payload written to Qdrant should include provider/model/dimension metadata."""
 
@@ -104,6 +103,10 @@ def test_upsert_payload_contains_embedding_profile_metadata() -> None:
         vectors=[np.array([0.1, 0.2, 0.3], dtype="float32")],
         chunk_file=chunk_file,
         entry_file=entry,
+        embedding_profile=EmbeddingProfileConfig(
+            provider="openai",
+            embed_model="text-embedding-3-small",
+        ),
     )
 
     payload = client.points[0].payload

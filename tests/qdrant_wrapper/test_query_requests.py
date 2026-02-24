@@ -28,16 +28,18 @@ from tests.helpers import make_qdrant_config
 
 
 @patch("app.clients.QdrantClientWrapper.requests.post")
-@patch("app.clients.QdrantClientWrapper.get_embedding")
+@patch("app.clients.QdrantClientWrapper.build_embedding_client")
 @patch("app.clients.QdrantClientWrapper.QdrantClient")
 def test_fetch_top_k_query_builds_expected_request(
     mock_qdrant_client_cls: MagicMock,
-    mock_get_embedding: MagicMock,
+    mock_build_embedding_client: MagicMock,
     mock_post: MagicMock,
 ) -> None:
     """Builds REST search payload with filters and returns ranked payloads."""
     mock_qdrant_client_cls.return_value = MagicMock()
-    mock_get_embedding.return_value = [0.1, 0.2, 0.3]
+    mock_embedding_client = MagicMock()
+    mock_embedding_client.embed_text.return_value.tolist.return_value = [0.1, 0.2, 0.3]
+    mock_build_embedding_client.return_value = mock_embedding_client
     fake_response = MagicMock()
     fake_response.json.return_value = {
         "result": [
@@ -51,8 +53,6 @@ def test_fetch_top_k_query_builds_expected_request(
     result = wrapper.fetch_top_k_query(
         query="risk factors",
         collection_name="chatbot_idx",
-        ollama_url="http://ollama:11434",
-        embed_model="nomic-embed-text",
         strategy_hash="strategy-v1",
         doc_id="doc-1",
         k=4,
@@ -108,16 +108,18 @@ def test_fetch_top_k_vector_builds_expected_request(
 
 
 @patch("app.clients.QdrantClientWrapper.requests.post")
-@patch("app.clients.QdrantClientWrapper.get_embedding")
+@patch("app.clients.QdrantClientWrapper.build_embedding_client")
 @patch("app.clients.QdrantClientWrapper.QdrantClient")
 def test_fetch_top_k_query_raises_on_http_error(
     mock_qdrant_client_cls: MagicMock,
-    mock_get_embedding: MagicMock,
+    mock_build_embedding_client: MagicMock,
     mock_post: MagicMock,
 ) -> None:
     """Propagates HTTP errors from the Qdrant REST request."""
     mock_qdrant_client_cls.return_value = MagicMock()
-    mock_get_embedding.return_value = [0.1, 0.2]
+    mock_embedding_client = MagicMock()
+    mock_embedding_client.embed_text.return_value.tolist.return_value = [0.1, 0.2]
+    mock_build_embedding_client.return_value = mock_embedding_client
     fake_response = MagicMock()
     fake_response.raise_for_status.side_effect = RuntimeError("boom")
     mock_post.return_value = fake_response
@@ -127,23 +129,23 @@ def test_fetch_top_k_query_raises_on_http_error(
         wrapper.fetch_top_k_query(
             query="risk",
             collection_name="chatbot_idx",
-            ollama_url="http://ollama:11434",
-            embed_model="nomic-embed-text",
             doc_id="doc-1",
         )
 
 
 @patch("app.clients.QdrantClientWrapper.requests.post")
-@patch("app.clients.QdrantClientWrapper.get_embedding")
+@patch("app.clients.QdrantClientWrapper.build_embedding_client")
 @patch("app.clients.QdrantClientWrapper.QdrantClient")
 def test_fetch_top_k_query_allows_empty_filter_when_no_doc_or_strategy(
     mock_qdrant_client_cls: MagicMock,
-    mock_get_embedding: MagicMock,
+    mock_build_embedding_client: MagicMock,
     mock_post: MagicMock,
 ) -> None:
     """Sends an empty must-filter list when no doc_id and no strategy_hash are supplied."""
     mock_qdrant_client_cls.return_value = MagicMock()
-    mock_get_embedding.return_value = [0.1, 0.2]
+    mock_embedding_client = MagicMock()
+    mock_embedding_client.embed_text.return_value.tolist.return_value = [0.1, 0.2]
+    mock_build_embedding_client.return_value = mock_embedding_client
     fake_response = MagicMock()
     fake_response.json.return_value = {"result": []}
     mock_post.return_value = fake_response
@@ -152,8 +154,6 @@ def test_fetch_top_k_query_allows_empty_filter_when_no_doc_or_strategy(
     wrapper.fetch_top_k_query(
         query="risk",
         collection_name="chatbot_idx",
-        ollama_url="http://ollama:11434",
-        embed_model="nomic-embed-text",
     )
 
     called_payload = mock_post.call_args.kwargs["json"]

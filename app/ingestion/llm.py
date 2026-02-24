@@ -15,8 +15,6 @@ load_dotenv()
 def answer_question(question: str,
                     qdrant_client: QdrantClientWrapper,
                     collection_name: str,
-                    ollama_url: str,
-                    embed_model: str,
                     openai_client: OpenAIClientWrapper,
                     llm_model: str,
                     top_k: int,
@@ -29,7 +27,7 @@ def answer_question(question: str,
       3) Ask LLM with that context
     """
     top_chunks = qdrant_client.fetch_top_k_query(
-        question, collection_name, ollama_url, embed_model, 
+        question, collection_name,
         strategy_hash=strategy_hash, doc_id=doc_id, k=top_k
     )
 
@@ -58,9 +56,7 @@ def main(config: GlobalConfig) -> None:
     qdrant_client = QdrantClientWrapper(config)
     openai_client = OpenAIClientWrapper(api_key=os.getenv("OPENAI_API_KEY"), llm_model=config.LLM_MODEL_CHATBOT)
     
-    ollama_url = config.OLLAMA_URL
     llm_model = config.LLM_MODEL_CHATBOT
-    embed_model = config.EMBEDDING_PROFILE.embed_model
     top_k = config.top_k
 
     # Compute strategy hash from global config
@@ -79,7 +75,7 @@ def main(config: GlobalConfig) -> None:
         if q.lower() in {"exit", "quit"}:
             break
         ans = answer_question(
-            q, qdrant_client, collection_name, ollama_url, embed_model, openai_client, llm_model,
+            q, qdrant_client, collection_name, openai_client, llm_model,
             strategy_hash=strategy_hash, top_k=top_k, doc_id=config.report_id
         )
         print("\nAssistant:", ans, "\n")
