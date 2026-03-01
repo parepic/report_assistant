@@ -1,0 +1,36 @@
+# Keep build context small and avoid shipping local/dev artifacts.
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.idea
+.vscode
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage
+.coverage.*
+.deepeval
+.streamlit
+.pdm-*
+
+# Local env and secrets.
+.env
+.env.*
+
+# Non-runtime project content.
+tests
+notebooks
+assets
+project_idea.pdf
+AGENTS.*.md
+
+# Generated outputs and evaluation runs.
+output
+app/output
+app/deepeval_eval/runs

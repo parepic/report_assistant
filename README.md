@@ -189,6 +189,23 @@ More details live in `ui/README.md`.
 
 ---
 
+## Docker Compose (Single-VM Production)
+
+For a single-VM deployment, use the production compose file and the container
+config override. This keeps FastAPI + Streamlit in separate containers built
+from the same PDM project, fronted by Nginx.
+
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Notes:
+- Create `.env.prod` on the VM with secrets (for example, `OPENAI_API_KEY`).
+- The API uses `app/global.prod.yaml`, which is mounted over `app/global.yaml`.
+
+---
+
 ## Config
 
 `global.yaml` controls major components (LLM model, embedding model, chunking strategy) to speed up experimentation.

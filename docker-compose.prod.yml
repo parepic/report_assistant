@@ -1,0 +1,61 @@
+# Production compose file for single-VM deployment.
+# Runs API + UI from the same PDM-based image, fronted by Nginx.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    env_file:
+      - ./.env.prod
+    volumes:
+      - ./app/global.prod.yaml:/app/app/global.yaml:ro
+    depends_on:
+      - postgres
+      - qdrant
+    restart: unless-stopped
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "streamlit", "run", "ui/streamlit_app.py", "--server.address", "0.0.0.0", "--server.port", "8501", "--server.headless", "true"]
+    env_file:
+      - ./.env.prod
+    environment:
+      REPORT_ASSISTANT_API_URL: "http://api:8000"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: report_assistant
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      # NOTE: Use "80:80" on the VM. "8080:80" is for local dev if port 80 is busy.
+      - "8080:80"
+    depends_on:
+      - ui
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  qdrant_data:
