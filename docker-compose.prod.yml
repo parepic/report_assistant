@@ -51,7 +51,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       # NOTE: Use "80:80" on the VM. "8080:80" is for local dev if port 80 is busy.
-      - "8080:80"
+      - "80:80"
     depends_on:
       - ui
     restart: unless-stopped
