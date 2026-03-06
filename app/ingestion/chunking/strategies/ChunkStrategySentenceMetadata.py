@@ -5,7 +5,6 @@ import spacy
 
 
 class ChunkStrategySentenceMetadata(BaseModel):
-    embed_model: str
     method: Literal["sentence_metadata"] = "sentence_metadata"
     chunk_size: int
     overlap: int

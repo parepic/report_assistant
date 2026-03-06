@@ -260,6 +260,6 @@ def main(config: GlobalConfig) -> None:
 
 
 if __name__ == "__main__":
-    from report_assistant.utils.load_utils import load_global_config
+    from app.utils.load_utils import load_global_config
     config = load_global_config()
     main(config)

@@ -43,19 +43,25 @@ def init_db(database_url: str) -> None:
     engine.dispose()
 
 
-def save_document_to_db(entry, engine) -> None:
+def save_document_to_db(entry, engine, on_existing: str = "prompt") -> None:
     """
-    Save a document entry to the database.
-    
-    Checks if document already exists. If it does, prompts user to delete or skip.
-    Otherwise inserts the document.
-    
+    Save a document entry to the database with configurable handling for duplicates.
+
+    This function writes a single document's metadata and markdown text into the
+    PostgreSQL `documents` table. If a document with the same `doc_id` already
+    exists, the behavior is controlled by `on_existing`:
+
+    - "prompt": interactively ask whether to delete and re-insert (default).
+    - "skip": skip insertion and leave the existing record untouched.
+    - "delete": delete the existing record (and cascade) before inserting.
+
     Args:
-        entry: DocumentEntry object loaded from config
-        engine: SQLAlchemy engine
-    
+        entry: Validated DocumentEntry object loaded from config/index.
+        engine: SQLAlchemy engine bound to the target database.
+        on_existing: Duplicate handling policy. One of "prompt", "skip", "delete".
+
     Returns:
-        None
+        None.
     """
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -66,17 +72,26 @@ def save_document_to_db(entry, engine) -> None:
         
         if existing_doc:
             print(f"\n⚠️  Document with id '{entry.doc_id}' already exists in the database.")
-            response = input("Delete all and re-insert? (yes/no): ").strip().lower()
-            
-            if response in ('yes', 'y'):
+            if on_existing == "skip":
+                print("Skipping insertion. Document remains unchanged.")
+                session.close()
+                return
+            if on_existing == "delete":
                 print("Deleting existing document and cascading deletions...")
                 session.delete(existing_doc)
                 session.commit()
                 print("Existing document deleted.")
             else:
-                print("Skipping insertion. Document remains unchanged.")
-                session.close()
-                return
+                response = input("Delete all and re-insert? (yes/no): ").strip().lower()
+                if response in ("yes", "y"):
+                    print("Deleting existing document and cascading deletions...")
+                    session.delete(existing_doc)
+                    session.commit()
+                    print("Existing document deleted.")
+                else:
+                    print("Skipping insertion. Document remains unchanged.")
+                    session.close()
+                    return
         
         # Read markdown file before creating Document
         md_file_path = Path(entry.text_dir) / f"{entry.doc_id}.md"
@@ -110,15 +125,17 @@ def save_document_to_db(entry, engine) -> None:
         session.close()
 
 
-def main(config: GlobalConfig) -> None:
+def main(config: GlobalConfig, on_existing: str = "prompt") -> None:
     """
-    Save document to database.
-    
+    Save one configured document to the database with duplicate handling control.
+
     Args:
-        config: Global configuration object
-    
+        config: Global configuration object.
+        on_existing: Duplicate handling policy for existing document IDs.
+            One of "prompt", "skip", "delete".
+
     Returns:
-        None
+        None.
     """
     init_db(config.POSTGRESQL_URL)
     print("Database is ready for use.")
@@ -126,11 +143,10 @@ def main(config: GlobalConfig) -> None:
     index_path = get_index_path(config)
     entry = load_document_entry(config.report_id, index_path, config)
     print(f"Loaded document entry for {config.report_id}:")
-    
     # Create engine
     engine = create_engine(database_url, echo=False)
     
     # Save document to database
-    save_document_to_db(entry, engine)
+    save_document_to_db(entry, engine, on_existing=on_existing)
     
     engine.dispose()

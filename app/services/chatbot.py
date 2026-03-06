@@ -5,6 +5,7 @@ import re
 from app.data_classes import GlobalConfig, compute_strategy_hash
 from app.clients.QdrantClientWrapper import QdrantClientWrapper
 from app.clients.OpenAiClientWrapper import OpenAIClientWrapper
+from app.ingestion.save_qdrant import derive_collection_name
 from app.prompts import prompt_chatbot
 
 
@@ -65,11 +66,13 @@ def main(
     strategy_hash = compute_strategy_hash(config.chunk_strategy_chatbot)
     
     # 1. Retrieval
+    collection_name = derive_collection_name(
+        config.QDRANT_DB_NAME_CHATBOT,
+        config.EMBEDDING_PROFILE,
+    )
     top_chunks = qdrant_client.fetch_top_k_query(
         prompt, 
-        config.QDRANT_DB_NAME_CHATBOT, 
-        config.OLLAMA_URL, 
-        config.chunk_strategy_chatbot.embed_model, 
+        collection_name, 
         strategy_hash=strategy_hash, 
         doc_id=doc_id, 
         k=config.top_k

@@ -24,7 +24,7 @@ Built using best AI Engineering best practices, such as clean architectural boun
 - **FastAPI** (API)
 - **Qdrant** (vector database)
 - **PostgreSQL** (document + metadata storage)
-- **Ollama** (`nomic-embed-text`) for embeddings
+- **Embeddings provider (configurable):** Ollama or OpenAI via `EMBEDDING_PROFILE.provider`
 - **OpenAI** for generation
 - **Streamlit** UI
 - **DeepEval** evaluation (LLM-as-judge metrics)
@@ -63,7 +63,7 @@ Test run using `gpt-4.1-mini` for generation and `nomic-embed-text` for retrieva
 You can reproduce these benchmarks by running the DeepEval suite:
 
 ```bash
-python -m app.deepeval_eval.eval_rag
+pdm run python -m app.deepeval_eval.eval_rag
 ```
 ---
 
@@ -108,9 +108,12 @@ cd report_assistant
 2) Configure OpenAI (primary generator):
 - Set `OPENAI_API_KEY` via env var or a `.env` file in the repo root.
 
-3) Install Ollama (embeddings):
-- Install: https://ollama.ai/
-- Pull the embedding model:
+3) Configure embeddings provider:
+- `EMBEDDING_PROFILE.provider: "openai"` uses OpenAI embeddings and requires `OPENAI_API_KEY`.
+- `EMBEDDING_PROFILE.provider: "ollama"` uses local Ollama embeddings.
+- If you use Ollama:
+  - Install: https://ollama.ai/
+  - Pull the embedding model:
 ```bash
 ollama pull nomic-embed-text
 ```
@@ -138,16 +141,53 @@ docker-compose up -d
 Three pipelines cover database ingestion, chatbot indexing, and YoY indexing:
 
 ```bash
-python -m app.ingestion.pipeline_db
+pdm run python -m app.ingestion.pipeline_db
 # Parse filing → store markdown in PostgreSQL
 
-python -m app.ingestion.pipeline_chatbot
+pdm run python -m app.ingestion.pipeline_chatbot
 # Chunk + embed for chatbot retrieval
 
-python -m app.ingestion.pipeline_comparison
+pdm run python -m app.ingestion.pipeline_comparison
 # Chunk + embed for YoY comparison (separate collection)
 ```
 
+To run the same pipelines inside the production Docker environment, use the
+dedicated ingestion services in `docker-compose.prod.yml`:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d postgres qdrant
+
+docker compose -f docker-compose.prod.yml run --rm ingestion_db
+docker compose -f docker-compose.prod.yml run --rm ingestion_chatbot
+docker compose -f docker-compose.prod.yml run --rm ingestion_comparison
+```
+
+### Batch ingestion (all documents in index.json)
+
+For a full bootstrap on a fresh VM, run the batch ingestion runner. It reads
+`app/data/index.json`, verifies each `source_file_path` exists, and runs the
+three ingestion stages for every eligible document. By default, it **skips**
+any document that already exists in Postgres or Qdrant (no prompts).
+
+```bash
+pdm run python -m app.ingestion.pipeline_batch
+```
+
+To run the batch ingestion inside the production Docker environment:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d api
+docker compose -f docker-compose.prod.yml run --rm ingestion_batch
+```
+
+Optional filters:
+
+```bash
+pdm run python -m app.ingestion.pipeline_batch --report-ids amazon_10-k-item1a-2024 apple_10-k-item1a-2024
+pdm run python -m app.ingestion.pipeline_batch --on-existing prompt
+```
+
+## TODO - Confirm these functions can be run with these flags.
 You can run a single stage too. For example:
 ```bash
 pdm run python pipeline_chatbot.py --chunk
@@ -185,7 +225,38 @@ More details live in `ui/README.md`.
 
 ---
 
+## Docker Compose (Single-VM Production)
+
+For a single-VM deployment, use the production compose file and the container
+config override. This keeps FastAPI + Streamlit in separate containers built
+from the same PDM project, fronted by Nginx.
+
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Notes:
+- Create `.env.prod` on the VM with secrets (for example, `OPENAI_API_KEY`).
+- Set `REPORT_ASSISTANT_ENV=production` so the app loads `app/global.prod.yaml`.
+
+---
+
 ## Config
 
 `global.yaml` controls major components (LLM model, embedding model, chunking strategy) to speed up experimentation.
+Use `REPORT_ASSISTANT_ENV=production` to load `app/global.prod.yaml` instead.
 
+For deterministic multi-model indexing, set:
+- `EMBEDDING_PROFILE.provider` (e.g., `ollama`, `openai`)
+- `EMBEDDING_PROFILE.embed_model` (e.g., `nomic-embed-text`, `text-embedding-3-small`)
+- `EMBEDDING_PROFILE.dimension` (optional, reserved for future validation)
+
+Qdrant collection names for ingestion are automatically derived as:
+`<base_collection>__<provider>_<model>` (normalized).
+
+---
+
+## TODO
+
+- Replace ad-hoc `payload_example` index bootstrap in Qdrant with a typed payload schema (for example, a Pydantic model + explicit index mapping) so payload fields/indexes are centrally validated.

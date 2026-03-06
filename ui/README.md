@@ -11,5 +11,4 @@ Prereqs:
 - Ollama is running for query embeddings
 
 Notes:
-- Reports are loaded only from `data/reports/` and indexed via `data/index.json`
-- This UI is a thin layer over `report_assistant/` and does not modify core logic
+- Reports are loaded only from `app/data/reports/` and indexed via `app/data/index.json`

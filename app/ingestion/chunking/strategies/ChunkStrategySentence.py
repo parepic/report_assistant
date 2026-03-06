@@ -5,7 +5,6 @@ import spacy
 
 
 class ChunkStrategySentence(BaseModel):
-    embed_model: str
     method: Literal["sentence"] = "sentence"
     chunk_size: int
     overlap: int

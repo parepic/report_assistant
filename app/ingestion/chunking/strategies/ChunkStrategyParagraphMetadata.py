@@ -5,7 +5,6 @@ import re
 
 
 class ChunkStrategyParagraphMetadata(BaseModel):
-    embed_model: str
     method: Literal["paragraph_metadata"] = "paragraph_metadata"
     max_chunk_chars: Optional[int] = None 
 
