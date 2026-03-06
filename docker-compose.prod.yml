@@ -55,6 +55,19 @@ services:
       - api
     restart: "no"
 
+  ingestion_batch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_batch"]
+    env_file:
+      - ./.env
+    environment:
+      REPORT_ASSISTANT_ENV: "production"
+    depends_on:
+      - api
+    restart: "no"
+
   ui:
     build:
       context: .

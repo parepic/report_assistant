@@ -173,6 +173,13 @@ any document that already exists in Postgres or Qdrant (no prompts).
 pdm run python -m app.ingestion.pipeline_batch
 ```
 
+To run the batch ingestion inside the production Docker environment:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d api
+docker compose -f docker-compose.prod.yml run --rm ingestion_batch
+```
+
 Optional filters:
 
 ```bash

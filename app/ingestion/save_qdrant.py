@@ -141,7 +141,16 @@ def upsert_to_company_collection(
         client.upsert(collection_name=collection_name, points=points)
 
 
-def main(config: GlobalConfig, mode="chatbot") -> None:
+def main(config: GlobalConfig, mode: str = "chatbot", on_existing: str = "prompt") -> None:
+    """
+    Embed and upsert chunks into Qdrant for one report with duplicate handling.
+
+    Args:
+        config: Global configuration object.
+        mode: Target collection mode, either "chatbot" or "yoy".
+        on_existing: Duplicate handling policy when matching points already exist.
+            One of "prompt", "skip", or "delete".
+    """
 
     index_path = get_index_path(config)
     entry = load_document_entry(config.report_id, index_path, config)
@@ -162,13 +171,20 @@ def main(config: GlobalConfig, mode="chatbot") -> None:
             f"Found {existing_count} existing points with the same strategy hash "
             f"and doc_id in collection '{collection_name}'."
         )
-        response = input("Do you want to delete them and recreate embeddings? (yes/no): ").strip().lower()
-        if response == "yes":
+        if on_existing == "skip":
+            print("Skipping embedding. Existing points remain unchanged.")
+            return
+        if on_existing == "delete":
             qdrant.delete_existing_points(collection_name, chunks_file.strategy_hash, entry.doc_id)
             print(f"Deleted {existing_count} existing points.")
         else:
-            print("Process stopped by user.")
-            return
+            response = input("Do you want to delete them and recreate embeddings? (yes/no): ").strip().lower()
+            if response == "yes":
+                qdrant.delete_existing_points(collection_name, chunks_file.strategy_hash, entry.doc_id)
+                print(f"Deleted {existing_count} existing points.")
+            else:
+                print("Process stopped by user.")
+                return
 
     chunks = chunks_file.chunks
     vectors = embed_chunks(chunks, config)
@@ -215,6 +231,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Embed chunks into Qdrant vector database.")
     parser.add_argument('--yoy', action='store_true', help='Use YOY mode')
     parser.add_argument('--chatbot', action='store_true', help='Use chatbot mode (default)')
+    parser.add_argument(
+        "--on-existing",
+        choices=["prompt", "skip", "delete"],
+        default="prompt",
+        help="How to handle existing points for the same doc_id/strategy_hash.",
+    )
     
     args = parser.parse_args()
     
@@ -226,4 +248,4 @@ if __name__ == "__main__":
     else:
         mode = "chatbot"  # default
     
-    main(load_global_config(), mode=mode)
+    main(load_global_config(), mode=mode, on_existing=args.on_existing)
