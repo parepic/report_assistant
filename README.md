@@ -151,6 +151,17 @@ pdm run python -m app.ingestion.pipeline_comparison
 # Chunk + embed for YoY comparison (separate collection)
 ```
 
+To run the same pipelines inside the production Docker environment, use the
+dedicated ingestion services in `docker-compose.prod.yml`:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d postgres qdrant
+
+docker compose -f docker-compose.prod.yml run --rm ingestion_db
+docker compose -f docker-compose.prod.yml run --rm ingestion_chatbot
+docker compose -f docker-compose.prod.yml run --rm ingestion_comparison
+```
+
 ### Batch ingestion (all documents in index.json)
 
 For a full bootstrap on a fresh VM, run the batch ingestion runner. It reads

@@ -9,7 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # System deps kept minimal; add OS packages only if runtime requires them.
-RUN pip install --no-cache-dir pdm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends pandoc \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir pdm
 
 # Install dependencies first for better layer caching.
 COPY pyproject.toml pdm.lock /app/

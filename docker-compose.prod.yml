@@ -9,10 +9,51 @@ services:
     command: ["pdm", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     env_file:
       - ./.env
+    environment:
+      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - postgres
       - qdrant
     restart: unless-stopped
+
+  ingestion_db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_db"]
+    env_file:
+      - ./.env
+    environment:
+      REPORT_ASSISTANT_ENV: "production"
+    depends_on:
+      - api
+    restart: "no"
+
+  ingestion_chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_chatbot"]
+    env_file:
+      - ./.env
+    environment:
+      REPORT_ASSISTANT_ENV: "production"
+    depends_on:
+      - api
+    restart: "no"
+
+  ingestion_comparison:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_comparison"]
+    env_file:
+      - ./.env
+    environment:
+      REPORT_ASSISTANT_ENV: "production"
+    depends_on:
+      - api
+    restart: "no"
 
   ui:
     build:
