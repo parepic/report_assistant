@@ -6,8 +6,16 @@ from .ChunkStrategySentence import ChunkStrategySentence
 from .ChunkStrategySentenceMetadata import ChunkStrategySentenceMetadata 
 from .ChunkStrategyParagraph import ChunkStrategyParagraph
 from .ChunkStrategyParagraphMetadata import ChunkStrategyParagraphMetadata 
+from .ChunkStrategyFactor import ChunkStrategyFactor
 
 ChunkStrategy = Annotated[
-    Union[ChunkStrategyFixedSize, ChunkStrategySentence, ChunkStrategySentenceMetadata, ChunkStrategyParagraph, ChunkStrategyParagraphMetadata],   
+    Union[
+        ChunkStrategyFixedSize,
+        ChunkStrategySentence,
+        ChunkStrategySentenceMetadata,
+        ChunkStrategyParagraph,
+        ChunkStrategyParagraphMetadata,
+        ChunkStrategyFactor,
+    ],
     Field(discriminator="method"),
 ]

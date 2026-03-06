@@ -3,7 +3,7 @@
 Batch ingestion runner for all documents listed in index.json.
 
 This script reads the document registry, validates that each entry points to a
-real source file, and runs the three ingestion stages (DB, chatbot, YoY) in
+real source file, and runs the ingestion stages (DB, chatbot, YoY, factors) in
 sequence for each eligible document. It is designed for non-interactive
 bootstrap runs where existing records should be skipped rather than prompting.
 """
@@ -18,6 +18,7 @@ from app.data_classes import GlobalConfig
 from app.ingestion.chunking.chunk import main as chunk_main
 from app.ingestion.preprocess import main as preprocess_main
 from app.ingestion.save_postgresql import main as save_sql_main
+from app.ingestion.save_postgresql_factors import main as save_sql_factors_main
 from app.ingestion.save_qdrant import main as save_qdrant_main
 from app.utils.load_utils import get_index_path, load_global_config
 
@@ -134,12 +135,13 @@ def filter_existing_sources(entries: Iterable[Dict], report_ids: Iterable[str]) 
 
 def run_full_ingestion(config: GlobalConfig, on_existing: str) -> None:
     """
-    Execute the three ingestion stages for a single report.
+    Execute all ingestion stages for a single report.
 
     Order:
     1) Preprocess and save to PostgreSQL
-    2) Chunk + embed for chatbot collection
-    3) Chunk + embed for YoY collection
+    2) Chunk by risk factor + save risk factors to PostgreSQL
+    3) Chunk + embed for chatbot collection
+    4) Chunk + embed for YoY collection
 
     Args:
         config: Report-specific configuration object.
@@ -150,6 +152,10 @@ def run_full_ingestion(config: GlobalConfig, on_existing: str) -> None:
     preprocess_main(config)
     print("Preprocessing completed. Saving to PostgreSQL...")
     save_sql_main(config, on_existing=on_existing)
+    print("Starting chunking (factor)...")
+    chunk_main(config, mode="factor")
+    print("Chunking completed. Saving risk factors to PostgreSQL...")
+    save_sql_factors_main(config, on_existing=on_existing)
     print("Starting chunking (chatbot)...")
     chunk_main(config, mode="chatbot")
     print("Chunking completed. Starting embedding (chatbot)...")

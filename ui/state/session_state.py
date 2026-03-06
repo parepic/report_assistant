@@ -12,6 +12,8 @@ DEFAULT_STATE: dict[str, Any] = {
     "compare_to_last_year_clicked": False,
     "compare_to_last_year_result": None,
     "compare_to_last_year_rendered": False,
+    "browse_risk_factors_clicked": False,
+    "browse_risk_factors_result": None,
 }
 
 
