@@ -63,7 +63,7 @@ Test run using `gpt-4.1-mini` for generation and `nomic-embed-text` for retrieva
 You can reproduce these benchmarks by running the DeepEval suite:
 
 ```bash
-python -m app.deepeval_eval.eval_rag
+pdm run python -m app.deepeval_eval.eval_rag
 ```
 ---
 
@@ -141,14 +141,32 @@ docker-compose up -d
 Three pipelines cover database ingestion, chatbot indexing, and YoY indexing:
 
 ```bash
-python -m app.ingestion.pipeline_db
+pdm run python -m app.ingestion.pipeline_db
 # Parse filing → store markdown in PostgreSQL
 
-python -m app.ingestion.pipeline_chatbot
+pdm run python -m app.ingestion.pipeline_chatbot
 # Chunk + embed for chatbot retrieval
 
-python -m app.ingestion.pipeline_comparison
+pdm run python -m app.ingestion.pipeline_comparison
 # Chunk + embed for YoY comparison (separate collection)
+```
+
+### Batch ingestion (all documents in index.json)
+
+For a full bootstrap on a fresh VM, run the batch ingestion runner. It reads
+`app/data/index.json`, verifies each `source_file_path` exists, and runs the
+three ingestion stages for every eligible document. By default, it **skips**
+any document that already exists in Postgres or Qdrant (no prompts).
+
+```bash
+pdm run python -m app.ingestion.pipeline_batch
+```
+
+Optional filters:
+
+```bash
+pdm run python -m app.ingestion.pipeline_batch --report-ids amazon_10-k-item1a-2024 apple_10-k-item1a-2024
+pdm run python -m app.ingestion.pipeline_batch --on-existing prompt
 ```
 
 ## TODO - Confirm these functions can be run with these flags.
@@ -202,13 +220,14 @@ docker compose -f docker-compose.prod.yml up -d
 
 Notes:
 - Create `.env.prod` on the VM with secrets (for example, `OPENAI_API_KEY`).
-- The API uses `app/global.prod.yaml`, which is mounted over `app/global.yaml`.
+- Set `REPORT_ASSISTANT_ENV=production` so the app loads `app/global.prod.yaml`.
 
 ---
 
 ## Config
 
 `global.yaml` controls major components (LLM model, embedding model, chunking strategy) to speed up experimentation.
+Use `REPORT_ASSISTANT_ENV=production` to load `app/global.prod.yaml` instead.
 
 For deterministic multi-model indexing, set:
 - `EMBEDDING_PROFILE.provider` (e.g., `ollama`, `openai`)
@@ -222,5 +241,4 @@ Qdrant collection names for ingestion are automatically derived as:
 
 ## TODO
 
-- Add a batch ingestion/indexing command to process multiple `report_id` entries (from `app/data/index.json` or a provided list) in one run, so comparisons do not require manual one-by-one pipeline execution.
 - Replace ad-hoc `payload_example` index bootstrap in Qdrant with a typed payload schema (for example, a Pydantic model + explicit index mapping) so payload fields/indexes are centrally validated.

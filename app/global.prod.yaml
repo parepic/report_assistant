@@ -1,13 +1,13 @@
 # Production config used inside containers.
-# This file is mounted over app/global.yaml by docker-compose.prod.yml.
+# Loaded when REPORT_ASSISTANT_ENV is set to "production" or "prod".
 
 data_path: "app/data/"
 output_path: "app/output/"
 
-report_id: "microsoft_10-k-item1a-2024"
+report_id: "apple_10-k-item1a-2021"
 
 OLLAMA_URL: "http://localhost:11434"
-POSTGRESQL_URL: "postgresql+psycopg://postgres:postgres@postgres:5432/report_assistant"
+POSTGRESQL_URL: "postgresql+psycopg://postgres:postgres@localhost:5432/report_assistant"
 QDRANT_URL: "http://qdrant:6333"
 LLM_MODEL_CHATBOT: "gpt-4.1-mini"
 LLM_MODEL_SUMMARIZER: "gpt-4.1-mini"

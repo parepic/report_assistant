@@ -1,18 +1,43 @@
 import json
+import os
 from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
 import yaml
 
 from app.data_classes import GlobalConfig, DocumentEntry, ChunkFile
 
 
+def resolve_global_config_path() -> Path:
+    """
+    Resolve the global configuration file path based on REPORT_ASSISTANT_ENV.
+
+    Supported environment values:
+    - "dev", "development", "local" (default): app/global.yaml
+    - "prod", "production": app/global.prod.yaml
+
+    Any other value is treated as a misconfiguration and raises ValueError.
+    """
+
+    env_value = os.getenv("REPORT_ASSISTANT_ENV", "").strip().lower()
+    print(f"REPORT_ASSISTANT_ENV: {env_value!r}")
+    if env_value in ("", "dev", "development", "local"):
+        return Path("app/global.yaml")
+    if env_value in ("prod", "production"):
+        return Path("app/global.prod.yaml")
+    raise ValueError(
+        "REPORT_ASSISTANT_ENV must be one of: dev, development, local, prod, production. "
+        f"Got: {env_value!r}"
+    )
+
+
 
 def load_global_config() -> "GlobalConfig":
     """
-    Load and validate global configuration from global.yaml.
+    Load and validate global configuration based on REPORT_ASSISTANT_ENV.
     """
-
-    path = Path("app/global.yaml")
+    load_dotenv()
+    path = resolve_global_config_path()
     if not path.is_file():
         raise FileNotFoundError(f"Global config file not found: {path}")
     with path.open("r", encoding="utf-8") as f:
