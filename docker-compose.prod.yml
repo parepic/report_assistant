@@ -9,8 +9,6 @@ services:
     command: ["pdm", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     env_file:
       - .env
-    environment:
-      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - postgres
       - qdrant
@@ -23,8 +21,6 @@ services:
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_db"]
     env_file:
       - .env
-    environment:
-      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - api
     restart: "no"
@@ -36,8 +32,6 @@ services:
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_chatbot"]
     env_file:
       - .env
-    environment:
-      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - api
     restart: "no"
@@ -49,8 +43,6 @@ services:
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_comparison"]
     env_file:
       - .env
-    environment:
-      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - api
     restart: "no"
@@ -62,8 +54,6 @@ services:
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_batch"]
     env_file:
       - .env
-    environment:
-      REPORT_ASSISTANT_ENV: "production"
     depends_on:
       - api
     restart: "no"
