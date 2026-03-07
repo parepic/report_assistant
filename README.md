@@ -236,8 +236,13 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 ```
 
+Or use the helper script (expects `.env` in repo root):
+```bash
+./start_prod_docker.sh
+```
+
 Notes:
-- Create `.env.prod` on the VM with secrets (for example, `OPENAI_API_KEY`).
+- Create `.env` on the VM with secrets (for example, `OPENAI_API_KEY`).
 - Set `REPORT_ASSISTANT_ENV=production` so the app loads `app/global.prod.yaml`.
 
 ---
