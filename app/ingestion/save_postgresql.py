@@ -6,41 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from pathlib import Path
 
 from app.utils.load_utils import get_index_path, load_document_entry
+from app.utils.utils import init_db
 from app.models import Document, Base
-
-
-def init_db(database_url: str) -> None:
-    """
-    Initialize the database by checking for existing tables and creating missing ones.
-    
-    Checks if the Document model exists in the database.
-    Creates any missing tables using SQLAlchemy's Base.metadata.create_all().
-    """
-    
-    from app.models import Base
-    # Create engine
-    engine = create_engine(database_url, echo=False)
-    
-    # Get inspector to check existing tables
-    inspector = inspect(engine)
-    existing_tables = set(inspector.get_table_names())
-
-    # Expected tables from models
-    expected_tables = {"documents"}
-
-    # Check what's missing
-    missing_tables = expected_tables - existing_tables
-    
-    if missing_tables:
-        print(f"Missing tables: {', '.join(sorted(missing_tables))}")
-        print("Creating missing tables...")
-        # Create all tables defined in Base metadata
-        Base.metadata.create_all(engine)
-        print("Database initialization complete.")
-    else:
-        print("All tables already exist. No action needed.")
-    
-    engine.dispose()
 
 
 def save_document_to_db(entry, engine, on_existing: str = "prompt") -> None:
@@ -137,7 +104,7 @@ def main(config: GlobalConfig, on_existing: str = "prompt") -> None:
     Returns:
         None.
     """
-    init_db(config.POSTGRESQL_URL)
+    init_db(config.POSTGRESQL_URL, expected_tables={"documents, risk_factors"})
     print("Database is ready for use.")
     database_url = config.POSTGRESQL_URL
     index_path = get_index_path(config)

@@ -7,9 +7,11 @@ import streamlit as st
 from components.chat_history import render_chat_history
 from components.chat_input import get_user_input
 from components.compare_results import render_compare_results
+from components.risk_factor_results import render_risk_factor_results
 from services.documents import from_entry_dict, report_display_name
 from services.rag import answer_for_entry
 from services.comparison import compare_to_last_year
+from services.risk_factors import browse_risk_factors
 from state.session_state import init_session_state
 
 
@@ -39,6 +41,12 @@ def _go_to_start() -> None:
 def _show_compare_dialog(result: dict) -> None:
     with st.container(height=800):
         render_compare_results(result)
+
+
+@st.dialog("Risk Factors")
+def _show_risk_factors_dialog(items: list[dict]) -> None:
+    with st.container(height=800):
+        render_risk_factor_results(items)
 
 
 def main() -> None:
@@ -93,6 +101,10 @@ def main() -> None:
         if st.button("✨ Compare to Prev. Fiscal Year", key="compare_to_prev_fiscal_year"):
             st.session_state["compare_to_last_year_clicked"] = True
             st.rerun()
+        if st.button("✨ Browse Risk Factor", key="browse_risk_factor"):
+            st.session_state["browse_risk_factors_result"] = None
+            st.session_state["browse_risk_factors_clicked"] = True
+            st.rerun()
 
     messages = st.session_state["chat_messages"]
     render_chat_history(messages, company=company, year=year)
@@ -115,6 +127,21 @@ def main() -> None:
         st.session_state["compare_to_last_year_clicked"] = False
         if isinstance(result, dict):
             _show_compare_dialog(result)
+
+    if st.session_state.get("browse_risk_factors_clicked"):
+        if st.session_state.get("browse_risk_factors_result") is None:
+            with st.spinner("Loading risk factors..."):
+                try:
+                    st.session_state["browse_risk_factors_result"] = browse_risk_factors(
+                        doc_id=str(entry.get("doc_id"))
+                    )
+                except Exception as exc:
+                    st.session_state["browse_risk_factors_result"] = []
+                    st.error(f"Browse risk factors failed: {exc}")
+        items = st.session_state.get("browse_risk_factors_result")
+        st.session_state["browse_risk_factors_clicked"] = False
+        if isinstance(items, list):
+            _show_risk_factors_dialog(items)
 
     user_input = get_user_input()
     if user_input:

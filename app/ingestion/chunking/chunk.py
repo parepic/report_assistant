@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.ingestion.chunking.convert_to_markdown import clean_markdown_text, docx_to_markdown, convert_to_markdown_pypandoc
 from app.data_classes import ChunkFile, GlobalConfig
+from app.ingestion.chunking.strategies.ChunkStrategyFactor import ChunkStrategyFactor
 from app.utils.load_utils import get_index_path, load_document_entry, load_global_config
 from app.models import Document as DBDocument
 
@@ -77,11 +78,14 @@ def main(config: GlobalConfig, mode: str = "chatbot") -> None:
         strategy = config.chunk_strategy_chatbot
     elif mode == "yoy":
         strategy = config.chunk_strategy_yoy
+    elif mode == "factor":
+        strategy = ChunkStrategyFactor(method="factor")
     else:
         raise ValueError(f"Unknown strategy key: {mode}")
     
     index_path = get_index_path(config)
     entry = load_document_entry(config.report_id, index_path, config)
+    print("entry loaded:", entry.doc_id)
     file_path = entry.source_file_path
     
     # Load markdown text from database

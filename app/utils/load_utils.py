@@ -71,7 +71,6 @@ def load_document_entry(report_id: str, index_path: Path, config: GlobalConfig) 
     """
     entries = load_document_entries(index_path, config)
     report_norm = report_id.strip().lower()
-
     try:
         return next(
             entry
