@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_ENV: "production"
     depends_on:
@@ -22,7 +22,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_db"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_ENV: "production"
     depends_on:
@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_chatbot"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_ENV: "production"
     depends_on:
@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_comparison"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_ENV: "production"
     depends_on:
@@ -61,7 +61,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "python", "-m", "app.ingestion.pipeline_batch"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_ENV: "production"
     depends_on:
@@ -74,7 +74,7 @@ services:
       dockerfile: Dockerfile
     command: ["pdm", "run", "streamlit", "run", "ui/streamlit_app.py", "--server.address", "0.0.0.0", "--server.port", "8501", "--server.headless", "true"]
     env_file:
-      - ./.env
+      - .env
     environment:
       REPORT_ASSISTANT_API_URL: "http://api:8000"
       REPORT_ASSISTANT_ENV: "production"
@@ -119,11 +119,13 @@ services:
 
   nginx:
     image: nginx:alpine
+    env_file:
+      - .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      # NOTE: Use "80:80" on the VM. "8080:80" is for local dev if port 80 is busy.
-      - "8080:80"
+      # NOTE: Use "80" on the VM. "8080" is for local dev if port 80 is busy.
+      - "${NGINX_HOST_PORT}:80"
     depends_on:
       - ui
     restart: unless-stopped
