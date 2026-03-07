@@ -34,3 +34,27 @@ class Document(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
+    # Relationship to risk factors
+    risk_factors = relationship("RiskFactor", back_populates="document", cascade="all, delete-orphan")
+
+
+class RiskFactor(Base):
+    """
+    Risk factor chunks extracted from a document.
+    
+    Each factor represents a single risk factor section with its associated text.
+    The idx field tracks the sequential position of the factor within the document.
+    """
+    __tablename__ = "risk_factors"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    document_id = Column(String, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True)
+    risk_factor = Column(Text, nullable=True)
+    text = Column(Text, nullable=False)
+    idx = Column(Integer, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    # Relationship to parent document
+    document = relationship("Document", back_populates="risk_factors")
+
